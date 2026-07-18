@@ -98,10 +98,21 @@
   </section>
 </main>
 
+<main style="grid-template-columns:1fr;max-width:1500px;margin:0 auto;padding:0 22px 16px">
+  <section class="card">
+    <h2>Facility knowledge graph — monitoring (simulated)</h2>
+    <div class="row" style="display:flex;gap:8px;align-items:center">
+      <button id="btn-scan">Scan for updates</button>
+      <span class="sim-note" style="margin:0">simulated web / phone_call / ehr_feed fetchers · nothing applies until approved below</span>
+    </div>
+    <div id="pending-list" style="margin-top:12px"></div>
+  </section>
+</main>
+
 <footer>facility directory compiled from public sources · availability, response behavior &amp; flow edges simulated · every agent call is nurse-authorized &amp; logged</footer>
 
 <script>
-const API = location.protocol === "file:" ? "http://localhost:8011" : "";
+const API = location.protocol === "file:" ? "http://localhost:8000" : "";
 const COLORS = {step_down:"var(--stepdown)",step_up:"var(--stepup)",vertical:"var(--vertical)",crisis_reentry:"var(--crisis)"};
 const PATIENT = {patient_id:"maria_demo", direction:"step_down", payer:"medi-cal", language:"es", nurse_name:"J. Alvarez, RN"};
 // demo packet: in the full flow this comes from pipeline.run_pipeline; kept inline so the UI demos standalone
@@ -216,6 +227,39 @@ document.getElementById("btn-self").onclick=async()=>{
   document.getElementById("transcript").innerHTML="";
   addLine("agent","Call script for "+PATIENT.nurse_name+":\n\n"+res.script,false);
 };
+
+async function renderPending(){
+  const {pending}=await j("/api/monitor/pending");
+  const el=document.getElementById("pending-list"); el.innerHTML="";
+  if(!pending.length){el.innerHTML='<div class="sim-note">no pending updates — click "Scan for updates"</div>';return}
+  pending.forEach(u=>{
+    const d=document.createElement("div"); d.className="cand";
+    const left=document.createElement("div");
+    const nm=document.createElement("strong");
+    nm.textContent=`${u.entity_type==="edge"?u.entity_id.replace("|"," → "):u.entity_id} · ${u.field_path}`;
+    const why=document.createElement("div"); why.className="why";
+    why.textContent=`${u.old_value ?? "(none)"} → ${u.new_value}  ·  ${u.source_type}: ${u.source_detail}  ·  confidence ${Math.round(u.confidence*100)}%`;
+    left.append(nm,why);
+    const btns=document.createElement("div"); btns.style.display="flex"; btns.style.gap="6px";
+    const approve=document.createElement("button"); approve.textContent="Approve";
+    approve.onclick=async()=>{await j(`/api/monitor/approve/${u.id}`,{method:"POST",
+      headers:{"Content-Type":"application/json"}, body:JSON.stringify({approved_by:"demo nurse"})});
+      renderPending()};
+    const reject=document.createElement("button"); reject.className="ghost"; reject.textContent="Reject";
+    reject.onclick=async()=>{await j(`/api/monitor/reject/${u.id}`,{method:"POST",
+      headers:{"Content-Type":"application/json"}, body:JSON.stringify({reason:"declined in demo"})});
+      renderPending()};
+    btns.append(approve,reject);
+    d.append(left,btns); el.appendChild(d)});
+}
+
+document.getElementById("btn-scan").onclick=async()=>{
+  document.getElementById("btn-scan").disabled=true;
+  try{await j("/api/monitor/scan",{method:"POST"}); await renderPending()}
+  finally{document.getElementById("btn-scan").disabled=false}
+};
+
+renderPending().catch(()=>{});
 
 drawMap().catch(e=>{document.getElementById("conn").textContent="API offline — start uvicorn"});
 </script>
