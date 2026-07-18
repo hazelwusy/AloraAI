@@ -429,7 +429,7 @@
 <div id="toast-host"></div>
 
 <script>
-const API = location.protocol === "file:" ? "http://localhost:8011" : "";
+const API = location.protocol === "file:" ? "http://localhost:8000" : "";
 const ORIGIN_ID = "zsfg-pes";   // real-directory id; the ZSFG psychiatric hub the referrals flow from
 const FLOW = {step_down:"var(--flow-stepdown)",step_up:"var(--flow-stepup)",vertical:"var(--flow-vertical)",crisis_reentry:"var(--flow-crisis)"};
 const PATIENT = {patient_id:"maria_demo", direction:"step_down", payer:"medi-cal", language:"es", nurse_name:"J. Alvarez, RN"};
@@ -603,7 +603,7 @@ async function runMonitorScan(reason){
   queued.forEach(u=>logActivity("KG agent",
     `flagged for review · ${entityName(u)} · ${prettyField(u.field_path)} ${u.old_value??"–"}→${u.new_value} (${u.source_type})`));
   if(!auto.length&&!queued.length){ if(reason!=="tick")logActivity("KG agent","network scan · no new changes"); }
-  else { const {facilities}=await j("/api/graph"); facilities.forEach(f=>FAC_BY_ID[f.id]=f); }  // refresh card data in place
+  else { try{ const {facilities}=await j("/api/graph"); facilities.forEach(f=>FAC_BY_ID[f.id]=f); }catch(e){} }  // refresh card data in place
   if(auto.length||queued.length)
     toast(`KG agent: ${auto.length} auto-applied · ${queued.length} queued for review`);
 }
@@ -641,19 +641,23 @@ function clearMap(){ document.querySelectorAll(".edge").forEach(e=>e.classList.r
 
 /* ---------- match + select ---------- */
 document.getElementById("btn-match").onclick=async()=>{
+  const btn=document.getElementById("btn-match"); btn.disabled=true;
   logActivity("Matcher","Ranking step-down facilities · Medi-Cal · Spanish");
-  const {candidates}=await j("/api/match-directory",{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({direction:PATIENT.direction,payer:PATIENT.payer,language:PATIENT.language,exclude:[]})});
-  const el=document.getElementById("candidates"); el.innerHTML="";
-  candidates.slice(0,3).forEach(c=>{
-    const d=document.createElement("div"); d.className="cand";
-    const left=document.createElement("div");
-    left.innerHTML=`<div class="nm">${esc(c.facility.name)}</div><div class="why">${esc(c.reasons.join(" · "))}</div>`;
-    const b=document.createElement("button"); b.className="btn btn-sm"; b.textContent="Prep call";
-    b.onclick=()=>selectFacility(c.facility);
-    d.append(left,b); el.appendChild(d);
-  });
-  logActivity("Matcher",`${candidates.length} candidates · top: ${candidates[0]?.facility.name||"none"}`);
+  try{
+    const {candidates}=await j("/api/match-directory",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({direction:PATIENT.direction,payer:PATIENT.payer,language:PATIENT.language,exclude:[]})});
+    const el=document.getElementById("candidates"); el.innerHTML="";
+    candidates.slice(0,3).forEach(c=>{
+      const d=document.createElement("div"); d.className="cand";
+      const left=document.createElement("div");
+      left.innerHTML=`<div class="nm">${esc(c.facility.name)}</div><div class="why">${esc(c.reasons.join(" · "))}</div>`;
+      const b=document.createElement("button"); b.className="btn btn-sm"; b.textContent="Prep call";
+      b.onclick=()=>selectFacility(c.facility);
+      d.append(left,b); el.appendChild(d);
+    });
+    logActivity("Matcher",`${candidates.length} candidates · top: ${candidates[0]?.facility.name||"none"}`);
+  }catch(e){ toast("Match failed: "+e.message); logActivity("Matcher","match failed"); }
+  finally{ btn.disabled=false; }
 };
 
 async function selectFacility(fac){
@@ -752,7 +756,7 @@ function renderState(s){
   document.getElementById("flags").innerHTML=flags.map(f=>`<div class="flag"><svg viewBox="0 0 24 24"><path d="M12 3l9 16H3z"></path><path d="M12 10v4M12 17h.01"></path></svg><span>${esc(f)}</span></div>`).join("");
   show("p-det",!!s.detected_outcome);
   if(s.detected_outcome){const o=s.detected_outcome;
-    document.getElementById("det-outcome").innerHTML=`<div class="det ${o.kind}"><strong>${o.kind.toUpperCase()}</strong>${o.reason?" — "+esc(o.reason):""}`+
+    document.getElementById("det-outcome").innerHTML=`<div class="det ${esc(o.kind)}"><strong>${esc(String(o.kind).toUpperCase())}</strong>${o.reason?" — "+esc(o.reason):""}`+
       (o.condition?`<div style="color:var(--warning);margin-top:3px">condition: ${esc(o.condition)}</div>`:"")+`</div>`}
 }
 function show(id,on){const el=document.getElementById(id);el.style.display=on?"block":"none";if(on&&!el.dataset.seen){el.classList.add("stagger");el.dataset.seen="1"}}

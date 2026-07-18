@@ -3,10 +3,7 @@ built from SFDPH/SAMHSA public sources; `simulated.*` fields are demo-only).
 The 10-facility facilities_demo.json remains only for the network-map view."""
 from __future__ import annotations
 
-import json
-from pathlib import Path
-
-DATA = Path(__file__).parent.parent / "data"
+from . import live_store
 
 STEP_DOWN_LEVELS = ["crisis_stabilization", "peer_respite", "sobering",
                     "residential_tx", "residential_stepdown", "PHP", "IOP", "outpatient"]
@@ -16,7 +13,9 @@ LANG_MAP = {"es": "Spanish", "en": "English", "zh": ["Cantonese", "Mandarin"]}
 
 
 def load_directory() -> list[dict]:
-    return json.loads((DATA / "facilities.json").read_text())
+    # the live runtime graph (seeded from data/facilities.json) so the matcher
+    # sees the monitoring agent's updates; committed data/ stays pristine.
+    return live_store.load_json(live_store.facilities_path(), [])
 
 
 def _speaks(facility: dict, lang_code: str) -> bool:

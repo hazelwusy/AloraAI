@@ -13,8 +13,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from pipeline.copilot import observe, precall_brief
+from pipeline.directory import load_directory, match_directory
 from pipeline.learning import record_call
-from pipeline.matcher import load_facilities, match
 from pipeline.schemas import CallOutcome, CallResult
 
 ROOT = Path(__file__).parent.parent
@@ -39,30 +39,15 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
-@app.get("/api/facilities")
-def facilities():
-    return {"facilities": load_facilities(),
-            "edges": json.loads((ROOT / "data" / "edges.json").read_text())}
-
-
-@app.post("/api/match")
-def do_match(need: dict):
-    return {"candidates": match(need)}
-
-
 @app.get("/api/referrals")
 def referrals():
     return _state()
 
 
 def _facility(facility_id: str) -> dict:
-    """Resolve against the real 74-facility directory (the knowledge graph the
-    map and monitoring agent share), falling back to the legacy demo set so any
-    older demo id still resolves."""
-    from pipeline.directory import load_directory
+    """Resolve against the real 74-facility directory — the single knowledge
+    graph the map, matcher, and monitoring agent all share."""
     fac = next((f for f in load_directory() if f["id"] == facility_id), None)
-    if not fac:
-        fac = next((f for f in load_facilities() if f["id"] == facility_id), None)
     if not fac:
         raise HTTPException(404, "unknown facility")
     return fac
@@ -125,9 +110,9 @@ def do_finalize(body: dict):
     nxt = None
     if outcome.outcome == "declined":
         exclude = [r["facility_id"] for r in state["referrals"] if r["patient_id"] == body["patient_id"]]
-        candidates = match({"direction": body.get("direction", "step_down"),
-                            "payer": body.get("payer"), "language": body.get("language"),
-                            "exclude": exclude})
+        candidates = match_directory({"direction": body.get("direction", "step_down"),
+                                      "payer": body.get("payer"), "language": body.get("language"),
+                                      "exclude": exclude})
         nxt = candidates[0] if candidates else None
 
     return {"recorded": True, "next_candidate": nxt}
@@ -138,7 +123,6 @@ def do_finalize(body: dict):
 
 from datetime import datetime as _dt  # noqa: E402
 
-from pipeline.directory import load_directory, match_directory  # noqa: E402
 from pipeline.readiness import check as readiness_check  # noqa: E402
 from pipeline.schemas import DECLINE_ROUTING  # noqa: E402
 
@@ -216,10 +200,9 @@ from pipeline import monitor  # noqa: E402
 
 @app.get("/api/graph")
 def graph():
-    """Real 74-facility directory + referral edges (data/edges_directory.json),
-    the graph the monitoring agent below actually updates. Distinct from the
-    legacy /api/facilities (facilities_demo.json + data/edges.json), which
-    backs the original network-map view and is left untouched."""
+    """The live knowledge graph: real 74-facility directory + referral edges,
+    served from the runtime store the monitoring agent updates (out/, seeded
+    from data/). This is the single graph the map, matcher, and agent share."""
     return {"facilities": monitor.load_facilities(), "edges": monitor.load_edges()}
 
 

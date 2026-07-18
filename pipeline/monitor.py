@@ -20,20 +20,21 @@ mutation, history log) is already generic over entity type and source type.
 """
 from __future__ import annotations
 
-import json
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Literal, Optional, Protocol
 
-DATA = Path(__file__).parent.parent / "data"
-FACILITIES_PATH = DATA / "facilities.json"
-EDGES_PATH = DATA / "edges_directory.json"
-MONITOR_DIR = DATA / "monitoring"
-PENDING_PATH = MONITOR_DIR / "pending_updates.json"
-HISTORY_PATH = MONITOR_DIR / "version_history.json"
-RELIABILITY_PATH = MONITOR_DIR / "source_reliability.json"
+from . import live_store
+
+# The agent reads and writes the *live* runtime graph (out/, git-ignored), seeded
+# from the committed data/ baseline — so scans never dirty committed files and the
+# map/matcher/agent all share one store. See pipeline/live_store.py.
+FACILITIES_PATH = live_store.facilities_path()
+EDGES_PATH = live_store.edges_path()
+PENDING_PATH = live_store.monitoring_path("pending_updates.json")
+HISTORY_PATH = live_store.monitoring_path("version_history.json")
+RELIABILITY_PATH = live_store.monitoring_path("source_reliability.json")
 
 SourceType = Literal["web", "phone_call", "ehr_feed"]
 EntityType = Literal["facility", "edge"]
@@ -58,13 +59,8 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
-def _load_json(path: Path, default):
-    return json.loads(path.read_text()) if path.exists() else default
-
-
-def _save_json(path: Path, data) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2) + "\n")
+_load_json = live_store.load_json
+_save_json = live_store.save_json
 
 
 def edge_entity_id(from_id: str, to_id: str) -> str:
@@ -111,13 +107,15 @@ class ProposedUpdate:
     proposed_at: str = field(default_factory=_now)
     old_value: object = None
     status: str = "pending"
+    effective_confidence: Optional[float] = None
 
     def to_dict(self) -> dict:
         return {
             "id": self.id, "entity_type": self.entity_type, "entity_id": self.entity_id,
             "field_path": self.field_path, "old_value": self.old_value, "new_value": self.new_value,
             "source_type": self.source_type, "source_detail": self.source_detail,
-            "confidence": self.confidence, "proposed_at": self.proposed_at, "status": self.status,
+            "confidence": self.confidence, "effective_confidence": self.effective_confidence,
+            "proposed_at": self.proposed_at, "status": self.status,
         }
 
 
@@ -221,13 +219,15 @@ def list_pending() -> list[dict]:
 
 
 def propose(update: ProposedUpdate) -> dict:
-    """Fill in old_value from current state, append to the pending queue."""
+    """Fill in old_value + effective_confidence from current state, append to
+    the pending queue."""
     _, entity = _find_entity(update.entity_type, update.entity_id)
     if entity is not None:
         try:
             update.old_value = _get_by_path(entity, update.field_path)
         except (KeyError, TypeError):
             update.old_value = None
+    update.effective_confidence = effective_confidence(update)
     pending = list_pending()
     pending.append(update.to_dict())
     _save_json(PENDING_PATH, pending)
@@ -266,6 +266,12 @@ def _apply_update(upd: dict, approved_by: str) -> dict:
     container, entity = _find_entity(upd["entity_type"], upd["entity_id"])
     if entity is None:
         raise KeyError(f"entity {upd['entity_id']} not found")
+    # re-read the value at apply time so the history diff is accurate even if the
+    # graph changed between proposal and approval
+    try:
+        upd["old_value"] = _get_by_path(entity, upd["field_path"])
+    except (KeyError, TypeError):
+        pass
     _set_by_path(entity, upd["field_path"], upd["new_value"])
     if upd["entity_type"] == "facility":
         entity["verified_date"] = _now()[:10]
@@ -284,12 +290,19 @@ def run_scan() -> dict:
     (the agent updating the graph on its own); everything else is queued for a
     human. Returns {auto_applied: [...], queued: [...]}."""
     already_pending = {(u["entity_type"], u["entity_id"], u["field_path"]) for u in list_pending()}
+    # remember rejections: a human who rejected an exact (entity, field, value)
+    # proposal shouldn't see it re-queued on every subsequent scan
+    history = _load_json(HISTORY_PATH, {})
+    rejected = {(h["entity_type"], h["entity_id"], h["field_path"], repr(h["new_value"]))
+                for hs in history.values() for h in hs if h.get("status") == "rejected"}
     auto_applied: list[dict] = []
     queued: list[dict] = []
     for fetcher in FETCHERS:
         for update in fetcher.scan():
             key = (update.entity_type, update.entity_id, update.field_path)
             if key in already_pending:
+                continue
+            if (update.entity_type, update.entity_id, update.field_path, repr(update.new_value)) in rejected:
                 continue
             already_pending.add(key)
             eff = effective_confidence(update)
