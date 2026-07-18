@@ -33,15 +33,16 @@ data/
   facilities_collection_notes.md  what's real, what's a gap, verification log
   simulation_params.json        documented basis for every simulated parameter
   patients/
-    maria/ patient_002../005/
+    maria/ patient_002../010/    10 synthetic patients total
       demographics.json
       notes/*.txt
+      raw_synthea_skeleton/      (patient_006-010 only — real Synthea FHIR bundle)
     QA_CHECKLIST.md             every embedded finding traced to source text
 scripts/
   scrape_sfdph.py, fetch_samhsa.py   process notes (not runnable — see files)
   merge_facilities.py           schema validation, safe to re-run
   generate_availability.py      (re)generates the `simulated` block, idempotent
-  run_synthea.md                why Synthea was skipped + how to redo it
+  run_synthea.md                actual Synthea run log + how to extend further
   generate_patients.py          prompt template + trajectory spec for notes
 ```
 
@@ -55,7 +56,10 @@ intake requirement subset, decline behavior) is synthetic and documented in
 treat these as live data.
 
 Patient data is 100% synthetic: no real patient records, MIMIC-style datasets,
-or scraped case reports were used anywhere in this repo.
+or scraped case reports were used anywhere in this repo. patient_006-010 use a
+real Synthea-generated structural skeleton (demographics/conditions/meds,
+itself fully synthetic) layered with hand-authored notes; maria/002-005 are
+entirely hand-authored (Synthea wasn't available yet in that pass).
 
 ## Known gaps (see data/facilities_collection_notes.md for full detail)
 - SFDPH's richest bed-count PDFs (BHSA Integrated Plan, Residential Care and
