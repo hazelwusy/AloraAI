@@ -1,0 +1,44 @@
+[TRANSCRIPT] [ED PHYSICIAN + RN, SPANISH INTERPRETER PRESENT] [2026-07-10 22:14]
+
+INTERPRETER: (Spanish-English, phone line, ID #4471)
+
+DR. OKAFOR: Maria, can you tell me what happened tonight?
+
+INTERPRETER (to patient): ¿Puede decirme qué pasó esta noche?
+
+PATIENT (via interpreter): She says she took a bunch of pills about two hours ago.
+Her sister found her and called 911. She says she counted them out, it wasn't an
+accident.
+
+DR. OKAFOR: Do you still want to die right now?
+
+INTERPRETER (relayed): Sí. Dice que sigue queriendo morir. Dice que tiene un plan
+para cuando salga de aquí, que va a ir al puente.
+
+DR. OKAFOR: She's confirming active suicidal ideation with a plan to go to the bridge
+after discharge. Okay. Maria, has anyone hurt you or are you using any drugs tonight?
+
+INTERPRETER (relayed): Dice que fumó metanfetamina esta tarde, antes de tomar las
+pastillas. Dice que ha estado usando "on and off" por unos meses.
+
+RN CHEN: Vitals at 22:20 — BP 148/92, HR 118, RR 20, temp 37.1, O2 99% RA. Patient is
+pacing the room, raised voice, slapped the bedrail twice when asked to sit down. Redirected
+x2 by this RN.
+
+DR. OKAFOR: Maria, I need you to sit down for me, we're going to take care of you.
+
+INTERPRETER (relayed): Dice — "¡No me toquen!" — says don't touch her, back away from
+the door twice.
+
+DR. OKAFOR: Understood. We're not going to touch you unless we need to keep you safe.
+Given the plan, the recent attempt, and how agitated she is right now, I'm placing a
+5150 hold — danger to self. Chen, can you get the paperwork started.
+
+RN CHEN: Starting it now.
+
+DR. OKAFOR: (to interpreter) Please let her know she's going to stay with us tonight
+so we can keep her safe, and that a psychiatrist will come talk to her.
+
+INTERPRETER (relayed): Entendido.
+
+[END TRANSCRIPT — continued in day0_psych_eval]
