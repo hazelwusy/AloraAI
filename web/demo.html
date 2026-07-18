@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AloraAI — 60s Demo</title>
+<style>
+  :root{--page:#0f1115;--surface:#171a21;--surface2:#1e222b;--ink:#eef0f4;--ink2:#a9adb8;
+    --hairline:#2a2f3a;--accent:#4f8ef7;--ok:#2fae5f;--warn:#e0a52e;--bad:#e05c5c;
+    --stepdown:#2fae5f;--stepup:#e05c5c;--vertical:#8b7ff0;--crisis:#e0a52e;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace}
+  *{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--ink);
+    font:14px/1.5 -apple-system,"Segoe UI",sans-serif;overflow:hidden}
+  header{display:flex;align-items:center;gap:16px;padding:12px 22px;border-bottom:1px solid var(--hairline)}
+  header h1{font-size:16px;margin:0}
+  .rail{display:flex;gap:4px;margin-left:auto}
+  .rail span{font-family:var(--mono);font-size:11px;padding:4px 12px;border-radius:6px;
+    color:var(--ink2);border:1px solid transparent}
+  .rail span.on{color:var(--ink);border-color:var(--accent);background:#1d3050}
+  #play{background:var(--accent);border:0;border-radius:8px;color:#fff;font-weight:700;
+    padding:8px 18px;cursor:pointer;font-size:13px}
+  main{position:relative;height:calc(100vh - 57px)}
+  .scene{position:absolute;inset:0;padding:20px 26px;opacity:0;pointer-events:none;
+    transition:opacity .5s ease;display:flex;gap:18px}
+  .scene.on{opacity:1;pointer-events:auto}
+  .card{background:var(--surface);border:1px solid var(--hairline);border-radius:12px;padding:16px 18px}
+  .card h2{font-size:12px;margin:0 0 10px;color:var(--ink2);text-transform:uppercase;letter-spacing:.06em}
+  svg{width:100%;height:auto}
+  .node circle{fill:var(--surface2);stroke:var(--hairline);stroke-width:1.5}
+  .node text{fill:var(--ink2);font-size:9.5px}
+  .edge{fill:none;opacity:.5}
+  .legend{display:flex;gap:14px;font-size:12px;color:var(--ink2);margin-top:6px}
+  .k{display:inline-block;width:18px;height:3px;border-radius:2px;vertical-align:middle;margin-right:5px}
+  .tagline{position:absolute;left:0;right:0;bottom:36px;text-align:center;font-size:22px;
+    font-weight:700;opacity:0;transition:opacity .8s ease}
+  .tagline.show{opacity:1}
+  .tagline small{display:block;font-size:13px;color:var(--ink2);font-weight:400;margin-top:6px}
+  /* scene 2: match */
+  .cand{border:1px solid var(--hairline);border-radius:10px;padding:12px 14px;margin-top:10px;
+    display:flex;justify-content:space-between;gap:10px;opacity:0;transform:translateY(6px);
+    transition:all .4s ease}
+  .cand.in{opacity:1;transform:none}
+  .cand.pick{border-color:var(--accent);background:#1d3050}
+  .why{color:var(--ink2);font-size:12px;margin-top:3px}
+  .score{font-family:var(--mono);color:var(--accent);font-weight:700}
+  /* scene 3: brief */
+  .brief-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;align-content:start;grid-auto-rows:min-content}
+  .brief-item{background:var(--surface2);border-radius:10px;padding:12px 14px;opacity:0;
+    transform:translateY(6px);transition:all .4s ease}
+  .brief-item.in{opacity:1;transform:none}
+  .brief-item .bl{font-family:var(--mono);font-size:10.5px;color:var(--accent);
+    text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+  .brief-item.gap{border:1px solid var(--bad)}
+  .brief-item.gap .bl{color:var(--bad)}
+  .brief-item div:last-child{font-size:13px}
+  /* scene 4: call */
+  .call-left{flex:1.2;display:flex;flex-direction:column}
+  .call-right{flex:1;display:flex;flex-direction:column}
+  .transcript{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:9px;padding-right:6px}
+  .line{max-width:88%;padding:9px 13px;border-radius:11px;font-size:13.5px;opacity:0;
+    transform:translateY(8px);transition:all .35s ease}
+  .line.in{opacity:1;transform:none}
+  .line.nurse{background:#1d3050;align-self:flex-end}
+  .line.intake{background:var(--surface2);align-self:flex-start}
+  .line .who{font-family:var(--mono);font-size:10px;color:var(--ink2);display:block;margin-bottom:2px}
+  .events{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+  .ev{border-left:3px solid var(--accent);background:var(--surface2);padding:9px 12px;
+    border-radius:0 9px 9px 0;font-size:12.5px;opacity:0;transform:translateX(8px);transition:all .35s ease}
+  .ev.in{opacity:1;transform:none}
+  .ev .et{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--accent);margin-bottom:3px}
+  .ev.ok{border-color:var(--ok)} .ev.ok .et{color:var(--ok)}
+  .ev.gap{border-color:var(--bad)} .ev.gap .et{color:var(--bad)}
+  .ev.flag{border-color:var(--warn)} .ev.flag .et{color:var(--warn)}
+  .ev cite{display:block;font-style:normal;font-family:var(--mono);font-size:11px;
+    color:var(--ink2);margin-top:4px;padding-left:8px;border-left:2px solid var(--hairline)}
+  /* scene 5: outcome */
+  .outcome-card{border:1px solid var(--bad);border-radius:12px;padding:16px 18px;margin-top:12px;
+    opacity:0;transition:opacity .5s ease}
+  .outcome-card.in{opacity:1}
+  .oc-head{font-weight:700;color:var(--bad);font-family:var(--mono);font-size:13px}
+  .next-card{border:1px solid var(--ok);border-radius:12px;padding:14px 18px;margin-top:12px;
+    opacity:0;transition:opacity .5s ease}
+  .next-card.in{opacity:1}
+  .badge{font-family:var(--mono);font-size:10.5px;border:1px solid var(--hairline);
+    border-radius:5px;padding:2px 8px;color:var(--ink2)}
+</style>
+</head>
+<body>
+<header>
+  <h1>AloraAI</h1>
+  <span class="badge">all availability &amp; call parties simulated</span>
+  <nav class="rail" id="rail">
+    <span data-s="0" class="on">Network</span><span data-s="1">Match</span>
+    <span data-s="2">Prep</span><span data-s="3">Live call</span><span data-s="4">Outcome</span>
+  </nav>
+  <button id="play">▶ Play 60s</button>
+</header>
+<main id="main">
+
+  <!-- SCENE 1 · 0:00-0:08 · network -->
+  <section class="scene on" id="s0">
+    <div class="card" style="flex:1;display:flex;flex-direction:column">
+      <h2>San Francisco behavioral-health network — referral flows (simulated)</h2>
+      <svg id="map" viewBox="0 0 900 430" style="flex:1"></svg>
+      <div class="legend">
+        <span><i class="k" style="background:var(--stepdown)"></i>step-down</span>
+        <span><i class="k" style="background:var(--stepup)"></i>step-up</span>
+        <span><i class="k" style="background:var(--vertical)"></i>vertical</span>
+        <span><i class="k" style="background:var(--crisis)"></i>crisis re-entry</span>
+      </div>
+      <div class="tagline" id="tagline">Alora never speaks on the line.
+        <small>It listens, grounds, and learns — so she decides, and she talks.</small></div>
+    </div>
+  </section>
+
+  <!-- SCENE 2 · 0:08-0:20 · match -->
+  <section class="scene" id="s1">
+    <div class="card" style="flex:1">
+      <h2>Step-down placements for Maria G. — 34F · Medi-Cal · Spanish-preferred · voluntary (day 4)</h2>
+      <div class="cand" id="c0"><div><strong>Dore Urgent Care Clinic — Crisis Stabilization</strong>
+        <div class="why">accepts Medi-Cal · Spanish OK · 2 beds (simulated) · median response ~1h</div></div>
+        <span class="score">14.8</span></div>
+      <div class="cand" id="c1"><div><strong>Hummingbird Place — Potrero (Peer Respite)</strong>
+        <div class="why">accepts Medi-Cal · Spanish OK · low-barrier · 5 beds (simulated)</div></div>
+        <span class="score">12.6</span></div>
+      <div class="cand" id="c2"><div><strong>Progress Foundation — Acute Diversion Unit</strong>
+        <div class="why">accepts Medi-Cal · Spanish OK · requires TB screen + signed med rec</div></div>
+        <span class="score">9.4</span></div>
+      <p style="color:var(--ink2);font-size:12px;margin-top:14px">Ranking is deterministic — payer, language,
+        level of care, simulated availability. The model narrates; it never decides.</p>
+    </div>
+  </section>
+
+  <!-- SCENE 3 · 0:20-0:32 · pre-call brief -->
+  <section class="scene" id="s2">
+    <div class="card" style="flex:1;display:flex;flex-direction:column">
+      <h2>Pre-call brief — Dore Urgent Care Clinic · prepared for J. Alvarez, RN</h2>
+      <div class="brief-grid">
+        <div class="brief-item" id="b0"><div class="bl">Open with</div>
+          <div>34F, voluntary, day 4 · seeking crisis stabilization · Medi-Cal · medically cleared</div></div>
+        <div class="brief-item" id="b1"><div class="bl">Lead with</div>
+          <div>Hold discontinued day 2 — they only take voluntary. Say it before they ask.</div></div>
+        <div class="brief-item" id="b2"><div class="bl">They'll likely ask</div>
+          <div>Ambulatory? · last risk assessment? · behavioral incidents this admission?</div></div>
+        <div class="brief-item gap" id="b3"><div class="bl">⚠ Gather first — not in packet</div>
+          <div>Substance use in last 72h — asked by 2 of 3 crisis facilities historically</div></div>
+        <div class="brief-item" id="b4"><div class="bl">Last time (facility memory)</div>
+          <div>No prior calls to Dore for this patient · facility asks about self-administration of meds</div></div>
+        <div class="brief-item" id="b5"><div class="bl">Citations</div>
+          <div style="font-family:var(--mono);font-size:11.5px;color:var(--ink2)">every line traces to the
+            clinician-approved packet · nothing invented</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 4 · 0:32-0:48 · live call -->
+  <section class="scene" id="s3">
+    <div class="card call-left">
+      <h2>Live call — nurse speaking · Dore intake line</h2>
+      <div class="transcript" id="transcript"></div>
+    </div>
+    <div class="card call-right">
+      <h2>Alora — listening &amp; grounding</h2>
+      <div class="events" id="events"></div>
+    </div>
+  </section>
+
+  <!-- SCENE 5 · 0:48-0:56 · outcome -->
+  <section class="scene" id="s4">
+    <div class="card" style="flex:1">
+      <h2>Call outcome — recorded &amp; learned</h2>
+      <div class="outcome-card" id="oc">
+        <div class="oc-head">DECLINED — missing_docs</div>
+        <div style="margin-top:6px">Condition captured verbatim: <em>"send the TB screen over and we'll
+          reconsider same-day."</em></div>
+        <div style="color:var(--ink2);font-size:12.5px;margin-top:6px">
+          Facility memory updated: Dore asks substance-use-72h, requires TB screen ·
+          Patient gather-list: +2 items for the care team</div>
+      </div>
+      <div class="next-card" id="nc">
+        <strong>Next candidate ready — Hummingbird Place (Peer Respite)</strong>
+        <div style="color:var(--ink2);font-size:12.5px;margin-top:4px">
+          Pre-call brief already regenerated — it now preempts the substance-use question and
+          notes the TB screen is pending. Every decline makes the next call smarter.</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+<script>
+const NS="http://www.w3.org/2000/svg";
+/* ---- minimal embedded network (self-contained: no server needed to record) ---- */
+const NODES=[["ZSFG PES",1],["ZSFG Inpatient",1.4],["Langley Porter",1],["Dore Crisis Stab",1.2],
+ ["Hummingbird Respite",1],["Progress ADU",1],["Baker Places",0.8],["Westside Crisis",1.1],
+ ["Citywide ICM",0.9],["CPMC PHP",0.8]];
+const EDGES=[[1,3,"stepdown"],[1,5,"stepdown"],[1,8,"stepdown"],[0,1,"stepup"],[0,3,"stepdown"],
+ [3,7,"stepdown"],[1,2,"vertical"],[7,0,"crisis"],[4,0,"crisis"],[2,9,"stepdown"],[6,1,"stepup"],
+ [5,8,"stepdown"],[9,2,"stepup"],[8,0,"crisis"]];
+const EC={stepdown:"var(--stepdown)",stepup:"var(--stepup)",vertical:"var(--vertical)",crisis:"var(--crisis)"};
+(function(){const svg=document.getElementById("map"),cx=450,cy=210,R=165,pos=[];
+ NODES.forEach((n,i)=>{const a=i/NODES.length*2*Math.PI-Math.PI/2;
+   pos.push([cx+R*1.6*Math.cos(a),cy+R*Math.sin(a)])});
+ EDGES.forEach(([f,t,ty])=>{const[x1,y1]=pos[f],[x2,y2]=pos[t];
+   const mx=(x1+x2)/2+(cy-(y1+y2)/2)*.22,my=(y1+y2)/2+((x1+x2)/2-cx)*.12;
+   const p=document.createElementNS(NS,"path");
+   p.setAttribute("d",`M${x1},${y1} Q${mx},${my} ${x2},${y2}`);
+   p.setAttribute("class","edge");p.setAttribute("stroke",EC[ty]);p.setAttribute("stroke-width",2.2);
+   svg.appendChild(p)});
+ NODES.forEach((n,i)=>{const[x,y]=pos[i],g=document.createElementNS(NS,"g");g.setAttribute("class","node");
+   const c=document.createElementNS(NS,"circle");c.setAttribute("cx",x);c.setAttribute("cy",y);
+   c.setAttribute("r",9*n[1]+4);g.appendChild(c);
+   const t=document.createElementNS(NS,"text");t.setAttribute("x",x);
+   t.setAttribute("y",y+(y>cy?26:-18));t.setAttribute("text-anchor","middle");t.textContent=n[0];
+   g.appendChild(t);svg.appendChild(g)});})();
+
+/* ---- the scripted call: [speaker, line, sideEvent|null] ---- */
+const CALL=[
+ ["nurse","Hi, this is Jess Alvarez, RN at ZSFG 7B — calling about a step-down referral. 34-year-old woman, voluntary, medically cleared, Medi-Cal, Spanish-speaking.",
+   {c:"ok",t:"Opening complete",b:"Level of care ✓ legal status ✓ clearance ✓ payer ✓ — all four triage items covered"}],
+ ["intake","Okay. Is the hold discontinued? We only take voluntary here.",null],
+ ["nurse","Yes — discontinued on day 2, and she's chosen to stay voluntarily since.",
+   {c:"ok",t:"Grounded ✓",b:"Matches packet.",cite:"day-2 psychiatry note: \"willing to remain voluntarily\""}],
+ ["intake","Any substance use in the last 72 hours?",null],
+ ["nurse","…I'd have to check on that one.",
+   {c:"gap",t:"Open gap logged",b:"substance use last 72h → added to gather-list · flagged to care team · not improvised"}],
+ ["intake","And behaviorally — any incidents this admission?",null],
+ ["nurse","None — honestly she's been completely fine the whole time.",
+   {c:"flag",t:"Integrity check",b:"\"completely fine\" drifts from the record — suggest precise phrasing.",
+    cite:"packet: intentional ingestion at presentation; no incidents since admission; SI denied since day 2"}],
+ ["nurse","Let me be precise — she presented after an intentional ingestion. No incidents since admission, and SI has been denied since day 2.",
+   {c:"ok",t:"Drift corrected",b:"Statement re-grounded to the record — honesty protects the placement and the patient"}],
+ ["intake","Appreciate the straight answer. Last thing — we need a TB screen on file before admission, and I don't see one.",null],
+ ["nurse","It's not done yet. What would you need to reconsider?",null],
+ ["intake","Send the TB screen over and we'll reconsider same-day.",
+   {c:"gap",t:"Condition captured",b:"\"reconsider same-day once TB screen received\" → recorded verbatim → routed: fix & resend, same facility"}],
+];
+
+/* ---- timeline ---- */
+const S=n=>document.getElementById("s"+n);
+function scene(n){document.querySelectorAll(".scene").forEach((s,i)=>s.classList.toggle("on",i===n));
+ document.querySelectorAll("#rail span").forEach(r=>r.classList.toggle("on",+r.dataset.s===n))}
+document.querySelectorAll("#rail span").forEach(r=>r.onclick=()=>scene(+r.dataset.s));
+
+function playCallLines(){
+ const tr=document.getElementById("transcript"),ev=document.getElementById("events");
+ tr.innerHTML="";ev.innerHTML="";
+ CALL.forEach((l,i)=>setTimeout(()=>{
+   const d=document.createElement("div");d.className="line "+l[0];
+   d.innerHTML='<span class="who">'+(l[0]==="nurse"?"NURSE (human)":"INTAKE (simulated)")+'</span>';
+   d.appendChild(document.createTextNode(l[1]));tr.appendChild(d);
+   requestAnimationFrame(()=>d.classList.add("in"));tr.scrollTop=tr.scrollHeight;
+   if(l[2]){const e=document.createElement("div");e.className="ev "+l[2].c;
+     e.innerHTML='<div class="et">'+l[2].t+'</div>';
+     e.appendChild(document.createTextNode(l[2].b));
+     if(l[2].cite){const c=document.createElement("cite");c.textContent=l[2].cite;e.appendChild(c)}
+     ev.appendChild(e);requestAnimationFrame(()=>e.classList.add("in"));ev.scrollTop=ev.scrollHeight}
+ },i*2050));
+}
+
+document.getElementById("play").onclick=()=>{
+ const T=[
+  [0,   ()=>{scene(0);document.getElementById("tagline").classList.remove("show")}],
+  [8000,()=>{scene(1);["c0","c1","c2"].forEach((id,i)=>setTimeout(()=>
+        document.getElementById(id).classList.add("in"),400+i*900));
+        setTimeout(()=>document.getElementById("c0").classList.add("pick"),3800)}],
+  [20000,()=>{scene(2);["b0","b1","b2","b3","b4","b5"].forEach((id,i)=>setTimeout(()=>
+        document.getElementById(id).classList.add("in"),300+i*950))}],
+  [32000,()=>{scene(3);playCallLines()}],
+  [55500,()=>{scene(4);setTimeout(()=>document.getElementById("oc").classList.add("in"),300);
+        setTimeout(()=>document.getElementById("nc").classList.add("in"),2600)}],
+  [63000,()=>{scene(0);document.getElementById("tagline").classList.add("show")}],
+ ];
+ T.forEach(([t,f])=>setTimeout(f,t));
+};
+if(location.hash==="#auto")setTimeout(()=>document.getElementById("play").click(),400);
+</script>
+</body>
+</html>
