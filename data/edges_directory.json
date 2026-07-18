@@ -1,0 +1,91 @@
+{
+  "_provenance": "Referral-flow edges over the REAL 74-facility directory (data/facilities.json), for the knowledge-graph monitoring feature. Separate from the legacy data/edges.json, which pairs with the older facilities_demo.json mock set used by the existing network-map UI — that file is left untouched. `freq_sim` here is a static demo baseline; the `simulated` block per edge is what pipeline/monitor.py updates over time via (simulated) monitoring. Never treat either as real referral-volume data.",
+  "edge_types": {
+    "step_down": "higher acuity -> lower acuity",
+    "step_up": "lower acuity -> higher acuity",
+    "vertical": "same level, different facility/program",
+    "crisis_reentry": "community/outpatient -> crisis services"
+  },
+  "edges": [
+    {
+      "from": "zsfg-pes", "to": "cpmc-davies-inpatient", "type": "step_up", "freq_sim": 9,
+      "simulated": {"accept_rate_observed": 0.52, "avg_response_time_min_observed": 95, "last_updated": "2026-07-18", "source": "baseline"}
+    },
+    {
+      "from": "zsfg-pes", "to": "dore-urgent-care", "type": "step_down", "freq_sim": 8,
+      "simulated": {"accept_rate_observed": 0.68, "avg_response_time_min_observed": 40, "last_updated": "2026-07-18", "source": "baseline"}
+    },
+    {
+      "from": "zsfg-pes", "to": "hummingbird-potrero", "type": "step_down", "freq_sim": 6,
+      "simulated": {"accept_rate_observed": 0.61, "avg_response_time_min_observed": 55, "last_updated": "2026-07-18", "source": "baseline"}
+    },
+    {
+      "from": "zsfg-pes", "to": "progress-dore-house", "type": "step_down", "freq_sim": 5,
+      "simulated": {"accept_rate_observed": 0.58, "avg_response_time_min_observed": 60, "last_updated": "2026-07-18", "source": "baseline"}
+    },
+    {
+      "from": "cpmc-davies-inpatient", "to": "progress-dore-house", "type": "step_down", "freq_sim": 6,
+      "simulated": {"accept_rate_observed": 0.55, "avg_response_time_min_observed": 70, "last_updated": "2026-07-18", "source": "baseline"}
+    },
+    {
+      "from": "cpmc-davies-inpatient", "to": "minna-project", "type": "step_down", "freq_sim": 4,
+      "simulated": {"accept_rate_observed": 0.60, "avg_response_time_min_observed": 80, "last_updated": "2026-07-18", "source": "baseline"}
+    },
+    {
+      "from": "cpmc-davies-inpatient", "to": "treasure-island-stepdown", "type": "step_down", "freq_sim": 5,
+      "simulated": {"accept_rate_observed": 0.63, "avg_response_time_min_observed": 65, "last_updated": "2026-07-18", "source": "baseline"}
+    },
+    {
+      "from": "cpmc-davies-inpatient", "to": "ucsf-langley-porter-mtzion", "type": "vertical", "freq_sim": 2,
+      "simulated": {"accept_rate_observed": 0.50, "avg_response_time_min_observed": 90, "last_updated": "2026-07-18", "source": "baseline"}
+    },
+    {
+      "from": "ucsf-langley-porter-mtzion", "to": "ucsf-php-divisadero", "type": "step_down", "freq_sim": 5,
+      "simulated": {"accept_rate_observed": 0.71, "avg_response_time_min_observed": 45, "last_updated": "2026-07-18", "source": "baseline"}
+    },
+    {
+      "from": "dore-urgent-care", "to": "zsfg-pes", "type": "step_up", "freq_sim": 4,
+      "simulated": {"accept_rate_observed": 0.47, "avg_response_time_min_observed": 100, "last_updated": "2026-07-18", "source": "baseline"}
+    },
+    {
+      "from": "dore-urgent-care", "to": "soma-rise", "type": "step_down", "freq_sim": 7,
+      "simulated": {"accept_rate_observed": 0.66, "avg_response_time_min_observed": 35, "last_updated": "2026-07-18", "source": "baseline"}
+    },
+    {
+      "from": "hummingbird-potrero", "to": "zsfg-pes", "type": "crisis_reentry", "freq_sim": 3,
+      "simulated": {"accept_rate_observed": 0.44, "avg_response_time_min_observed": 105, "last_updated": "2026-07-18", "source": "baseline"}
+    },
+    {
+      "from": "soma-rise", "to": "zsfg-pes", "type": "crisis_reentry", "freq_sim": 5,
+      "simulated": {"accept_rate_observed": 0.49, "avg_response_time_min_observed": 90, "last_updated": "2026-07-18", "source": "baseline"}
+    },
+    {
+      "from": "minna-project", "to": "zsfg-pes", "type": "crisis_reentry", "freq_sim": 4,
+      "simulated": {"accept_rate_observed": 0.46, "avg_response_time_min_observed": 95, "last_updated": "2026-07-18", "source": "baseline"}
+    },
+    {
+      "from": "progress-dore-house", "to": "cpmc-davies-inpatient", "type": "step_up", "freq_sim": 2,
+      "simulated": {"accept_rate_observed": 0.42, "avg_response_time_min_observed": 110, "last_updated": "2026-07-18", "source": "baseline"}
+    },
+    {
+      "from": "treasure-island-stepdown", "to": "minna-project", "type": "step_down", "freq_sim": 5,
+      "simulated": {"accept_rate_observed": 0.64, "avg_response_time_min_observed": 50, "last_updated": "2026-07-18", "source": "baseline"}
+    },
+    {
+      "from": "ucsf-php-divisadero", "to": "ucsf-iop-divisadero", "type": "step_down", "freq_sim": 6,
+      "simulated": {"accept_rate_observed": 0.75, "avg_response_time_min_observed": 30, "last_updated": "2026-07-18", "source": "baseline"}
+    },
+    {
+      "from": "ucsf-iop-divisadero", "to": "ucsf-adult-psychiatry-clinic", "type": "step_down", "freq_sim": 7,
+      "simulated": {"accept_rate_observed": 0.80, "avg_response_time_min_observed": 20, "last_updated": "2026-07-18", "source": "baseline"}
+    },
+    {
+      "from": "bhac-1380-howard", "to": "zsfg-pes", "type": "step_up", "freq_sim": 3,
+      "simulated": {"accept_rate_observed": 0.45, "avg_response_time_min_observed": 100, "last_updated": "2026-07-18", "source": "baseline"}
+    },
+    {
+      "from": "bhac-1380-howard", "to": "soma-rise", "type": "vertical", "freq_sim": 4,
+      "simulated": {"accept_rate_observed": 0.62, "avg_response_time_min_observed": 40, "last_updated": "2026-07-18", "source": "baseline"}
+    }
+  ]
+}

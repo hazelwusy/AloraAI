@@ -3,7 +3,7 @@ verifier enforces that the citation is real before anything reaches the packet."
 from __future__ import annotations
 
 from typing import Literal, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 SourceDoc = Literal["transcript", "note", "fhir"]
 
@@ -105,6 +105,84 @@ class CallResult(BaseModel):
     transcript: list[dict]  # [{"speaker": "agent"|"intake", "text": str}]
     outcome: CallOutcome
     simulated_far_end: bool = True
+
+
+# ---- companion co-pilot (human makes the call; Alora assists) ----
+# Alora no longer places calls. The case manager is on the line; these contracts
+# drive (1) the pre-call brief and (2) the live dashboard that reacts as the
+# human's call unfolds.
+
+CALL_ESSENTIALS = [
+    "level of care sought",
+    "legal status",
+    "payer",
+    "medical clearance",
+    "acuity one-liner",
+]
+
+
+class CoveredItem(BaseModel):
+    label: str = Field(description="one of CALL_ESSENTIALS")
+    covered: bool = Field(description="true once the case manager has stated this on the call")
+
+
+class SurfacedAnswer(BaseModel):
+    """A live prompt to the case manager: intake asked X, here is what the
+    approved packet says. Grounded — `in_packet=false` means we do NOT have it."""
+    intake_question: str
+    in_packet: bool
+    packet_answer: str = Field(default="", description="answer drawn ONLY from the packet; empty if not in packet")
+    citation: Optional[str] = Field(default=None, description="verbatim packet field/value supporting the answer")
+
+    @field_validator("packet_answer", mode="before")
+    @classmethod
+    def _none_to_empty(cls, v):  # the model nulls this out for gaps
+        return v or ""
+
+
+class DetectedOutcome(BaseModel):
+    kind: CallOutcomeKind
+    reason: str = ""
+
+    @field_validator("reason", mode="before")
+    @classmethod
+    def _none_to_empty(cls, v):
+        return v or ""
+    reason_category: Optional[str] = None
+    condition: Optional[str] = Field(default=None, description="verbatim reconsideration condition if a conditional decline is emerging")
+
+
+class CoPilotState(BaseModel):
+    """Emitted on every /observe tick; the dashboard re-renders from it."""
+    covered: list[CoveredItem] = Field(default_factory=list)
+    surfaced_answers: list[SurfacedAnswer] = Field(default_factory=list)
+    open_gaps: list[str] = Field(default_factory=list, description="asked-but-not-in-packet questions, logged live as known unknowns")
+    suggested_next_line: str = Field(default="", description="one natural sentence the case manager could say next")
+    detected_outcome: Optional[DetectedOutcome] = None
+    integrity_flags: list[str] = Field(default_factory=list, description="if the human appears to minimize acuity/omit a risk vs the packet")
+
+
+class LikelyQuestion(BaseModel):
+    question: str
+    in_packet: bool
+    packet_answer: str = ""
+
+    @field_validator("packet_answer", mode="before")
+    @classmethod
+    def _none_to_empty(cls, v):
+        return v or ""
+
+
+class PreCallBrief(BaseModel):
+    """Job 1 — what to say, assembled before the case manager dials.
+    Every field defaults so an occasional dropped field degrades to a partial
+    brief instead of failing the request."""
+    one_liner: str = ""
+    lead_with: list[str] = Field(default_factory=list, description="bullet points to open with: level of care, legal status, payer, clearance")
+    script: str = Field(default="", description="a 30-second script the case manager can read")
+    likely_questions: list[LikelyQuestion] = Field(default_factory=list, description="from facility memory; each pre-answered from the packet or flagged")
+    gather_first: list[str] = Field(default_factory=list, description="open known-unknowns to resolve before dialing")
+    last_time: Optional[str] = Field(default=None, description="last decline + its reconsideration condition, if any")
 
 
 # ---- referral state machine ----

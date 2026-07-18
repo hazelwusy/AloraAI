@@ -61,6 +61,23 @@ real Synthea-generated structural skeleton (demographics/conditions/meds,
 itself fully synthetic) layered with hand-authored notes; maria/002-005 are
 entirely hand-authored (Synthea wasn't available yet in that pass).
 
+## Facility knowledge-graph monitoring (`pipeline/monitor.py`)
+A HITL update loop over the real facility/edge data: (simulated) fetchers
+propose changes to `data/facilities.json` or `data/edges_directory.json`
+(a real-id edge set for the knowledge graph — separate from the legacy
+`data/edges.json`, which pairs with `facilities_demo.json` and backs the
+original network-map view); nothing is applied until a human approves it via
+`/api/monitor/approve/{id}`, at which point it's written into the graph and
+logged to `data/monitoring/version_history.json`.
+
+Researched OpenBeds / California's own effort (DHCS RFI 25-071, "Bed Capacity
+Data Solution") before building this: neither has a public API today — CA's
+system is still at the RFI stage (due Feb 2026) — so the three fetchers
+(`web`, `phone_call`, `ehr_feed` source types) are explicitly simulated,
+producing example proposals rather than real crawls/calls/feed polls. See
+`pipeline/monitor.py`'s docstring for what a real implementation would swap
+in per source type.
+
 ## Known gaps (see data/facilities_collection_notes.md for full detail)
 - SFDPH's richest bed-count PDFs (BHSA Integrated Plan, Residential Care and
   Treatment Working Group Report) were located but not text-extractable in
