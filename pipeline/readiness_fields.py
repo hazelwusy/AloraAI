@@ -53,3 +53,16 @@ FIELD_CHECKS: dict[str, Callable] = {
     "no_active_violence_risk": _presence("no_violence_risk", "no active violence risk documented"),
     "pregnancy_test_if_applicable": _presence("pregnancy_test", "pregnancy test (if applicable)"),
 }
+
+
+# ---- teammate dataset vocabulary (simulation_params.json / facilities.json) ----
+FIELD_CHECKS.update({
+    "medical_clearance_24h": _fresh("medical_clearance", "medical clearance <24h", 24),
+    "psychiatric_eval_current": _fresh("psych_eval", "psychiatric eval <72h", 72),
+    "hold_paperwork_signed": _presence("hold_paperwork", "hold paperwork signed"),
+    "med_reconciliation": _presence("med_rec_signed", "medication reconciliation"),
+    "insurance_verification": _presence("insurance_verified", "insurance verification"),
+    "covid_test_48h": _fresh("covid_test", "COVID test <48h", 48),
+    "labs_within_72h": _fresh("labs", "labs <72h", 72),
+    "guardian_contact": _presence("guardian_contact", "guardian contact on file"),
+})

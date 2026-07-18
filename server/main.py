@@ -106,10 +106,11 @@ def place_call(body: dict):
 
 from datetime import datetime as _dt  # noqa: E402
 
+from pipeline.directory import load_directory, match_directory  # noqa: E402
 from pipeline.readiness import check as readiness_check  # noqa: E402
 from pipeline.schemas import DECLINE_ROUTING  # noqa: E402
 
-DEMO_NOW = _dt(2026, 7, 18, 10, 0)
+DEMO_NOW = _dt(2026, 7, 12, 15, 0)  # aligned to Maria timeline in data/patients/maria/notes/
 
 
 @app.get("/api/reconcile/{patient_id}")
@@ -130,8 +131,21 @@ def get_readiness(patient_id: str):
     if not fields_path.exists():
         raise HTTPException(404, "no patient_fields.json for patient")
     fields = json.loads(fields_path.read_text())
-    return {"reports": [readiness_check(f, fields, DEMO_NOW).model_dump()
-                        for f in load_facilities()]}
+    reports = []
+    for f in load_directory():
+        sim = f.get("simulated", {})
+        fac = {"id": f["id"], "intake_requirements": sim.get("intake_requirements", [])}
+        rep = readiness_check(fac, fields, DEMO_NOW).model_dump()
+        rep["name"] = f["name"]
+        rep["level_of_care"] = f["level_of_care"]
+        reports.append(rep)
+    return {"reports": reports}
+
+
+@app.post("/api/match-directory")
+def do_match_directory(need: dict):
+    """Match over the real 74-facility SF directory (teammate dataset)."""
+    return {"candidates": match_directory(need)}
 
 
 @app.get("/api/decline-routing")

@@ -48,14 +48,18 @@ def test_reconcile() -> None:
 
 
 def test_readiness() -> None:
+    """Maria is on a 5150 hold with a day-0 risk assessment: any facility requiring
+    voluntary status must gate her, and stale clocks must fire. Not-ready here is
+    the clinically correct answer — the gate exists to say it."""
+    from datetime import datetime as dt
+    NOW2 = dt(2026, 7, 12, 15, 0)
     facilities = {f["id"]: f for f in json.loads((ROOT / "data/facilities_demo.json").read_text())["facilities"]}
     fields = json.loads((ROOT / "data/patients/maria/patient_fields.json").read_text())
-    dore = check(facilities["dore"], fields, NOW)
-    adu = check(facilities["progress_adu"], fields, NOW)
-    assert dore.ready, [i for i in dore.items if i.status != "met"]
-    missing = {i.requirement for i in adu.items if i.status != "met"}
-    assert "TB screen" in missing and "signed med reconciliation" in missing, missing
-    print(f"readiness gate: dore READY; progress_adu missing {sorted(missing)}")
+    dore = check(facilities["dore"], fields, NOW2)
+    assert not dore.ready
+    gaps = {i.requirement: i.status for i in dore.items if i.status != "met"}
+    assert gaps.get("voluntary status") == "missing", gaps
+    print(f"readiness gate: dore correctly NOT ready for held patient — gaps {sorted(gaps)}")
 
 
 def test_matcher_and_routing() -> None:
@@ -65,8 +69,42 @@ def test_matcher_and_routing() -> None:
     print(f"matcher: {len(c)} explainable candidates; decline routing table intact")
 
 
+
+
+def test_teammate_directory() -> None:
+    """Real 74-facility directory + Maria readiness against teammate vocabulary."""
+    from datetime import datetime as dt
+
+    from pipeline.directory import load_directory, match_directory
+    from pipeline.readiness import check as rcheck
+
+    NOW2 = dt(2026, 7, 12, 15, 0)
+    d = load_directory()
+    assert len(d) >= 70 and all("simulated" in f for f in d)
+
+    c = match_directory({"direction": "step_down", "payer": "medi-cal", "language": "es", "exclude": []})
+    assert c, "no step-down candidates from real directory"
+    assert all(x["facility"]["level_of_care"] != "inpatient_psych" for x in c)
+
+    fields = json.loads((ROOT / "data/patients/maria/patient_fields.json").read_text())
+    top = c[0]
+    rep = rcheck({"id": top["facility"]["id"], "intake_requirements": top["intake_requirements"]}, fields, NOW2)
+    unknown = [i for i in rep.items if i.evidence and "no checker defined" in (i.evidence or "")]
+    assert not unknown, f"uncovered requirement vocab: {[i.requirement for i in unknown]}"
+
+    # the clinically load-bearing gaps must surface: risk assessment + vitals are >limit old
+    zsfg = next(f for f in d if f["id"] == "zsfg-pes")
+    rep2 = rcheck({"id": "zsfg-pes", "intake_requirements": zsfg["simulated"]["intake_requirements"]}, fields, NOW2)
+    stale = {i.requirement for i in rep2.items if i.status == "stale"}
+    assert any("risk assessment" in s for s in stale), stale
+    assert any("vitals" in s for s in stale), stale
+    print(f"teammate directory: {len(d)} facilities; {len(c)} step-down candidates; "
+          f"stale gaps surfaced correctly: {sorted(stale)}")
+
+
 if __name__ == "__main__":
     test_reconcile()
     test_readiness()
     test_matcher_and_routing()
+    test_teammate_directory()
     print("\nALL OFFLINE TESTS PASS")

@@ -22,15 +22,16 @@ def extract_doc(name: str, text: str) -> ExtractedDomains:
 
 
 def reconcile_patient(patient_id: str = "maria") -> ReconciliationReport:
-    folder = DATA / "patients" / patient_id
-    prev_docs = [extract_doc(p.name, p.read_text()) for p in sorted(folder.glob("day0_*.md"))]
-    curr_docs = [extract_doc(p.name, p.read_text()) for p in sorted(folder.glob("day2_*.md"))]
+    folder = DATA / "patients" / patient_id / "notes"
+    prev_docs = [extract_doc(p.name, p.read_text())
+                 for p in sorted(folder.glob("day0_*")) + sorted(folder.glob("day1_*"))]
+    curr_docs = [extract_doc(p.name, p.read_text()) for p in sorted(folder.glob("day2_*"))]
     report = reconcile(
         patient_id=patient_id,
         previous_docs=prev_docs,
         current_docs=curr_docs,
-        now=datetime(2026, 7, 18, 10, 0),      # demo clock: day 2, 10:00
-        hours_since_previous=36.0,
+        now=datetime(2026, 7, 12, 15, 0),      # demo clock: day2 15:00 (patient timeline 07-10 -> 07-12)
+        hours_since_previous=32.0,             # last previous-timepoint doc: day1 RN 07:15
     )
     out = Path("out") / f"{patient_id}_recon.json"
     out.parent.mkdir(exist_ok=True)
