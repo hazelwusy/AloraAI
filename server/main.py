@@ -203,5 +203,54 @@ def decline_routing():
     return DECLINE_ROUTING
 
 
+# ---- v3: facility knowledge-graph monitoring (HITL update loop) ----
+
+from pipeline import monitor  # noqa: E402
+
+
+@app.get("/api/graph")
+def graph():
+    """Real 74-facility directory + referral edges (data/edges_directory.json),
+    the graph the monitoring agent below actually updates. Distinct from the
+    legacy /api/facilities (facilities_demo.json + data/edges.json), which
+    backs the original network-map view and is left untouched."""
+    return {"facilities": monitor.load_facilities(), "edges": monitor.load_edges()}
+
+
+@app.get("/api/monitor/pending")
+def monitor_pending():
+    return {"pending": monitor.list_pending()}
+
+
+@app.post("/api/monitor/scan")
+def monitor_scan():
+    """Run every registered fetcher (simulated web/phone/EHR-feed checks) and
+    queue anything new for human review — nothing is applied yet."""
+    return {"proposed": monitor.run_scan()}
+
+
+@app.post("/api/monitor/approve/{update_id}")
+def monitor_approve(update_id: str, body: dict):
+    """body = {approved_by: str}"""
+    try:
+        return monitor.approve(update_id, approved_by=body.get("approved_by", "unknown"))
+    except KeyError as e:
+        raise HTTPException(404, str(e))
+
+
+@app.post("/api/monitor/reject/{update_id}")
+def monitor_reject(update_id: str, body: dict):
+    """body = {reason: str}"""
+    try:
+        return monitor.reject(update_id, reason=body.get("reason", ""))
+    except KeyError as e:
+        raise HTTPException(404, str(e))
+
+
+@app.get("/api/monitor/history/{entity_id:path}")
+def monitor_history(entity_id: str):
+    return {"entity_id": entity_id, "history": monitor.get_history(entity_id)}
+
+
 # serve the demo UI at / — MUST stay last so it never shadows /api routes
 app.mount("/", StaticFiles(directory=ROOT / "web", html=True), name="web")
