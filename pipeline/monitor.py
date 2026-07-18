@@ -305,35 +305,56 @@ def run_scan() -> dict:
             if (update.entity_type, update.entity_id, update.field_path, repr(update.new_value)) in rejected:
                 continue
             already_pending.add(key)
-            eff = effective_confidence(update)
-            can_auto = eff >= AUTO_APPLY_THRESHOLD and update.field_path not in NEVER_AUTO_APPLY_FIELDS
-            # fill old_value from current state either way
-            _, entity = _find_entity(update.entity_type, update.entity_id)
-            if entity is not None:
-                try:
-                    update.old_value = _get_by_path(entity, update.field_path)
-                except (KeyError, TypeError):
-                    update.old_value = None
-            # already-applied (or unchanged) values are a no-op — keeps repeated
-            # scans idempotent even for auto-applied updates not sitting in the queue
-            if update.old_value == update.new_value:
-                continue
-            rec = update.to_dict()
-            rec["effective_confidence"] = eff
-            if can_auto:
-                rec["status"] = "auto_applied"
-                try:
-                    _apply_update(rec, approved_by="agent (auto)")
-                    auto_applied.append(rec)
-                except KeyError:
-                    rec["status"] = "pending"
-                    _save_json(PENDING_PATH, list_pending() + [rec])
-                    queued.append(rec)
-            else:
-                rec["status"] = "pending"
-                _save_json(PENDING_PATH, list_pending() + [rec])
+            mode, rec = _route_update(update)
+            if mode == "auto":
+                auto_applied.append(rec)
+            elif mode == "queued":
                 queued.append(rec)
+            # mode == "noop" (value unchanged) is dropped
     return {"auto_applied": auto_applied, "queued": queued}
+
+
+def _route_update(update: ProposedUpdate):
+    """Route one proposal by effective confidence: auto-apply high-confidence
+    non-clinical facts to the graph, else queue for a human. Returns
+    (mode, record) where mode is "auto" | "queued" | "noop"."""
+    eff = effective_confidence(update)
+    can_auto = eff >= AUTO_APPLY_THRESHOLD and update.field_path not in NEVER_AUTO_APPLY_FIELDS
+    _, entity = _find_entity(update.entity_type, update.entity_id)
+    if entity is not None:
+        try:
+            update.old_value = _get_by_path(entity, update.field_path)
+        except (KeyError, TypeError):
+            update.old_value = None
+    # unchanged value is a no-op — keeps repeated scans idempotent
+    if update.old_value == update.new_value:
+        return "noop", update.to_dict()
+    rec = update.to_dict()
+    rec["effective_confidence"] = eff
+    if can_auto:
+        rec["status"] = "auto_applied"
+        try:
+            _apply_update(rec, approved_by="agent (auto)")
+            return "auto", rec
+        except KeyError:
+            pass
+    rec["status"] = "pending"
+    _save_json(PENDING_PATH, list_pending() + [rec])
+    return "queued", rec
+
+
+def contribute(entity_type: str, entity_id: str, field_path: str, new_value,
+               source_detail: str, confidence: float = 0.85,
+               source_type: SourceType = "phone_call") -> dict:
+    """A case-manager-confirmed INSTITUTION-level fact from a live call, routed
+    through the same tiered pipeline as an autonomous scan. This is the only way
+    call-derived data enters the graph — and by construction it is about the
+    facility, never the patient. Returns {mode, record}."""
+    upd = ProposedUpdate(entity_type=entity_type, entity_id=entity_id, field_path=field_path,
+                         new_value=new_value, source_type=source_type,
+                         source_detail=source_detail, confidence=confidence)
+    mode, rec = _route_update(upd)
+    return {"mode": mode, "record": rec}
 
 
 def approve(update_id: str, approved_by: str) -> dict:

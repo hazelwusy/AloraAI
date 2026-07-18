@@ -253,6 +253,19 @@ def monitor_reliability():
     return {"reliability": monitor.load_reliability()}
 
 
+@app.post("/api/monitor/contribute")
+def monitor_contribute(body: dict):
+    """A case-manager-confirmed institution-level fact from a live call.
+    body = {entity_type?, entity_id, field_path, new_value, source_detail?, confidence?}
+    This is the ONLY path from a call into the graph — the confirmation card is the
+    filter that guarantees what enters is about the facility, never the patient."""
+    return monitor.contribute(
+        entity_type=body.get("entity_type", "facility"),
+        entity_id=body["entity_id"], field_path=body["field_path"],
+        new_value=body["new_value"], source_detail=body.get("source_detail", "confirmed on call"),
+        confidence=body.get("confidence", 0.85))
+
+
 @app.post("/api/monitor/approve/{update_id}")
 def monitor_approve(update_id: str, body: dict):
     """body = {approved_by: str}"""

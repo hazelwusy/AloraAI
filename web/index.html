@@ -277,6 +277,26 @@
   .det { border-radius: var(--radius-s); padding: 9px 12px; font-size: 13px; border-left: 3px solid var(--neutral); background: var(--surface-2); }
   .det.accepted { border-color: var(--success); } .det.declined { border-color: var(--critical); } .det.info_requested { border-color: var(--warning); }
   .live-foot { font-size: 11.5px; color: var(--text-faint); padding: 0 18px 16px; max-width: 66ch; }
+  /* contribute-to-graph confirmation (the privacy filter) */
+  .panel.contribute { border-color: var(--accent); background: var(--accent-tint); }
+  .boundary-note { display: flex; gap: 9px; font-size: 12px; line-height: 1.45; color: var(--accent-strong); margin-bottom: 11px; }
+  .boundary-note svg { width: 18px; height: 18px; flex: none; stroke: var(--accent-strong); fill: none; stroke-width: 1.6; margin-top: 1px; }
+  .cf-row { display: flex; align-items: center; gap: 9px; margin: 7px 0; font-size: 13px; }
+  .cf-row label { flex: 1; color: var(--text); }
+  .cf-row input[type=number] { width: 64px; padding: 5px 8px; border: 1px solid var(--border-strong); border-radius: var(--radius-s);
+    font-family: var(--font-mono); font-size: 13px; background: var(--surface); color: var(--text); }
+  .cf-row input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--accent); }
+  .cf-inst { font-family: var(--font-mono); font-size: 9.5px; color: var(--accent-strong); background: var(--surface);
+    border: 1px solid var(--accent); border-radius: 999px; padding: 1px 7px; }
+  .workspace-only { margin-top: 11px; padding: 9px 11px; border-radius: var(--radius-s); background: var(--surface);
+    border: 1px dashed var(--border-strong); font-size: 11.5px; color: var(--text-faint); }
+  .workspace-only b { color: var(--text-muted); }
+  /* two-store boundary labels */
+  .store-tag { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); font-weight: 600; margin-bottom: 8px; }
+  .store-tag .lock { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+  .store-tag.ephemeral { color: var(--warning); }
+  .store-tag.shared { color: var(--accent-strong); }
 
   .stagger { opacity: 0; animation: stagger .3s ease forwards; }
   @keyframes stagger { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
@@ -402,6 +422,7 @@
     <div class="workspace">
       <!-- LEFT: network map (spatial centerpiece) -->
       <section class="card card-pad map-card">
+        <div class="store-tag shared"><svg class="lock" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"></path></svg>Knowledge graph · institution-level · shareable across hospitals</div>
         <div class="map-head"><h2><span class="step-tag">1</span>SF psychiatric knowledge graph</h2><span class="eyebrow">click a node or edge · agent-monitored</span></div>
         <div class="calling-banner" id="calling-banner"><span class="live-dot"></span><span id="calling-text">On call</span></div>
         <svg id="map" viewBox="0 0 640 560" aria-label="Facility network"></svg>
@@ -416,6 +437,7 @@
 
       <!-- RIGHT: flow column — live conversation rises to the top when a call starts -->
       <div class="flow-col">
+        <div class="store-tag ephemeral"><svg class="lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 018 0v3"></path></svg>Patient workspace · ephemeral · this placement only, per hospital retention</div>
 
         <!-- LIVE CO-PILOT (top-right, prominent during a call) -->
         <section class="card live-card" id="copilot-card" style="display:none">
@@ -441,9 +463,20 @@
               <div class="panel" id="p-gaps" style="display:none"><h4>Can't answer — gather</h4><ul class="gaps" id="gaps"></ul></div>
               <div class="panel" id="p-flags" style="display:none"><h4>Integrity check</h4><div id="flags"></div></div>
               <div class="panel" id="p-det" style="display:none"><h4>Outcome forming</h4><div id="det-outcome"></div></div>
+              <div class="panel contribute" id="p-contribute" style="display:none">
+                <h4>Contribute to the knowledge graph</h4>
+                <div class="boundary-note"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"></path><path d="M9.5 12l1.8 1.8 3.5-3.6"></path></svg>
+                  <span>Only <b>facility-level facts</b> cross into the graph. This patient's name, clinical detail, and the transcript stay in the workspace — never shared.</span></div>
+                <div id="contribute-fields"></div>
+                <div class="workspace-only" id="workspace-only"></div>
+                <div style="display:flex;gap:8px;margin-top:12px">
+                  <button class="btn btn-primary btn-sm" id="btn-confirm-contribute">Confirm &amp; record</button>
+                  <button class="btn btn-sm" id="btn-record-only">Record outcome only</button>
+                </div>
+              </div>
             </div>
           </div>
-          <p class="live-foot">Alora never speaks on the line. It listens, grounds every answer in the approved packet, and flags any oversell. You decide and you talk.</p>
+          <p class="live-foot">Alora never speaks on the line. It listens, grounds every answer in the approved packet, and flags any oversell. You decide and you talk. <b>Two stores, one boundary:</b> the patient workspace is ephemeral (this placement only, per hospital retention); the knowledge graph holds institution-level facts only.</p>
         </section>
 
         <!-- PRE-CALL BRIEF -->
@@ -968,7 +1001,45 @@ document.getElementById("btn-demo").onclick=async()=>{
   btn.disabled=false;
 };
 
-document.getElementById("btn-finalize").onclick=async()=>{
+// Step 1: end call → show the contribution confirmation card (the privacy filter)
+document.getElementById("btn-finalize").onclick=()=>{
+  const f=FAC_BY_ID[selected.id]||{}, av=f.simulated?.availability||{}, s=_lastState||{};
+  const cond=s.detected_outcome?.condition;
+  const fields=document.getElementById("contribute-fields");
+  let html=`<div class="cf-row"><label>Beds open now</label><input type="number" id="cf-beds" min="0" value="${av.available_beds??""}"><span class="cf-inst">facility</span></div>`;
+  html+=`<div class="cf-row"><label>Est. wait (days)</label><input type="number" id="cf-wait" min="0" value="${av.estimated_wait_days??""}"><span class="cf-inst">facility</span></div>`;
+  if(cond) html+=`<div class="cf-row"><input type="checkbox" id="cf-req" checked><label>Requires: ${esc(cond)}</label><span class="cf-inst">facility</span></div>`;
+  fields.innerHTML=html;
+  document.getElementById("workspace-only").innerHTML=`<b>Stays in Maria G.'s workspace (never in the graph):</b> clinical status, risk history, the full call transcript, and this placement's patient-side outcome.`;
+  show("p-det", !!s.detected_outcome);
+  document.getElementById("p-contribute").style.display="block";
+  document.getElementById("p-contribute").scrollIntoView({behavior:"smooth",block:"nearest"});
+};
+
+async function contributeConfirmedFacts(){
+  const fid=selected.id, cur=FAC_BY_ID[fid]?.simulated||{}, av=cur.availability||{};
+  const tasks=[];
+  const beds=document.getElementById("cf-beds")?.value, wait=document.getElementById("cf-wait")?.value;
+  if(beds!==""&&beds!=null&&Number(beds)!==av.available_beds) tasks.push({field_path:"simulated.availability.available_beds",new_value:Number(beds)});
+  if(wait!==""&&wait!=null&&Number(wait)!==av.estimated_wait_days) tasks.push({field_path:"simulated.availability.estimated_wait_days",new_value:Number(wait)});
+  const reqEl=document.getElementById("cf-req");
+  if(reqEl&&reqEl.checked){ const cond=_lastState?.detected_outcome?.condition;
+    const list=(cur.intake_requirements||[]).slice();
+    if(cond&&!list.includes(cond)){ list.push(cond); tasks.push({field_path:"simulated.intake_requirements",new_value:list}); } }
+  let applied=0,queued=0;
+  for(const t of tasks){ try{
+    const r=await j("/api/monitor/contribute",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({entity_id:fid,source_detail:"case manager confirmed on call",...t})});
+    if(r.mode==="auto")applied++; else if(r.mode==="queued")queued++;
+    const shown=Array.isArray(t.new_value)?"+"+t.new_value[t.new_value.length-1]:t.new_value;
+    logActivity("KG agent",`call contribution · ${(FAC_BY_ID[fid]?.name||fid).split("(")[0].trim()} · ${prettyField(t.field_path)} → ${shown} (${r.mode})`);
+  }catch(e){} }
+  if(tasks.length) toast(`${tasks.length} facility fact(s) → graph · ${applied} applied · ${queued} for review`);
+  return tasks.length;
+}
+
+// Step 2: record the outcome (patient-side → workspace/learning ledgers only)
+async function doFinalize(){
   const s=_lastState||{}, o=s.detected_outcome;
   const kind=o?o.kind:prompt("Outcome? accepted / declined / info_requested","info_requested"); if(!kind)return;
   const body={patient_id:PATIENT.patient_id,facility_id:selected.id,outcome:kind,reason:o?o.reason:"",
@@ -978,15 +1049,18 @@ document.getElementById("btn-finalize").onclick=async()=>{
     direction:PATIENT.direction,payer:PATIENT.payer,language:PATIENT.language};
   try{
     const res=await j("/api/copilot/finalize",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
-    logActivity("Alora · learning","Recorded to facility memory + patient gap log");
-    let msg="Recorded to the learning ledgers.";
-    if(res.next_candidate){msg+=" Next candidate: "+res.next_candidate.facility.name; logActivity("Matcher","Suggested next candidate: "+res.next_candidate.facility.name);}
+    logActivity("Alora · learning","Patient-side outcome recorded to the workspace ledgers");
+    let msg="Recorded. Patient detail stayed in the workspace.";
+    if(res.next_candidate){msg+=" Next: "+res.next_candidate.facility.name; logActivity("Matcher","Suggested next candidate: "+res.next_candidate.facility.name);}
+    document.getElementById("p-contribute").style.display="none";
     document.getElementById("det-outcome").innerHTML+=`<div style="color:var(--text-muted);margin-top:6px;font-size:12px">✓ ${esc(msg)}</div>`;
     show("p-det",true); stopMic();
     document.getElementById("calling-banner").classList.remove("on"); highlight(selected.id,false);
     toast(msg);
   }catch(e){toast("finalize failed: "+e.message)}
-};
+}
+document.getElementById("btn-confirm-contribute").onclick=async()=>{ await contributeConfirmedFacts(); doFinalize(); };
+document.getElementById("btn-record-only").onclick=()=>{ document.getElementById("p-contribute").style.display="none"; doFinalize(); };
 
 /* ============ SYSTEM MAP (Kumu-style full network) ============ */
 // facility categories → color + shape (matches the legend)
