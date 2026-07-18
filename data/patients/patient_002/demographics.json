@@ -1,0 +1,17 @@
+{
+  "id": "patient_002",
+  "synthetic": true,
+  "age": 41,
+  "gender": "male",
+  "insurance": "Medi-Cal",
+  "language": "English",
+  "housing_status": "housed, lives alone in subsidized SRO unit",
+  "emergency_contact": {
+    "relationship": "case manager",
+    "name": "assigned county case manager (synthetic)",
+    "contact_note": "primary contact, no next of kin on file"
+  },
+  "medications_home": [
+    "risperidone 2mg BID (per pharmacy record)"
+  ]
+}

@@ -1,0 +1,3943 @@
+[
+  {
+    "id": "zsfg-pes",
+    "name": "Zuckerberg San Francisco General Psychiatric Emergency Services (PES)",
+    "operator": "SF Dept of Public Health / ZSFG",
+    "address": "1001 Potrero Ave, San Francisco, CA 94110",
+    "lat": 37.7562,
+    "lng": -122.4054,
+    "level_of_care": "ED_psych",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "medicare",
+      "county_funded",
+      "private"
+    ],
+    "languages": [
+      "English",
+      "Spanish",
+      "Cantonese",
+      "Mandarin"
+    ],
+    "total_beds": null,
+    "designation_5150": true,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.zuckerbergsanfranciscogeneral.org/services/psychiatric-emergency-services-pes/",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "medical_clearance_24h",
+        "vitals_within_12h",
+        "hold_paperwork_signed",
+        "risk_assessment_current"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 0,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.45,
+        "possible_declines": [
+          "no_capacity",
+          "acuity_too_high"
+        ],
+        "median_response_min_sim": 30
+      }
+    }
+  },
+  {
+    "id": "cpmc-davies-ed",
+    "name": "CPMC Davies Campus Emergency Department (psych-capable)",
+    "operator": "Sutter Health / CPMC",
+    "address": "3698 California St, San Francisco, CA 94118",
+    "lat": 37.7857,
+    "lng": -122.4494,
+    "level_of_care": "ED_psych",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": []
+    },
+    "payers": [
+      "private",
+      "medicare",
+      "medi-cal"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.sutterhealth.org/education/gme/residencies/cpmc-psychiatry",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "medical_clearance_24h",
+        "vitals_within_12h",
+        "hold_paperwork_signed",
+        "risk_assessment_current"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 0,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.45,
+        "possible_declines": [
+          "no_capacity",
+          "acuity_too_high"
+        ],
+        "median_response_min_sim": 120
+      }
+    }
+  },
+  {
+    "id": "ucsf-parnassus-ed",
+    "name": "UCSF Parnassus Emergency Department (psych-capable)",
+    "operator": "UCSF Health",
+    "address": "505 Parnassus Ave, San Francisco, CA 94143",
+    "lat": 37.7631,
+    "lng": -122.4576,
+    "level_of_care": "ED_psych",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": []
+    },
+    "payers": [
+      "private",
+      "medicare",
+      "medi-cal"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.ucsfhealth.org/",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "vitals_within_12h",
+        "hold_paperwork_signed"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 0,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.31,
+        "possible_declines": [
+          "no_capacity",
+          "acuity_too_high"
+        ],
+        "median_response_min_sim": 15
+      }
+    }
+  },
+  {
+    "id": "dore-urgent-care",
+    "name": "Dore Urgent Care Clinic",
+    "operator": "Progress Foundation (contracted by SFDPH)",
+    "address": "52 Dore St / 52 Dore Alley, San Francisco, CA 94103",
+    "lat": 37.7736,
+    "lng": -122.4128,
+    "level_of_care": "crisis_stabilization",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://media.api.sf.gov/documents/BHC_Site_Visit_Dore_Alley_May_2024.pdf",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "medical_clearance_24h",
+        "vitals_within_12h",
+        "risk_assessment_current",
+        "psychiatric_eval_current"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 0,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.45,
+        "possible_declines": [
+          "no_capacity",
+          "acuity_too_high",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 15
+      }
+    }
+  },
+  {
+    "id": "bhac-1380-howard",
+    "name": "Behavioral Health Access Center (BHAC)",
+    "operator": "SF Dept of Public Health",
+    "address": "1380 Howard St, 1st Floor, San Francisco, CA 94103",
+    "lat": 37.7723,
+    "lng": -122.4144,
+    "level_of_care": "crisis_stabilization",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded",
+      "sliding_scale"
+    ],
+    "languages": [
+      "English",
+      "Spanish",
+      "Cantonese",
+      "Mandarin",
+      "Vietnamese"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.sf.gov/location--behavioral-health-access-center-bhac",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "medical_clearance_24h",
+        "risk_assessment_current"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 2,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.49,
+        "possible_declines": [
+          "no_capacity",
+          "acuity_too_high",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 60
+      }
+    }
+  },
+  {
+    "id": "soma-rise",
+    "name": "SoMa RISE Center",
+    "operator": "HealthRIGHT 360 (SFDPH oversight)",
+    "address": "1076 Howard St, San Francisco, CA 94103",
+    "lat": 37.7797,
+    "lng": -122.4066,
+    "level_of_care": "crisis_stabilization",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": []
+    },
+    "payers": [
+      "county_funded"
+    ],
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "total_beds": 20,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.sf.gov/soma-rise-center",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "vitals_within_12h",
+        "psychiatric_eval_current"
+      ],
+      "availability": {
+        "available_beds": 2,
+        "estimated_wait_days": 0,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.49,
+        "possible_declines": [
+          "no_capacity",
+          "acuity_too_high",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 45
+      }
+    }
+  },
+  {
+    "id": "mission-street-sobering",
+    "name": "San Francisco Sobering Center (Medical Respite and Sobering Center)",
+    "operator": "Community Awareness & Treatment Services (CATS) / SFDPH",
+    "address": "1171 Mission St, San Francisco, CA 94103",
+    "lat": 37.7778,
+    "lng": -122.4147,
+    "level_of_care": "sobering",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": []
+    },
+    "payers": [
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": 12,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.sf.gov/the-sobering-center",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "vitals_within_12h",
+        "medical_clearance_24h"
+      ],
+      "availability": {
+        "available_beds": 1,
+        "estimated_wait_days": 0,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.62,
+        "possible_declines": [
+          "no_capacity",
+          "acuity_too_high"
+        ],
+        "median_response_min_sim": 60
+      }
+    }
+  },
+  {
+    "id": "soma-rise-sobering",
+    "name": "SoMa RISE Center (Drug Sobering)",
+    "operator": "HealthRIGHT 360 (SFDPH oversight)",
+    "address": "1076 Howard St, San Francisco, CA 94103",
+    "lat": 37.7797,
+    "lng": -122.4066,
+    "level_of_care": "sobering",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": []
+    },
+    "payers": [
+      "county_funded"
+    ],
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "total_beds": 20,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.sf.gov/soma-rise-center",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "vitals_within_12h",
+        "medical_clearance_24h"
+      ],
+      "availability": {
+        "available_beds": 3,
+        "estimated_wait_days": 0,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.76,
+        "possible_declines": [
+          "no_capacity",
+          "acuity_too_high"
+        ],
+        "median_response_min_sim": 120
+      }
+    }
+  },
+  {
+    "id": "hummingbird-valencia",
+    "name": "Hummingbird Place - Valencia (Psychiatric Respite)",
+    "operator": "PRC (Positive Resource Center) / Salvation Army, funded by SFDPH & Tipping Point",
+    "address": "1156 Valencia St, San Francisco, CA 94110",
+    "lat": 37.7524,
+    "lng": -122.421,
+    "level_of_care": "peer_respite",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "county_funded"
+    ],
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "total_beds": 60,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://prcsf.org/hummingbird-valencia-opens-in-san-franciscos-mission-district/",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "risk_assessment_current",
+        "no_active_violence_risk"
+      ],
+      "availability": {
+        "available_beds": 5,
+        "estimated_wait_days": 3,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.57,
+        "possible_declines": [
+          "no_capacity",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 45
+      }
+    }
+  },
+  {
+    "id": "hummingbird-potrero",
+    "name": "Hummingbird Place - Potrero (Psychiatric Respite)",
+    "operator": "Baker Places / SFDPH",
+    "address": "Potrero Ave campus area, San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "peer_respite",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": 29,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.mentalhealthfacilities.net/listings/baker-places-inc-baker-street-house-san-francisco-ca.html",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "risk_assessment_current",
+        "no_active_violence_risk"
+      ],
+      "availability": {
+        "available_beds": 1,
+        "estimated_wait_days": 2,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.67,
+        "possible_declines": [
+          "no_capacity",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 120
+      }
+    }
+  },
+  {
+    "id": "ucsf-langley-porter-mtzion",
+    "name": "UCSF Langley Porter Psychiatric Hospital (Mount Zion)",
+    "operator": "UCSF Health",
+    "address": "2356 Sutter St, San Francisco, CA 94115",
+    "lat": 37.7846,
+    "lng": -122.4364,
+    "level_of_care": "inpatient_psych",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": []
+    },
+    "payers": [
+      "private",
+      "medicare",
+      "medi-cal"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": 30,
+    "designation_5150": true,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://psych.ucsf.edu/news/langley-porter-psychiatric-hospital-moves-ucsf-mount-zion-medical-center",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "medical_clearance_24h",
+        "vitals_within_12h",
+        "hold_paperwork_signed",
+        "psychiatric_eval_current",
+        "risk_assessment_current",
+        "no_active_violence_risk",
+        "labs_within_72h"
+      ],
+      "availability": {
+        "available_beds": 4,
+        "estimated_wait_days": 2,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.6,
+        "possible_declines": [
+          "no_capacity",
+          "missing_docs",
+          "acuity_too_high",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 240
+      }
+    }
+  },
+  {
+    "id": "cpmc-davies-inpatient",
+    "name": "CPMC Davies Campus Adult Inpatient Psychiatric Unit",
+    "operator": "Sutter Health / CPMC",
+    "address": "3698 California St, San Francisco, CA 94118",
+    "lat": 37.7857,
+    "lng": -122.4494,
+    "level_of_care": "inpatient_psych",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": []
+    },
+    "payers": [
+      "private",
+      "medicare"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": true,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.sutterhealth.org/education/gme/residencies/cpmc-psychiatry",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "medical_clearance_24h",
+        "vitals_within_12h",
+        "hold_paperwork_signed",
+        "psychiatric_eval_current",
+        "risk_assessment_current",
+        "no_active_violence_risk",
+        "labs_within_72h"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 0,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.48,
+        "possible_declines": [
+          "no_capacity",
+          "missing_docs",
+          "acuity_too_high",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 60
+      }
+    }
+  },
+  {
+    "id": "ucsf-stanyan-mcauley",
+    "name": "UCSF Health Stanyan Hospital - McAuley Inpatient Psychiatric Unit (formerly St. Mary's)",
+    "operator": "UCSF Health (formerly Dignity Health / Saint Mary's Medical Center)",
+    "address": "450 Stanyan St, San Francisco, CA 94117",
+    "lat": 37.7692,
+    "lng": -122.4531,
+    "level_of_care": "inpatient_psych",
+    "population": {
+      "age_groups": [
+        "adult",
+        "adolescent"
+      ],
+      "gender_restrictions": null,
+      "special": []
+    },
+    "payers": [
+      "private",
+      "medicare",
+      "medi-cal"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": 35,
+    "designation_5150": true,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://en.wikipedia.org/wiki/St._Mary%27s_Medical_Center_(San_Francisco)",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "medical_clearance_24h",
+        "hold_paperwork_signed",
+        "psychiatric_eval_current",
+        "risk_assessment_current",
+        "no_active_violence_risk",
+        "labs_within_72h"
+      ],
+      "availability": {
+        "available_beds": 2,
+        "estimated_wait_days": 2,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.47,
+        "possible_declines": [
+          "no_capacity",
+          "missing_docs",
+          "acuity_too_high",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 120
+      }
+    }
+  },
+  {
+    "id": "ucsfh-hyde-stfrancis",
+    "name": "UCSF Health Hyde (formerly St. Francis Memorial Hospital) Adult Inpatient Psychiatric Unit",
+    "operator": "UCSF Health (formerly Dignity Health)",
+    "address": "900 Hyde St, San Francisco, CA 94109",
+    "lat": 37.7869,
+    "lng": -122.4177,
+    "level_of_care": "inpatient_psych",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": []
+    },
+    "payers": [
+      "private",
+      "medicare",
+      "medi-cal"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": 24,
+    "designation_5150": true,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.findhelp.org/st.-francis-memorial-hospital--san-francisco-ca--inpatient-psychiatric-care/5150765304512512?postal=94102",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "medical_clearance_24h",
+        "vitals_within_12h",
+        "hold_paperwork_signed",
+        "psychiatric_eval_current",
+        "risk_assessment_current",
+        "no_active_violence_risk",
+        "labs_within_72h"
+      ],
+      "availability": {
+        "available_beds": 3,
+        "estimated_wait_days": 4,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.53,
+        "possible_declines": [
+          "no_capacity",
+          "missing_docs",
+          "acuity_too_high",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 90
+      }
+    }
+  },
+  {
+    "id": "kaiser-sf-psych",
+    "name": "Kaiser Permanente San Francisco Medical Center - Psychiatry Inpatient",
+    "operator": "Kaiser Permanente",
+    "address": "2425 Geary Blvd, San Francisco, CA 94115",
+    "lat": 37.7822,
+    "lng": -122.4432,
+    "level_of_care": "inpatient_psych",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": []
+    },
+    "payers": [
+      "private",
+      "medicare"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://healthy.kaiserpermanente.org/northern-california/facilities/San-Francisco-Medical-Center-100328",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "medical_clearance_24h",
+        "vitals_within_12h",
+        "hold_paperwork_signed",
+        "psychiatric_eval_current",
+        "risk_assessment_current",
+        "no_active_violence_risk",
+        "labs_within_72h"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 1,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.49,
+        "possible_declines": [
+          "no_capacity",
+          "missing_docs",
+          "acuity_too_high",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 45
+      }
+    }
+  },
+  {
+    "id": "sf-behavioral-health-center",
+    "name": "San Francisco Behavioral Health Center (Locked Sub-Acute / Institute of Mental Disease)",
+    "operator": "SF Dept of Public Health",
+    "address": "1380 Howard St / 887 Potrero Ave campus, San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "locked_subacute",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.sf.gov/departments--department-public-health--behavioral-health",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "medical_clearance_24h",
+        "risk_assessment_current",
+        "insurance_verification",
+        "guardian_contact"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 3,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.45,
+        "possible_declines": [
+          "no_capacity",
+          "missing_docs",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 15
+      }
+    }
+  },
+  {
+    "id": "progress-shrader-house",
+    "name": "Progress Foundation - Shrader House (Crisis Residential)",
+    "operator": "Progress Foundation",
+    "address": "Haight-Ashbury, San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "locked_subacute",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://recovery.com/residential/progress-foundation-shrader-house-crisis-program-san-francisco/",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "medical_clearance_24h",
+        "psychiatric_eval_current",
+        "risk_assessment_current",
+        "insurance_verification",
+        "guardian_contact"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 7,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.41,
+        "possible_declines": [
+          "no_capacity",
+          "missing_docs",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 90
+      }
+    }
+  },
+  {
+    "id": "progress-dore-house",
+    "name": "Progress Foundation - Dore House (Intensive Crisis Residential)",
+    "operator": "Progress Foundation",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "locked_subacute",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": 14,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.progressfoundation.org/programs/",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "medical_clearance_24h",
+        "risk_assessment_current",
+        "med_reconciliation",
+        "insurance_verification",
+        "guardian_contact"
+      ],
+      "availability": {
+        "available_beds": 1,
+        "estimated_wait_days": 13,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.5,
+        "possible_declines": [
+          "no_capacity",
+          "missing_docs",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 120
+      }
+    }
+  },
+  {
+    "id": "progress-la-posada",
+    "name": "Progress Foundation - La Posada",
+    "operator": "Progress Foundation",
+    "address": "Mission District, San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "residential_tx",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "total_beds": 10,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.progressfoundation.org/programs/",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "tb_screen",
+        "med_reconciliation",
+        "insurance_verification",
+        "psychiatric_eval_current",
+        "no_active_violence_risk"
+      ],
+      "availability": {
+        "available_beds": 1,
+        "estimated_wait_days": 14,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.65,
+        "possible_declines": [
+          "no_capacity",
+          "out_of_network",
+          "missing_docs",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 90
+      }
+    }
+  },
+  {
+    "id": "baker-street-house",
+    "name": "Baker Places - Baker Street House",
+    "operator": "Baker Places Inc / PRC",
+    "address": "Baker St, San Francisco, CA 94115",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "residential_tx",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": []
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": 16,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.mentalhealthfacilities.net/listings/baker-places-inc-baker-street-house-san-francisco-ca.html",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "tb_screen",
+        "covid_test_48h",
+        "med_reconciliation",
+        "psychiatric_eval_current"
+      ],
+      "availability": {
+        "available_beds": 2,
+        "estimated_wait_days": 19,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.57,
+        "possible_declines": [
+          "no_capacity",
+          "out_of_network",
+          "missing_docs",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 30
+      }
+    }
+  },
+  {
+    "id": "baker-robertson-place",
+    "name": "Baker Places - Robertson Place",
+    "operator": "Baker Places Inc / PRC",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "residential_tx",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": 12,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.freementalhealth.us/services/san-francisco_baker-places-inc",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "tb_screen",
+        "covid_test_48h",
+        "med_reconciliation",
+        "insurance_verification",
+        "psychiatric_eval_current",
+        "no_active_violence_risk"
+      ],
+      "availability": {
+        "available_beds": 1,
+        "estimated_wait_days": 8,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.67,
+        "possible_declines": [
+          "no_capacity",
+          "out_of_network",
+          "missing_docs",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 30
+      }
+    }
+  },
+  {
+    "id": "baker-jo-ruffin-place",
+    "name": "Baker Places - Jo Ruffin Place",
+    "operator": "Baker Places Inc / PRC",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "residential_tx",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": 16,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.freementalhealth.us/services/san-francisco_baker-places-inc",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "tb_screen",
+        "covid_test_48h",
+        "med_reconciliation",
+        "insurance_verification",
+        "no_active_violence_risk"
+      ],
+      "availability": {
+        "available_beds": 1,
+        "estimated_wait_days": 9,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.58,
+        "possible_declines": [
+          "no_capacity",
+          "out_of_network",
+          "missing_docs",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 90
+      }
+    }
+  },
+  {
+    "id": "baker-odyssey-house",
+    "name": "Baker Places - Odyssey House",
+    "operator": "Baker Places Inc / PRC",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "residential_tx",
+    "population": {
+      "age_groups": [],
+      "gender_restrictions": null,
+      "special": [
+        "older_adult"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.freementalhealth.us/services/san-francisco_baker-places-inc",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "tb_screen",
+        "covid_test_48h",
+        "med_reconciliation",
+        "insurance_verification",
+        "no_active_violence_risk"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 15,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.69,
+        "possible_declines": [
+          "no_capacity",
+          "out_of_network",
+          "missing_docs",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 240
+      }
+    }
+  },
+  {
+    "id": "hr360-mens-residential-890hayes",
+    "name": "HealthRIGHT 360 Men's Residential Treatment (890 Hayes)",
+    "operator": "HealthRIGHT 360",
+    "address": "890 Hayes St, San Francisco, CA 94117",
+    "lat": 37.7763,
+    "lng": -122.4295,
+    "level_of_care": "residential_tx",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": "male",
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://recovery.com/healthright-360-mens-residential-treatment/",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "tb_screen",
+        "covid_test_48h",
+        "med_reconciliation",
+        "insurance_verification",
+        "psychiatric_eval_current",
+        "no_active_violence_risk"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 28,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.64,
+        "possible_declines": [
+          "no_capacity",
+          "out_of_network",
+          "missing_docs",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 120
+      }
+    }
+  },
+  {
+    "id": "hr360-acceptance-place",
+    "name": "HealthRIGHT 360 - Acceptance Place",
+    "operator": "HealthRIGHT 360",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "residential_tx",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": "male",
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://yourfirststep.org/treatment-center/baker-places-inc-acceptance-place-san-francisco-ca/",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "tb_screen",
+        "covid_test_48h",
+        "psychiatric_eval_current",
+        "no_active_violence_risk"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 10,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.56,
+        "possible_declines": [
+          "no_capacity",
+          "out_of_network",
+          "missing_docs",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 30
+      }
+    }
+  },
+  {
+    "id": "hr360-womens-hope",
+    "name": "HealthRIGHT 360 - Women's HOPE",
+    "operator": "HealthRIGHT 360",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "residential_tx",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": "female",
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.healthright360.org/programs",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "covid_test_48h",
+        "med_reconciliation",
+        "insurance_verification",
+        "psychiatric_eval_current",
+        "no_active_violence_risk"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 15,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.69,
+        "possible_declines": [
+          "no_capacity",
+          "out_of_network",
+          "missing_docs",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 240
+      }
+    }
+  },
+  {
+    "id": "hr360-walden-house",
+    "name": "HealthRIGHT 360 - Walden House",
+    "operator": "HealthRIGHT 360",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "residential_tx",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.healthright360.org/parent-program/walden-house/",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "tb_screen",
+        "covid_test_48h",
+        "med_reconciliation",
+        "insurance_verification",
+        "psychiatric_eval_current",
+        "no_active_violence_risk"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 23,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.68,
+        "possible_declines": [
+          "no_capacity",
+          "out_of_network",
+          "missing_docs",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 240
+      }
+    }
+  },
+  {
+    "id": "minna-project",
+    "name": "The Minna Project",
+    "operator": "SFDPH / SFAPD / Westside Community Services",
+    "address": "447 Minna St, San Francisco, CA 94103",
+    "lat": 37.7815,
+    "lng": -122.4056,
+    "level_of_care": "residential_tx",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "county_funded",
+      "medi-cal"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": 75,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://ecbsf.com/projects/447-minna-street",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "tb_screen",
+        "med_reconciliation",
+        "insurance_verification",
+        "no_active_violence_risk"
+      ],
+      "availability": {
+        "available_beds": 5,
+        "estimated_wait_days": 11,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.57,
+        "possible_declines": [
+          "no_capacity",
+          "out_of_network",
+          "missing_docs",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 30
+      }
+    }
+  },
+  {
+    "id": "treasure-island-stepdown",
+    "name": "Treasure Island Residential Stepdown Program",
+    "operator": "HealthRIGHT 360 / SFDPH",
+    "address": "Treasure Island, San Francisco, CA 94130",
+    "lat": 37.8237,
+    "lng": -122.3708,
+    "level_of_care": "residential_stepdown",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": 70,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.healthright360.org/program/residential-stepdown-men-and-women-treasure-island/",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "med_reconciliation",
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": 6,
+        "estimated_wait_days": 17,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.6,
+        "possible_declines": [
+          "no_capacity",
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 15
+      }
+    }
+  },
+  {
+    "id": "conard-house-sh",
+    "name": "Conard House Supportive Housing (transitional stepdown site)",
+    "operator": "Conard House",
+    "address": "SoMa, San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "residential_stepdown",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://conardhouse.org/programs",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "tb_screen",
+        "med_reconciliation",
+        "risk_assessment_current"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 14,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.51,
+        "possible_declines": [
+          "no_capacity",
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 90
+      }
+    }
+  },
+  {
+    "id": "conard-house-transitional",
+    "name": "Conard House Transitional Program (2-year bridge to independent living)",
+    "operator": "Conard House",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "residential_stepdown",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://conardhouse.org/programs",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "tb_screen",
+        "med_reconciliation",
+        "insurance_verification",
+        "risk_assessment_current"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 9,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.65,
+        "possible_declines": [
+          "no_capacity",
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 240
+      }
+    }
+  },
+  {
+    "id": "ucsf-php-divisadero",
+    "name": "UCSF Health Partial Hospitalization Program (PHP)",
+    "operator": "UCSF Health",
+    "address": "1600 Divisadero St, San Francisco, CA 94115",
+    "lat": 37.7847,
+    "lng": -122.4386,
+    "level_of_care": "PHP",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": []
+    },
+    "payers": [
+      "private",
+      "medicare",
+      "medi-cal"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.ucsfhealth.org/care/services/psychiatric-partial-hospitalization-and-intensive-outpatient-programs",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "psychiatric_eval_current",
+        "med_reconciliation",
+        "insurance_verification",
+        "risk_assessment_current"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 4,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.75,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs",
+          "acuity_too_high"
+        ],
+        "median_response_min_sim": 30
+      }
+    }
+  },
+  {
+    "id": "kaiser-sf-php",
+    "name": "Kaiser Permanente San Francisco - Adult Psychiatry PHP/Outpatient",
+    "operator": "Kaiser Permanente",
+    "address": "4141 Geary Blvd, San Francisco, CA 94118",
+    "lat": 37.7809,
+    "lng": -122.4553,
+    "level_of_care": "PHP",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": []
+    },
+    "payers": [
+      "private",
+      "medicare"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://healthy.kaiserpermanente.org/northern-california/facilities/San-Francisco-Medical-Center-100328/departments/behavioral-mental-health-dlp-311395",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "psychiatric_eval_current",
+        "insurance_verification",
+        "risk_assessment_current"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 2,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.71,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs",
+          "acuity_too_high"
+        ],
+        "median_response_min_sim": 90
+      }
+    }
+  },
+  {
+    "id": "progress-carroll-house",
+    "name": "Progress Foundation - Carroll House (day treatment/PHP component)",
+    "operator": "Progress Foundation",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "PHP",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://recovery.com/progress-foundation-carroll-house-san-francisco-california/",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "psychiatric_eval_current",
+        "insurance_verification",
+        "risk_assessment_current"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 4,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.75,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs",
+          "acuity_too_high"
+        ],
+        "median_response_min_sim": 120
+      }
+    }
+  },
+  {
+    "id": "ucsf-iop-divisadero",
+    "name": "UCSF Health Intensive Outpatient Program (IOP)",
+    "operator": "UCSF Health",
+    "address": "1600 Divisadero St, San Francisco, CA 94115",
+    "lat": 37.7847,
+    "lng": -122.4386,
+    "level_of_care": "IOP",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": []
+    },
+    "payers": [
+      "private",
+      "medicare",
+      "medi-cal"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.ucsfhealth.org/care/services/psychiatric-partial-hospitalization-and-intensive-outpatient-programs",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "psychiatric_eval_current",
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 2,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.78,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 120
+      }
+    }
+  },
+  {
+    "id": "westside-iop",
+    "name": "Westside Community Services - Intensive Outpatient / Adult Mental Health Services",
+    "operator": "Westside Community Services",
+    "address": "245 11th St, San Francisco, CA 94103",
+    "lat": 37.7714,
+    "lng": -122.4145,
+    "level_of_care": "IOP",
+    "population": {
+      "age_groups": [
+        "adult",
+        "adolescent",
+        "child"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded",
+      "sliding_scale"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://westside-health.org/services/adult-mental-health-services",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "psychiatric_eval_current",
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 3,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.88,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 60
+      }
+    }
+  },
+  {
+    "id": "hr360-iop-mission",
+    "name": "HealthRIGHT 360 - Mission Outpatient/IOP",
+    "operator": "HealthRIGHT 360",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "IOP",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://recovery.com/outpatient/healthright-360-mission-san-francisco-california/",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "psychiatric_eval_current",
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 1,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.74,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 45
+      }
+    }
+  },
+  {
+    "id": "mission-mental-health",
+    "name": "Mission Mental Health",
+    "operator": "SF Dept of Public Health",
+    "address": "2712 Mission St, San Francisco, CA 94110",
+    "lat": 37.7599,
+    "lng": -122.4188,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "adult",
+        "older_adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "older_adult"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.sf.gov/location--mission-mental-health",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 3,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.82,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 15
+      }
+    }
+  },
+  {
+    "id": "chinatown-northbeach-mh",
+    "name": "Chinatown North Beach Mental Health Services",
+    "operator": "SF Dept of Public Health",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "adult",
+        "older_adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "older_adult"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English",
+      "Cantonese",
+      "Mandarin"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.sfdph.org/dph/comupg/oservices/mentalhlth/cbhs/default.asp",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 0,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.75,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 15
+      }
+    }
+  },
+  {
+    "id": "southeast-child-family",
+    "name": "Southeast Child/Family Therapy Center",
+    "operator": "SF Dept of Public Health",
+    "address": "Blanken Ave, San Francisco, CA 94134",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "child",
+        "adolescent"
+      ],
+      "gender_restrictions": null,
+      "special": []
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.sfdph.org/dph/comupg/oservices/medSvs/hlthCtrs/SEHlthCtr/default.asp",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 1,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.8,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 45
+      }
+    }
+  },
+  {
+    "id": "westside-outpatient-clinic",
+    "name": "Westside Community Services - Outpatient Clinic",
+    "operator": "Westside Community Services",
+    "address": "245 11th St, San Francisco, CA 94103",
+    "lat": 37.7714,
+    "lng": -122.4145,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "adult",
+        "adolescent",
+        "child"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded",
+      "sliding_scale"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://westside-health.org/programs/outpatient-clinic",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 3,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.81,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 120
+      }
+    }
+  },
+  {
+    "id": "cbhs-1380-howard",
+    "name": "Community Behavioral Health Services (psychiatry outpatient)",
+    "operator": "SF Dept of Public Health",
+    "address": "1380 Howard St, Floor 5, San Francisco, CA 94103",
+    "lat": 37.7723,
+    "lng": -122.4144,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": []
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.yelp.com/biz/community-behavioral-health-services-san-francisco",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 7,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.75,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 60
+      }
+    }
+  },
+  {
+    "id": "conard-house-outpatient",
+    "name": "Conard House Outpatient Counseling & Case Management",
+    "operator": "Conard House",
+    "address": "SoMa, San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://conardhouse.org/programs",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 3,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.72,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 120
+      }
+    }
+  },
+  {
+    "id": "citywide-casc",
+    "name": "Citywide Case Management (UCSF Citywide)",
+    "operator": "UCSF / SFDPH",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://citywide.ucsf.edu/citywide-casc",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 5,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.78,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 60
+      }
+    }
+  },
+  {
+    "id": "ucsf-adult-psychiatry-clinic",
+    "name": "UCSF Adult Psychiatry Clinic (APC)",
+    "operator": "UCSF Health",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": []
+    },
+    "payers": [
+      "private",
+      "medicare",
+      "medi-cal"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.sfserviceguide.org/services/1052",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 1,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.71,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 120
+      }
+    }
+  },
+  {
+    "id": "kaiser-sf-outpatient-therapy",
+    "name": "Kaiser Permanente SF - Adult Outpatient Therapy",
+    "operator": "Kaiser Permanente",
+    "address": "2425 Geary Blvd, San Francisco, CA 94115",
+    "lat": 37.7822,
+    "lng": -122.4432,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": []
+    },
+    "payers": [
+      "private",
+      "medicare"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://healthy.kaiserpermanente.org/northern-california/facilities/San-Francisco-Medical-Center-100328/departments/behavioral-mental-health-dlp-311395",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 1,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.75,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 30
+      }
+    }
+  },
+  {
+    "id": "hridge-sf-methadone",
+    "name": "BAART Programs - Turk Street (Opioid Treatment)",
+    "operator": "BAART Programs",
+    "address": "433 Turk St, San Francisco, CA 94102",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "sliding_scale",
+      "county_funded"
+    ],
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "samhsa"
+    ],
+    "source_url": "https://baartprograms.com/locations/california/san-francisco-turk-st",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 7,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.73,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 30
+      }
+    }
+  },
+  {
+    "id": "bayview-hunters-point-fdn",
+    "name": "Bayview Hunters Point Foundation for Community Improvement - Substance Use Services",
+    "operator": "Bayview Hunters Point Foundation",
+    "address": "1625 Carroll Ave, San Francisco, CA 94124",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "sliding_scale",
+      "county_funded"
+    ],
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "samhsa"
+    ],
+    "source_url": "https://www.bayviewci.org/contact",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 7,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.75,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 15
+      }
+    }
+  },
+  {
+    "id": "hr360-vanness-clinic",
+    "name": "HealthRIGHT 360 - Integrated Care Center",
+    "operator": "HealthRIGHT 360",
+    "address": "1563 Mission St, San Francisco, CA 94103",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "sliding_scale",
+      "county_funded"
+    ],
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "samhsa"
+    ],
+    "source_url": "https://www.healthright360.org/locations/san-francisco/",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 1,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.71,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 90
+      }
+    }
+  },
+  {
+    "id": "progress-foundation-outpatient",
+    "name": "Progress Foundation - Outpatient Case Management",
+    "operator": "Progress Foundation",
+    "address": "368 Fell St, San Francisco, CA 94102",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "sliding_scale",
+      "county_funded"
+    ],
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "samhsa"
+    ],
+    "source_url": "https://www.progressfoundation.org/contact/",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 1,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.89,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 240
+      }
+    }
+  },
+  {
+    "id": "swords-to-plowshares-mh",
+    "name": "Swords to Plowshares - Veteran Behavioral Health Services",
+    "operator": "Swords to Plowshares",
+    "address": "1060 Howard St, San Francisco, CA 94103",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "sliding_scale",
+      "county_funded"
+    ],
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "samhsa"
+    ],
+    "source_url": "https://www.sf.gov/location--swords-plowshares-veterans-access-point",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 2,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.78,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 60
+      }
+    }
+  },
+  {
+    "id": "rams-inc",
+    "name": "Richmond Area Multi-Services (RAMS) - Outpatient Mental Health",
+    "operator": "RAMS Inc",
+    "address": "601 Clement St, San Francisco, CA 94118",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "sliding_scale",
+      "county_funded"
+    ],
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "samhsa"
+    ],
+    "source_url": "https://ramsinc.org/programs/clinical-counseling-services/adult-outpatient-services/",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 6,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.88,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 30
+      }
+    }
+  },
+  {
+    "id": "naomi-project",
+    "name": "Instituto Familiar de la Raza - Behavioral Health",
+    "operator": "Instituto Familiar de la Raza",
+    "address": "2919 Mission St, San Francisco, CA 94110",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "sliding_scale",
+      "county_funded"
+    ],
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "samhsa"
+    ],
+    "source_url": "https://www.ifrsf.org/contact",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 0,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.9,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 45
+      }
+    }
+  },
+  {
+    "id": "felton-institute",
+    "name": "Felton Institute - Adult Mental Health Services",
+    "operator": "Felton Institute",
+    "address": "1500 Franklin St, San Francisco, CA 94109",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "sliding_scale",
+      "county_funded"
+    ],
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "samhsa"
+    ],
+    "source_url": "https://felton.org/social-services/adult/",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 4,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.78,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 120
+      }
+    }
+  },
+  {
+    "id": "hr360-tay-village",
+    "name": "HealthRIGHT 360 - TAY (Transition Age Youth) Services",
+    "operator": "HealthRIGHT 360",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "TAY"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "TAY",
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.healthright360.org/programs",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 7,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.73,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 45
+      }
+    }
+  },
+  {
+    "id": "larkin-street-tay",
+    "name": "Larkin Street Youth Services - Behavioral Health (TAY)",
+    "operator": "Larkin Street Youth Services",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "TAY"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "TAY"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded",
+      "sliding_scale"
+    ],
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.larkinstreetyouth.org/",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 0,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.82,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 90
+      }
+    }
+  },
+  {
+    "id": "progress-older-adult",
+    "name": "Progress Foundation - Older Adult Co-Occurring Program",
+    "operator": "Progress Foundation",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "residential_tx",
+    "population": {
+      "age_groups": [
+        "older_adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "older_adult",
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "medicare",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://mindsitenews.org/2024/01/24/after-the-crisis-unique-program-helps-older-adults-grappling-with-both-addiction-and-mental-illness/",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "tb_screen",
+        "covid_test_48h",
+        "med_reconciliation",
+        "insurance_verification",
+        "psychiatric_eval_current",
+        "no_active_violence_risk"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 17,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.51,
+        "possible_declines": [
+          "no_capacity",
+          "out_of_network",
+          "missing_docs",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 90
+      }
+    }
+  },
+  {
+    "id": "samsan-mateo-crc",
+    "name": "San Mateo County Behavioral Health Recovery Services - Crisis Stabilization",
+    "operator": "San Mateo County BHRS",
+    "address": "San Mateo, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "crisis_stabilization",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": []
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "samhsa"
+    ],
+    "source_url": "https://findtreatment.gov/locator",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "medical_clearance_24h",
+        "risk_assessment_current",
+        "psychiatric_eval_current"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 0,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.54,
+        "possible_declines": [
+          "no_capacity",
+          "acuity_too_high",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 15
+      }
+    }
+  },
+  {
+    "id": "alameda-john-george",
+    "name": "John George Psychiatric Pavilion",
+    "operator": "Alameda Health System",
+    "address": "2060 Fairmont Dr, San Leandro, CA 94578",
+    "lat": 37.6975,
+    "lng": -122.1489,
+    "level_of_care": "inpatient_psych",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": []
+    },
+    "payers": [
+      "medi-cal",
+      "medicare",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": 82,
+    "designation_5150": true,
+    "data_source": [
+      "samhsa",
+      "manual"
+    ],
+    "source_url": "https://findtreatment.gov/locator",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "medical_clearance_24h",
+        "vitals_within_12h",
+        "hold_paperwork_signed",
+        "psychiatric_eval_current",
+        "risk_assessment_current",
+        "no_active_violence_risk",
+        "labs_within_72h"
+      ],
+      "availability": {
+        "available_beds": 3,
+        "estimated_wait_days": 4,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.41,
+        "possible_declines": [
+          "no_capacity",
+          "missing_docs",
+          "acuity_too_high",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 240
+      }
+    }
+  },
+  {
+    "id": "alameda-willow-rock",
+    "name": "Willow Rock Center (Crisis Stabilization)",
+    "operator": "Alameda County Behavioral Health",
+    "address": "2060 Fairmont Dr, San Leandro, CA 94578",
+    "lat": 37.6975,
+    "lng": -122.1489,
+    "level_of_care": "crisis_stabilization",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": []
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "samhsa"
+    ],
+    "source_url": "https://findtreatment.gov/locator",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "medical_clearance_24h",
+        "vitals_within_12h",
+        "risk_assessment_current",
+        "psychiatric_eval_current"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 1,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.37,
+        "possible_declines": [
+          "no_capacity",
+          "acuity_too_high",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 90
+      }
+    }
+  },
+  {
+    "id": "sanmateo-cordilleras",
+    "name": "Cordilleras Health System - Locked Sub-Acute",
+    "operator": "San Mateo County",
+    "address": "Redwood City, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "locked_subacute",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "samhsa"
+    ],
+    "source_url": "https://findtreatment.gov/locator",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "medical_clearance_24h",
+        "psychiatric_eval_current",
+        "risk_assessment_current",
+        "med_reconciliation",
+        "insurance_verification",
+        "guardian_contact"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 12,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.52,
+        "possible_declines": [
+          "no_capacity",
+          "missing_docs",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 90
+      }
+    }
+  },
+  {
+    "id": "hr360-h360-outpatient-oakland",
+    "name": "HealthRIGHT 360 - Oakland Outpatient (out-of-county fallback)",
+    "operator": "HealthRIGHT 360",
+    "address": "Oakland, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "samhsa"
+    ],
+    "source_url": "https://findtreatment.gov/locator",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 6,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.83,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 90
+      }
+    }
+  },
+  {
+    "id": "bonita-house-alameda",
+    "name": "Bonita House - Residential Treatment (Alameda County fallback)",
+    "operator": "Bonita House Inc",
+    "address": "Berkeley, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "residential_tx",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "samhsa"
+    ],
+    "source_url": "https://findtreatment.gov/locator",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "tb_screen",
+        "covid_test_48h",
+        "psychiatric_eval_current",
+        "no_active_violence_risk"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 13,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.63,
+        "possible_declines": [
+          "no_capacity",
+          "out_of_network",
+          "missing_docs",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 45
+      }
+    }
+  },
+  {
+    "id": "horizon-services-alameda",
+    "name": "Horizon Services - Outpatient SUD (Alameda County fallback)",
+    "operator": "Horizon Services Inc",
+    "address": "Alameda, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "sliding_scale"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "samhsa"
+    ],
+    "source_url": "https://findtreatment.gov/locator",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 4,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.78,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 120
+      }
+    }
+  },
+  {
+    "id": "telecare-sanmateo-crisis",
+    "name": "Telecare San Mateo Crisis Residential (fallback)",
+    "operator": "Telecare Corp",
+    "address": "San Mateo, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "crisis_stabilization",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "samhsa"
+    ],
+    "source_url": "https://findtreatment.gov/locator",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "medical_clearance_24h",
+        "vitals_within_12h",
+        "risk_assessment_current"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 1,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.54,
+        "possible_declines": [
+          "no_capacity",
+          "acuity_too_high",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 15
+      }
+    }
+  },
+  {
+    "id": "starvista-sanmateo",
+    "name": "StarVista - Youth & TAY Behavioral Health (San Mateo fallback)",
+    "operator": "StarVista",
+    "address": "San Mateo County, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "TAY",
+        "adolescent"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "TAY"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "sliding_scale"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "samhsa"
+    ],
+    "source_url": "https://findtreatment.gov/locator",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 7,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.82,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 90
+      }
+    }
+  },
+  {
+    "id": "edgewood-center-tay",
+    "name": "Edgewood Center for Children and Families - TAY & Youth Residential",
+    "operator": "Edgewood Center",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "residential_tx",
+    "population": {
+      "age_groups": [
+        "TAY",
+        "adolescent"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "TAY",
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.sf.gov/departments--department-public-health--behavioral-health",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "tb_screen",
+        "covid_test_48h",
+        "med_reconciliation",
+        "insurance_verification",
+        "psychiatric_eval_current",
+        "no_active_violence_risk"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 9,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.61,
+        "possible_declines": [
+          "no_capacity",
+          "out_of_network",
+          "missing_docs",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 90
+      }
+    }
+  },
+  {
+    "id": "hr360-safe-passages",
+    "name": "HealthRIGHT 360 - Safe Passages Perinatal Residential",
+    "operator": "HealthRIGHT 360",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "residential_tx",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.sf.gov/departments--department-public-health--behavioral-health",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "tb_screen",
+        "med_reconciliation",
+        "insurance_verification",
+        "psychiatric_eval_current",
+        "no_active_violence_risk"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 18,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.68,
+        "possible_declines": [
+          "no_capacity",
+          "out_of_network",
+          "missing_docs",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 30
+      }
+    }
+  },
+  {
+    "id": "progress-hummingbird-carroll",
+    "name": "Progress Foundation - Guerrero House (Crisis Residential)",
+    "operator": "Progress Foundation",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "locked_subacute",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.sf.gov/departments--department-public-health--behavioral-health",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "medical_clearance_24h",
+        "psychiatric_eval_current",
+        "med_reconciliation",
+        "insurance_verification",
+        "guardian_contact"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 5,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.49,
+        "possible_declines": [
+          "no_capacity",
+          "missing_docs",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 90
+      }
+    }
+  },
+  {
+    "id": "baker-diamond-street",
+    "name": "Baker Places - Diamond Street Youth Program",
+    "operator": "Baker Places Inc",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "residential_tx",
+    "population": {
+      "age_groups": [
+        "TAY",
+        "adolescent"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "TAY"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.sf.gov/departments--department-public-health--behavioral-health",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "tb_screen",
+        "covid_test_48h",
+        "med_reconciliation",
+        "insurance_verification",
+        "no_active_violence_risk"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 27,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.61,
+        "possible_declines": [
+          "no_capacity",
+          "out_of_network",
+          "missing_docs",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 120
+      }
+    }
+  },
+  {
+    "id": "hr360-h360-tay-village-res",
+    "name": "HealthRIGHT 360 - TAY Village Residential",
+    "operator": "HealthRIGHT 360",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "residential_tx",
+    "population": {
+      "age_groups": [
+        "TAY"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "TAY",
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.sf.gov/departments--department-public-health--behavioral-health",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "covid_test_48h",
+        "insurance_verification",
+        "psychiatric_eval_current",
+        "no_active_violence_risk"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 11,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.55,
+        "possible_declines": [
+          "no_capacity",
+          "out_of_network",
+          "missing_docs",
+          "behavioral_exclusion"
+        ],
+        "median_response_min_sim": 15
+      }
+    }
+  },
+  {
+    "id": "mha-warmline",
+    "name": "Mental Health Association of SF - Peer Warmline & Support (non-residential)",
+    "operator": "Mental Health Association of San Francisco",
+    "address": "870 Market St, San Francisco, CA 94102",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "outpatient",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "county_funded",
+      "sliding_scale"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.sf.gov/departments--department-public-health--behavioral-health",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 2,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.75,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 90
+      }
+    }
+  },
+  {
+    "id": "hr360-integrated-outpatient-soma",
+    "name": "HealthRIGHT 360 - SoMa Integrated Outpatient",
+    "operator": "HealthRIGHT 360",
+    "address": "San Francisco, CA",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "IOP",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.sf.gov/departments--department-public-health--behavioral-health",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "psychiatric_eval_current",
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 2,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.74,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs"
+        ],
+        "median_response_min_sim": 120
+      }
+    }
+  },
+  {
+    "id": "westside-php",
+    "name": "Westside Community Services - Day Treatment / PHP",
+    "operator": "Westside Community Services",
+    "address": "245 11th St, San Francisco, CA 94103",
+    "lat": null,
+    "lng": null,
+    "level_of_care": "PHP",
+    "population": {
+      "age_groups": [
+        "adult"
+      ],
+      "gender_restrictions": null,
+      "special": [
+        "dual_diagnosis"
+      ]
+    },
+    "payers": [
+      "medi-cal",
+      "county_funded"
+    ],
+    "languages": [
+      "English"
+    ],
+    "total_beds": null,
+    "designation_5150": false,
+    "data_source": [
+      "manual"
+    ],
+    "source_url": "https://www.sf.gov/departments--department-public-health--behavioral-health",
+    "verified_date": "2026-07-18",
+    "simulated": {
+      "intake_requirements": [
+        "psychiatric_eval_current",
+        "med_reconciliation",
+        "insurance_verification"
+      ],
+      "availability": {
+        "available_beds": null,
+        "estimated_wait_days": 2,
+        "last_updated": "2026-07-18"
+      },
+      "decline_behavior": {
+        "accept_rate": 0.78,
+        "possible_declines": [
+          "out_of_network",
+          "missing_docs",
+          "acuity_too_high"
+        ],
+        "median_response_min_sim": 240
+      }
+    }
+  }
+]

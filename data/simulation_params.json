@@ -1,0 +1,60 @@
+{
+  "_disclaimer": "These are SIMULATED operational parameters for demo purposes. Facility identities and structural fields (address, level_of_care, payers, etc.) are real/public; availability, wait times, and decline behavior below are NOT real-time data and should never be presented as such.",
+  "intake_requirements_by_level": {
+    "_basis": "Requirement sets are drawn from a fixed vocabulary matching common clinical intake practice per level of acuity (e.g., higher-acuity levels require current psych eval + risk assessment + medical clearance; lower-acuity outpatient levels require fewer). Assigned deterministically per facility (see generate_availability.py) so specific facilities differ from each other, supporting a readiness-diff demo.",
+    "ED_psych": ["medical_clearance_24h", "vitals_within_12h", "hold_paperwork_signed", "risk_assessment_current"],
+    "crisis_stabilization": ["medical_clearance_24h", "vitals_within_12h", "risk_assessment_current", "psychiatric_eval_current"],
+    "inpatient_psych": ["medical_clearance_24h", "vitals_within_12h", "hold_paperwork_signed", "psychiatric_eval_current", "risk_assessment_current", "no_active_violence_risk", "labs_within_72h"],
+    "locked_subacute": ["medical_clearance_24h", "psychiatric_eval_current", "risk_assessment_current", "med_reconciliation", "insurance_verification", "guardian_contact"],
+    "residential_tx": ["tb_screen", "covid_test_48h", "med_reconciliation", "insurance_verification", "psychiatric_eval_current", "no_active_violence_risk"],
+    "residential_stepdown": ["tb_screen", "med_reconciliation", "insurance_verification", "risk_assessment_current"],
+    "sobering": ["vitals_within_12h", "medical_clearance_24h"],
+    "PHP": ["psychiatric_eval_current", "med_reconciliation", "insurance_verification", "risk_assessment_current"],
+    "IOP": ["psychiatric_eval_current", "insurance_verification"],
+    "outpatient": ["insurance_verification"],
+    "peer_respite": ["risk_assessment_current", "no_active_violence_risk"]
+  },
+  "accept_rate_ranges_by_level": {
+    "_basis": "Ranges as specified in the task brief: inpatient 0.4-0.6, residential 0.5-0.7, IOP/OP 0.7-0.9. Extended proportionally to adjacent levels (crisis/ED slightly below inpatient given acuity; peer_respite/sobering near residential range given lower-barrier low-acuity access model).",
+    "ED_psych": [0.3, 0.5],
+    "crisis_stabilization": [0.35, 0.55],
+    "inpatient_psych": [0.4, 0.6],
+    "locked_subacute": [0.4, 0.6],
+    "residential_tx": [0.5, 0.7],
+    "residential_stepdown": [0.5, 0.7],
+    "sobering": [0.6, 0.8],
+    "peer_respite": [0.55, 0.75],
+    "PHP": [0.6, 0.8],
+    "IOP": [0.7, 0.9],
+    "outpatient": [0.7, 0.9]
+  },
+  "wait_days_by_level": {
+    "_basis": "SFDPH's own Residential Care and Treatment Working Group materials describe a step-down/residential bottleneck (patients clinically ready for a lower level of care awaiting placement); modeled here as a 1-4 week (7-28 day) wait band for residential_stepdown and residential_tx, shorter bands for higher-acuity levels that turn over faster, near-zero for outpatient/IOP which are least bed-constrained.",
+    "ED_psych": [0, 0],
+    "crisis_stabilization": [0, 2],
+    "inpatient_psych": [0, 5],
+    "locked_subacute": [3, 14],
+    "residential_tx": [7, 28],
+    "residential_stepdown": [7, 28],
+    "sobering": [0, 0],
+    "peer_respite": [0, 3],
+    "PHP": [0, 5],
+    "IOP": [0, 3],
+    "outpatient": [0, 7]
+  },
+  "occupancy_basis_note": "No accessible DataSF dataset directly reporting real-time psychiatric bed occupancy was found in this pass (see facilities_collection_notes.md); the 90-97% high-occupancy assumption commonly cited for urban psych inpatient units informs the narrow inpatient_psych/locked_subacute wait bands above rather than being stored as a literal field.",
+  "possible_declines_by_level": {
+    "ED_psych": ["no_capacity", "acuity_too_high"],
+    "crisis_stabilization": ["no_capacity", "acuity_too_high", "missing_docs"],
+    "inpatient_psych": ["no_capacity", "missing_docs", "acuity_too_high", "behavioral_exclusion"],
+    "locked_subacute": ["no_capacity", "missing_docs", "behavioral_exclusion"],
+    "residential_tx": ["no_capacity", "out_of_network", "missing_docs", "behavioral_exclusion"],
+    "residential_stepdown": ["no_capacity", "out_of_network", "missing_docs"],
+    "sobering": ["no_capacity", "acuity_too_high"],
+    "peer_respite": ["no_capacity", "behavioral_exclusion"],
+    "PHP": ["out_of_network", "missing_docs", "acuity_too_high"],
+    "IOP": ["out_of_network", "missing_docs"],
+    "outpatient": ["out_of_network", "missing_docs"]
+  },
+  "random_seed": 42
+}

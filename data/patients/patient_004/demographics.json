@@ -1,0 +1,18 @@
+{
+  "id": "patient_004",
+  "synthetic": true,
+  "age": 52,
+  "gender": "female",
+  "insurance": "Medicare/Medi-Cal (dual eligible)",
+  "language": "Cantonese (primary); interpreter used",
+  "housing_status": "housed, lives with adult daughter",
+  "emergency_contact": {
+    "relationship": "daughter",
+    "name": "Wei (synthetic)",
+    "contact_note": "reached and engaged throughout admission"
+  },
+  "medications_home": [
+    "escitalopram 10mg daily",
+    "quetiapine 25mg qHS"
+  ]
+}

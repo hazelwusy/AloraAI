@@ -1,0 +1,17 @@
+{
+  "id": "maria",
+  "synthetic": true,
+  "age": 34,
+  "gender": "female",
+  "insurance": "Medi-Cal",
+  "language": "Spanish (primary); limited English",
+  "housing_status": "unhoused, staying intermittently at a friend's SRO unit",
+  "emergency_contact": {
+    "relationship": "sister",
+    "name": "Rosa (synthetic)",
+    "contact_note": "phone on file, inconsistent reachability per social work note"
+  },
+  "medications_home": [
+    "sertraline 100mg daily (per patient report, last fill date unknown)"
+  ]
+}
