@@ -1,0 +1,15 @@
+{
+  "id": "patient_003",
+  "synthetic": true,
+  "age": 27,
+  "gender": "nonbinary",
+  "insurance": "Medi-Cal",
+  "language": "English",
+  "housing_status": "unhoused",
+  "emergency_contact": {
+    "relationship": "friend",
+    "name": "Jordan (synthetic)",
+    "contact_note": "listed as emergency contact, has not been reached this admission"
+  },
+  "medications_home": []
+}

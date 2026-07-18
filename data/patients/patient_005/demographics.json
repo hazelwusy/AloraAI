@@ -1,0 +1,17 @@
+{
+  "id": "patient_005",
+  "synthetic": true,
+  "age": 45,
+  "gender": "male",
+  "insurance": "private (employer-sponsored)",
+  "language": "English",
+  "housing_status": "housed, lives with spouse",
+  "emergency_contact": {
+    "relationship": "spouse",
+    "name": "Pat (synthetic)",
+    "contact_note": "reachable, present at bedside day 1"
+  },
+  "medications_home": [
+    "fluoxetine 20mg daily"
+  ]
+}

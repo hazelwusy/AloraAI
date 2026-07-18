@@ -48,7 +48,7 @@ def test_reconcile() -> None:
 
 
 def test_readiness() -> None:
-    facilities = {f["id"]: f for f in json.loads((ROOT / "data/facilities.json").read_text())["facilities"]}
+    facilities = {f["id"]: f for f in json.loads((ROOT / "data/facilities_demo.json").read_text())["facilities"]}
     fields = json.loads((ROOT / "data/patients/maria/patient_fields.json").read_text())
     dore = check(facilities["dore"], fields, NOW)
     adu = check(facilities["progress_adu"], fields, NOW)
