@@ -1,0 +1,23 @@
+# OS
+.DS_Store
+
+# Editors
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Env / secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Node (future agent tooling)
+node_modules/
+dist/
+build/
