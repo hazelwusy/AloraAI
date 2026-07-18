@@ -93,3 +93,25 @@ def briefing_for_call(facility_id: str, patient_id: str) -> str:
 def gap_checklist(patient_id: str) -> list[dict]:
     """The nurse-facing gather-list."""
     return _load(PATIENT_GAPS).get(patient_id, [])
+
+
+def memory_block(facility_id: str, patient_id: str) -> str:
+    """Human-readable prior-call memory, fed to the pre-call brief prompt.
+    Same two ledgers as briefing_for_call, phrased for a person, not a bot."""
+    mem = _load(FACILITY_MEM).get(facility_id, {})
+    gaps = [g["question"] for g in _load(PATIENT_GAPS).get(patient_id, [])
+            if g.get("status") == "open"]
+    lines: list[str] = []
+    if mem.get("questions_asked"):
+        lines.append("This facility has asked before: "
+                     + "; ".join(mem["questions_asked"][-6:]))
+    if mem.get("conditions"):
+        lines.append("Conditions they've named for acceptance: "
+                     + "; ".join(mem["conditions"][-3:]))
+    if mem.get("decline_reasons"):
+        last = mem["decline_reasons"][-1]
+        lines.append(f"They last declined for: {last.get('category')} — {last.get('reason')}.")
+    if gaps:
+        lines.append("Open known-unknowns about this patient (no packet answer yet): "
+                     + "; ".join(gaps[-6:]))
+    return "\n".join(f"- {l}" for l in lines) if lines else "- No prior-call history for this facility yet."
