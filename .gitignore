@@ -23,3 +23,8 @@ dist/
 build/
 .venv/
 out/
+
+# Agent tooling / installed skills (local, not product code)
+.agents/
+.claude/
+skills-lock.json
