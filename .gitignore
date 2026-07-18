@@ -26,3 +26,6 @@ build/
 .agents/
 .claude/
 skills-lock.json
+
+# Runtime output
+out/

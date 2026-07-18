@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AloraAI — SF Psych Care Coordination</title>
+<style>
+  :root {
+    --page:#0f1115; --surface:#171a21; --surface2:#1e222b; --ink:#eef0f4; --ink2:#a9adb8;
+    --hairline:#2a2f3a; --accent:#4f8ef7; --ok:#2fae5f; --warn:#e0a52e; --bad:#e05c5c;
+    --stepdown:#2fae5f; --stepup:#e05c5c; --vertical:#8b7ff0; --crisis:#e0a52e;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box} body{margin:0;background:var(--page);color:var(--ink);
+    font:14px/1.5 -apple-system,"Segoe UI",sans-serif}
+  header{display:flex;align-items:baseline;gap:14px;padding:14px 22px;border-bottom:1px solid var(--hairline)}
+  header h1{font-size:17px;margin:0} header .sub{color:var(--ink2);font-size:12px}
+  .badge{font-family:var(--mono);font-size:10.5px;border:1px solid var(--hairline);border-radius:5px;
+    padding:2px 7px;color:var(--ink2)}
+  main{display:grid;grid-template-columns:1.25fr 1fr;gap:16px;padding:16px 22px;max-width:1500px;margin:0 auto}
+  .card{background:var(--surface);border:1px solid var(--hairline);border-radius:12px;padding:16px}
+  .card h2{font-size:13px;margin:0 0 10px;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em}
+  svg{width:100%;height:auto}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--ink2);margin-top:8px}
+  .k{display:inline-block;width:18px;height:3px;border-radius:2px;vertical-align:middle;margin-right:5px}
+  .node circle{fill:var(--surface2);stroke:var(--hairline);stroke-width:1.5;cursor:pointer}
+  .node.active circle{stroke:var(--accent);stroke-width:3}
+  .node text{fill:var(--ink2);font-size:9.5px;pointer-events:none}
+  .edge{fill:none;opacity:.5} .edge.dim{opacity:.12} .edge.hot{opacity:1;stroke-width:3.5}
+  .patient{display:flex;flex-direction:column;gap:8px}
+  .patient .row{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{background:var(--surface2);border:1px solid var(--hairline);border-radius:6px;
+    padding:3px 9px;font-family:var(--mono);font-size:11px}
+  .chip.warn{border-color:var(--warn);color:var(--warn)}
+  button{background:var(--accent);border:0;border-radius:8px;color:#fff;font-weight:600;
+    padding:9px 14px;cursor:pointer;font-size:13px} button:hover{filter:brightness(1.1)}
+  button.ghost{background:transparent;border:1px solid var(--hairline);color:var(--ink)}
+  button:disabled{opacity:.45;cursor:default}
+  .cand{border:1px solid var(--hairline);border-radius:10px;padding:10px 12px;margin-top:8px;
+    display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .cand .why{color:var(--ink2);font-size:12px}
+  .transcript{max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-top:10px}
+  .line{max-width:85%;padding:8px 12px;border-radius:10px;font-size:13px}
+  .line.agent{background:#1d3050;align-self:flex-end}
+  .line.intake{background:var(--surface2);align-self:flex-start}
+  .line .who{font-family:var(--mono);font-size:10px;color:var(--ink2);display:block;margin-bottom:2px}
+  .outcome{border-left:3px solid var(--ok);background:var(--surface2);padding:10px 12px;
+    border-radius:0 8px 8px 0;margin-top:10px;font-size:13px}
+  .outcome.declined{border-color:var(--bad)}
+  .sim-note{font-size:11px;color:var(--ink2);font-family:var(--mono);margin-top:8px}
+  footer{padding:10px 22px;color:var(--ink2);font-size:11px;font-family:var(--mono);
+    border-top:1px solid var(--hairline)}
+</style>
+</head>
+<body>
+<header>
+  <h1>AloraAI</h1>
+  <span class="sub">psychiatric care-transition coordination — human decides, agent does the phone tree</span>
+  <span class="badge" id="conn">connecting…</span>
+</header>
+
+<main>
+  <section class="card">
+    <h2>SF network — referral flows (simulated)</h2>
+    <svg id="map" viewBox="0 0 640 560"></svg>
+    <div class="legend">
+      <span><i class="k" style="background:var(--stepdown)"></i>step-down</span>
+      <span><i class="k" style="background:var(--stepup)"></i>step-up</span>
+      <span><i class="k" style="background:var(--vertical)"></i>vertical</span>
+      <span><i class="k" style="background:var(--crisis)"></i>crisis re-entry</span>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:16px">
+    <div class="card patient">
+      <h2>Patient — demo</h2>
+      <strong id="p-name">Maria G. · 34 · ZSFG inpatient psychiatry, day 4</strong>
+      <div class="row">
+        <span class="chip">Medi-Cal</span><span class="chip">Spanish-preferred</span>
+        <span class="chip">voluntary (5150 lapsed day 2)</span><span class="chip warn">step-down candidate</span>
+      </div>
+      <div class="row" id="find-row">
+        <button id="btn-match">Find step-down placements</button>
+      </div>
+      <div id="candidates"></div>
+    </div>
+
+    <div class="card" id="call-card" style="display:none">
+      <h2>Placement call — <span id="call-fac"></span></h2>
+      <div class="row" style="display:flex;gap:8px">
+        <button id="btn-agent">Authorize agent call</button>
+        <button id="btn-self" class="ghost">I'll call myself (get script)</button>
+      </div>
+      <div class="transcript" id="transcript"></div>
+      <div id="outcome"></div>
+      <div class="sim-note">far end simulated for demo · production: telephony integration, same agent contract</div>
+    </div>
+  </section>
+</main>
+
+<footer>facility directory compiled from public sources · availability, response behavior &amp; flow edges simulated · every agent call is nurse-authorized &amp; logged</footer>
+
+<script>
+const API = location.protocol === "file:" ? "http://localhost:8011" : "";
+const COLORS = {step_down:"var(--stepdown)",step_up:"var(--stepup)",vertical:"var(--vertical)",crisis_reentry:"var(--crisis)"};
+const PATIENT = {patient_id:"maria_demo", direction:"step_down", payer:"medi-cal", language:"es", nurse_name:"J. Alvarez, RN"};
+// demo packet: in the full flow this comes from pipeline.run_pipeline; kept inline so the UI demos standalone
+const PACKET = JSON.stringify({
+  one_liner:"34F, voluntary, day 4 ZSFG inpatient; mood stabilized on current regimen, sleeping 6h, engaging in groups; step-down to crisis-stabilization level sought.",
+  legal_status:"voluntary (5150 expired day 2, not renewed)",
+  medications:"quetiapine 200mg qhs (unchanged x3 days); no PRNs x48h",
+  risk:"no SI since day 1 reassessment; no behavioral incidents; ambulatory, independent ADLs",
+  medical_clearance:"cleared day 3, labs unremarkable",
+  psychosocial:"Medi-Cal; Spanish-preferred; sister in Excelsior is support; housing unstable (staying with sister)",
+  aftercare_needs:"med continuity, Spanish-capable programming, warm handoff to ICM"
+});
+let selected=null, nodePos={};
+
+async function j(url,opts){const r=await fetch(API+url,opts);if(!r.ok)throw new Error(await r.text());return r.json()}
+
+async function drawMap(){
+  const {facilities,edges}=await j("/api/facilities");
+  document.getElementById("conn").textContent="live";
+  const svg=document.getElementById("map"),NS="http://www.w3.org/2000/svg";
+  const cx=320,cy=270,R=205;
+  facilities.forEach((f,i)=>{const a=(i/facilities.length)*2*Math.PI-Math.PI/2;
+    nodePos[f.id]=[cx+R*Math.cos(a),cy+R*Math.sin(a)]});
+  edges.edges.forEach(e=>{
+    const[x1,y1]=nodePos[e.from],[x2,y2]=nodePos[e.to];
+    const mx=(x1+x2)/2+(cy-(y1+y2)/2)*0.25, my=(y1+y2)/2+((x1+x2)/2-cx)*0.25;
+    const p=document.createElementNS(NS,"path");
+    p.setAttribute("d",`M${x1},${y1} Q${mx},${my} ${x2},${y2}`);
+    p.setAttribute("class","edge"); p.dataset.from=e.from; p.dataset.to=e.to;
+    p.setAttribute("stroke",COLORS[e.type]); p.setAttribute("stroke-width",1+e.freq_sim*0.35);
+    svg.appendChild(p)});
+  facilities.forEach(f=>{
+    const[x,y]=nodePos[f.id];
+    const g=document.createElementNS(NS,"g"); g.setAttribute("class","node"); g.id="n-"+f.id;
+    const c=document.createElementNS(NS,"circle");
+    c.setAttribute("cx",x);c.setAttribute("cy",y);c.setAttribute("r",10+f.beds_sim*1.5);
+    const t=document.createElementNS(NS,"text");
+    t.setAttribute("x",x);t.setAttribute("y",y+(y>cy?30:-22));t.setAttribute("text-anchor","middle");
+    f.name.split("(")[0].trim().split(" ").reduce((lines,w)=>{const l=lines[lines.length-1];
+      if((l+" "+w).length>20)lines.push(w);else lines[lines.length-1]=(l+" "+w).trim();return lines},[""])
+      .forEach((ln,k)=>{const ts=document.createElementNS(NS,"tspan");
+        ts.setAttribute("x",x);ts.setAttribute("dy",k?11:0);ts.textContent=ln;t.appendChild(ts)});
+    g.appendChild(c);g.appendChild(t);svg.appendChild(g)});
+}
+
+function highlight(facId){
+  document.querySelectorAll(".edge").forEach(e=>{
+    e.classList.toggle("hot", e.dataset.to===facId&&e.dataset.from==="zsfg_inpatient");
+    e.classList.toggle("dim", !(e.dataset.to===facId||e.dataset.from===facId))});
+  document.querySelectorAll(".node").forEach(n=>n.classList.toggle("active",
+    n.id==="n-"+facId||n.id==="n-zsfg_inpatient"));
+}
+
+document.getElementById("btn-match").onclick=async()=>{
+  const {candidates}=await j("/api/match",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({direction:PATIENT.direction,payer:PATIENT.payer,language:PATIENT.language,exclude:[]})});
+  const el=document.getElementById("candidates"); el.innerHTML="";
+  candidates.slice(0,3).forEach(c=>{
+    const d=document.createElement("div"); d.className="cand";
+    const left=document.createElement("div");
+    const nm=document.createElement("strong"); nm.textContent=c.facility.name;
+    const why=document.createElement("div"); why.className="why"; why.textContent=c.reasons.join(" · ");
+    left.append(nm,why);
+    const b=document.createElement("button"); b.textContent="Select";
+    b.onclick=()=>{selected=c.facility; highlight(c.facility.id);
+      document.getElementById("call-card").style.display="block";
+      document.getElementById("call-fac").textContent=c.facility.name;
+      document.getElementById("transcript").innerHTML=""; document.getElementById("outcome").innerHTML=""};
+    d.append(left,b); el.appendChild(d)});
+};
+
+function addLine(speaker,text,speak){
+  const t=document.getElementById("transcript");
+  const d=document.createElement("div"); d.className="line "+speaker;
+  const w=document.createElement("span"); w.className="who";
+  w.textContent=speaker==="agent"?"ALORA AGENT":"INTAKE";
+  d.append(w,document.createTextNode(text)); t.appendChild(d); t.scrollTop=t.scrollHeight;
+  if(speak&&"speechSynthesis"in window){const u=new SpeechSynthesisUtterance(text);
+    u.rate=1.25; u.pitch=speaker==="agent"?1.0:0.85; speechSynthesis.speak(u)}
+}
+
+document.getElementById("btn-agent").onclick=async()=>{
+  if(!selected)return;
+  document.getElementById("btn-agent").disabled=true;
+  addLine("agent","Dialing "+selected.name+"…",false);
+  try{
+    const res=await j("/api/call",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({...PATIENT,facility_id:selected.id,packet_json:PACKET,mode:"agent"})});
+    document.getElementById("transcript").innerHTML="";
+    for(const line of res.result.transcript){addLine(line.speaker,line.text,true);
+      await new Promise(r=>setTimeout(r,600))}
+    const o=res.result.outcome, box=document.getElementById("outcome");
+    box.innerHTML=""; const div=document.createElement("div");
+    div.className="outcome "+o.outcome;
+    div.textContent=`${o.outcome.toUpperCase()} — ${o.reason}. Next: ${o.next_step_for_nurse}`;
+    box.appendChild(div);
+    if(res.next_candidate){const b=document.createElement("button");
+      b.style.marginTop="8px"; b.textContent="Try next: "+res.next_candidate.facility.name;
+      b.onclick=()=>{selected=res.next_candidate.facility; highlight(selected.id);
+        document.getElementById("call-fac").textContent=selected.name;
+        document.getElementById("btn-agent").disabled=false;
+        document.getElementById("transcript").innerHTML=""; box.innerHTML=""};
+      box.appendChild(b)}
+  }catch(err){addLine("intake","(call failed: "+err.message+")",false)}
+  document.getElementById("btn-agent").disabled=false;
+};
+
+document.getElementById("btn-self").onclick=async()=>{
+  if(!selected)return;
+  const res=await j("/api/call",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({...PATIENT,facility_id:selected.id,packet_json:PACKET,mode:"self"})});
+  document.getElementById("transcript").innerHTML="";
+  addLine("agent","Call script for "+PATIENT.nurse_name+":\n\n"+res.script,false);
+};
+
+drawMap().catch(e=>{document.getElementById("conn").textContent="API offline — start uvicorn"});
+</script>
+</body>
+</html>
