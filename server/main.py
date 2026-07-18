@@ -13,8 +13,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from pipeline.copilot import observe, precall_brief
+from pipeline.directory import load_directory, match_directory
 from pipeline.learning import record_call
-from pipeline.matcher import load_facilities, match
 from pipeline.schemas import CallOutcome, CallResult
 
 ROOT = Path(__file__).parent.parent
@@ -39,24 +39,15 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
-@app.get("/api/facilities")
-def facilities():
-    return {"facilities": load_facilities(),
-            "edges": json.loads((ROOT / "data" / "edges.json").read_text())}
-
-
-@app.post("/api/match")
-def do_match(need: dict):
-    return {"candidates": match(need)}
-
-
 @app.get("/api/referrals")
 def referrals():
     return _state()
 
 
 def _facility(facility_id: str) -> dict:
-    fac = next((f for f in load_facilities() if f["id"] == facility_id), None)
+    """Resolve against the real 74-facility directory — the single knowledge
+    graph the map, matcher, and monitoring agent all share."""
+    fac = next((f for f in load_directory() if f["id"] == facility_id), None)
     if not fac:
         raise HTTPException(404, "unknown facility")
     return fac
@@ -119,9 +110,9 @@ def do_finalize(body: dict):
     nxt = None
     if outcome.outcome == "declined":
         exclude = [r["facility_id"] for r in state["referrals"] if r["patient_id"] == body["patient_id"]]
-        candidates = match({"direction": body.get("direction", "step_down"),
-                            "payer": body.get("payer"), "language": body.get("language"),
-                            "exclude": exclude})
+        candidates = match_directory({"direction": body.get("direction", "step_down"),
+                                      "payer": body.get("payer"), "language": body.get("language"),
+                                      "exclude": exclude})
         nxt = candidates[0] if candidates else None
 
     return {"recorded": True, "next_candidate": nxt}
@@ -132,7 +123,6 @@ def do_finalize(body: dict):
 
 from datetime import datetime as _dt  # noqa: E402
 
-from pipeline.directory import load_directory, match_directory  # noqa: E402
 from pipeline.readiness import check as readiness_check  # noqa: E402
 from pipeline.schemas import DECLINE_ROUTING  # noqa: E402
 
@@ -198,6 +188,33 @@ def list_patients():
     return {"patients": out}
 
 
+_PAYER_MAP = {"medi-cal": "medi-cal", "medicare": "medicare", "private": "private",
+              "uninsured": "uninsured", "county": "county_funded"}
+_LANG_MAP = {"english": "en", "spanish": "es", "cantonese": "zh", "mandarin": "zh", "chinese": "zh"}
+
+
+def _demo_to_need(demo: dict, direction: str) -> dict:
+    ins = str(demo.get("insurance", "")).strip().lower()
+    payer = next((v for k, v in _PAYER_MAP.items() if k in ins), None)
+    lang = _LANG_MAP.get(str(demo.get("language", "")).strip().lower())
+    return {"direction": direction, "payer": payer, "language": lang, "exclude": []}
+
+
+@app.get("/api/recommend/{patient_id}")
+def recommend(patient_id: str, direction: str = "step_down"):
+    """Agentic next-step recommendation for a patient just entering the system:
+    read demographics, rank the real directory by fit, return the top options the
+    case manager should pursue — computed the moment the patient shows up."""
+    demo_path = ROOT / "data" / "patients" / patient_id / "demographics.json"
+    if not demo_path.exists():
+        raise HTTPException(404, "unknown patient")
+    demo = json.loads(demo_path.read_text())
+    need = _demo_to_need(demo, direction)
+    candidates = match_directory(need)
+    return {"patient_id": patient_id, "need": need,
+            "top": candidates[:3], "n_considered": len(candidates)}
+
+
 @app.get("/api/decline-routing")
 def decline_routing():
     return DECLINE_ROUTING
@@ -210,10 +227,9 @@ from pipeline import monitor  # noqa: E402
 
 @app.get("/api/graph")
 def graph():
-    """Real 74-facility directory + referral edges (data/edges_directory.json),
-    the graph the monitoring agent below actually updates. Distinct from the
-    legacy /api/facilities (facilities_demo.json + data/edges.json), which
-    backs the original network-map view and is left untouched."""
+    """The live knowledge graph: real 74-facility directory + referral edges,
+    served from the runtime store the monitoring agent updates (out/, seeded
+    from data/). This is the single graph the map, matcher, and agent share."""
     return {"facilities": monitor.load_facilities(), "edges": monitor.load_edges()}
 
 
@@ -224,9 +240,30 @@ def monitor_pending():
 
 @app.post("/api/monitor/scan")
 def monitor_scan():
-    """Run every registered fetcher (simulated web/phone/EHR-feed checks) and
-    queue anything new for human review — nothing is applied yet."""
-    return {"proposed": monitor.run_scan()}
+    """Run every registered fetcher (simulated web/phone/EHR-feed checks).
+    Confidence-tiered: high-confidence, non-clinical findings are auto-applied
+    to the graph; the rest are queued for human review. Returns both sets."""
+    return monitor.run_scan()
+
+
+@app.get("/api/monitor/reliability")
+def monitor_reliability():
+    """The agent's learned per-source trust weights — how it 'gets better' at
+    deciding what to apply on its own vs escalate to a human."""
+    return {"reliability": monitor.load_reliability()}
+
+
+@app.post("/api/monitor/contribute")
+def monitor_contribute(body: dict):
+    """A case-manager-confirmed institution-level fact from a live call.
+    body = {entity_type?, entity_id, field_path, new_value, source_detail?, confidence?}
+    This is the ONLY path from a call into the graph — the confirmation card is the
+    filter that guarantees what enters is about the facility, never the patient."""
+    return monitor.contribute(
+        entity_type=body.get("entity_type", "facility"),
+        entity_id=body["entity_id"], field_path=body["field_path"],
+        new_value=body["new_value"], source_detail=body.get("source_detail", "confirmed on call"),
+        confidence=body.get("confidence", 0.85))
 
 
 @app.post("/api/monitor/approve/{update_id}")

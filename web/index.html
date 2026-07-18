@@ -23,17 +23,7 @@
     /* referral-flow edge colors, mapped onto the palette */
     --flow-stepdown: #2f7a44; --flow-stepup: #b1362f; --flow-vertical: #1f6f6b; --flow-crisis: #a8690a;
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg:#101817; --surface:#17201f; --surface-2:#1c2725; --text:#e7efed;
-      --text-muted:#a3b5b1; --text-faint:#6f8480; --border:#2a3634; --border-strong:#3b4b48;
-      --accent:#4fbdb6; --accent-strong:#7fd6d0; --accent-tint:#17302e;
-      --success:#6fbf7c; --success-tint:#17301d; --warning:#e0a83e; --warning-tint:#332409;
-      --critical:#e2685f; --critical-tint:#341714; --neutral:#8fa9ae; --neutral-tint:#1b2828;
-      --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px -10px rgba(0,0,0,.55);
-      --flow-stepdown:#6fbf7c; --flow-stepup:#e2685f; --flow-vertical:#4fbdb6; --flow-crisis:#e0a83e;
-    }
-  }
+  /* Light mode is locked on — system dark-mode override intentionally removed. */
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: var(--font-ui);
@@ -45,22 +35,54 @@
   .eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
     color: var(--text-faint); font-weight: 600; }
 
-  /* ---------- App shell: slim rail + main ---------- */
-  .app { display: grid; grid-template-columns: 72px 1fr; min-height: 100vh; }
-  @media (max-width: 820px) { .app { grid-template-columns: 56px 1fr; } }
+  /* ---------- App shell: docked sidebar (desktop) / drawer (mobile) ---------- */
+  .app { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
   .rail { background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column;
-    align-items: center; padding: 16px 0; gap: 3px; position: sticky; top: 0; height: 100vh; }
-  .rail-mark { width: 34px; height: 34px; border-radius: 9px; background: var(--accent); display: flex;
+    align-items: stretch; padding: 16px 12px; gap: 2px; position: sticky; top: 0; height: 100vh;
+    transition: transform .28s cubic-bezier(.4,0,.2,1); }
+  .rail-brand { display: flex; align-items: center; gap: 10px; padding: 4px 8px 18px; }
+  .rail-mark { width: 32px; height: 32px; border-radius: 9px; background: var(--accent); display: flex;
     align-items: center; justify-content: center; color: #fff; font-family: var(--font-mono); font-weight: 700;
-    font-size: 13px; margin-bottom: 16px; flex-shrink: 0; }
-  .rail-step { width: 54px; display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 9px 2px;
-    border-radius: var(--radius-s); background: none; border: none; color: var(--text-faint); cursor: pointer;
-    transition: background .15s, color .15s; }
-  .rail-step svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.6; }
-  .rail-step .rail-label { font-size: 9px; letter-spacing: .02em; text-align: center; line-height: 1.1; }
-  .rail-step:hover { background: var(--surface-2); color: var(--text-muted); }
+    font-size: 13px; flex-shrink: 0; }
+  .rail-brand .name { font-weight: 700; font-size: 16px; letter-spacing: -.02em; }
+  .rail-brand .close { display: none; margin-left: auto; background: none; border: none; color: var(--text-faint);
+    cursor: pointer; font-size: 22px; line-height: 1; padding: 4px 8px; border-radius: var(--radius-s); }
+  .rail-brand .close:hover { background: var(--surface-2); color: var(--text); }
+  .rail-eyebrow { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--text-faint); font-weight: 600; padding: 6px 10px 6px; }
+  .rail-step { display: flex; flex-direction: row; align-items: center; gap: 12px; padding: 10px 11px; width: 100%;
+    border-radius: var(--radius-m); background: none; border: none; color: var(--text-muted); cursor: pointer;
+    text-align: left; transition: background .15s, color .15s; }
+  .rail-step svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.7; flex: none; }
+  .rail-step .rail-label { font-size: 14px; font-weight: 550; letter-spacing: -.01em; }
+  .rail-step .rail-num { margin-left: auto; font-family: var(--font-mono); font-size: 10px; color: var(--text-faint);
+    background: var(--surface-2); border-radius: 999px; padding: 1px 7px; }
+  .rail-step:hover { background: var(--surface-2); color: var(--text); }
   .rail-step.is-active { background: var(--accent-tint); color: var(--accent-strong); }
+  .rail-step.is-active .rail-num { background: var(--accent); color: #fff; }
   .rail-spacer { flex: 1; }
+  .rail-foot { font-size: 11px; color: var(--text-faint); padding: 10px 11px; line-height: 1.45; }
+
+  /* hamburger (mobile) + scrim */
+  .hamburger { display: none; align-items: center; justify-content: center; width: 38px; height: 38px; flex: none;
+    border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text);
+    cursor: pointer; }
+  .hamburger svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+  .scrim { display: none; position: fixed; inset: 0; background: rgba(10,18,17,.42); z-index: 40; opacity: 0;
+    transition: opacity .28s; }
+
+  @media (max-width: 820px) {
+    .app { grid-template-columns: 1fr; }
+    .hamburger { display: inline-flex; }
+    .rail { position: fixed; top: 0; left: 0; z-index: 50; width: 280px; height: 100dvh;
+      transform: translateX(-100%); box-shadow: 0 0 40px -8px rgba(0,0,0,.4); }
+    .rail.open { transform: translateX(0); }
+    .rail-brand .close { display: block; }
+    .scrim.show { display: block; opacity: 1; }
+    .topbar .tagline { display: none; }
+    .topbar { padding: 11px 16px; gap: 10px; }
+    .workspace { padding: 16px 16px 90px; }
+  }
 
   .main { display: flex; flex-direction: column; min-width: 0; }
   .topbar { display: flex; align-items: center; gap: 14px; padding: 13px 24px; border-bottom: 1px solid var(--border);
@@ -86,9 +108,19 @@
     padding: 20px 24px 90px; max-width: 1640px; width: 100%; margin: 0 auto; align-items: start; }
   @media (max-width: 1080px) { .workspace { grid-template-columns: 1fr; } }
 
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-m); box-shadow: var(--shadow); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-m); box-shadow: var(--shadow);
+    transition: box-shadow .2s, border-color .2s; }
   .card-pad { padding: 18px 20px; }
-  .card h2 { font-size: 12px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px; }
+  .card h2 { font-size: 12px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 9px; }
+  /* small numbered chip that ties a card to its workflow step in the rail */
+  .step-tag { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; flex: none;
+    border-radius: 999px; background: var(--accent-tint); color: var(--accent-strong); font-family: var(--font-mono);
+    font-size: 11px; font-weight: 700; }
+  /* empty-state hint — quiet guidance instead of a blank panel */
+  .hint { display: flex; align-items: flex-start; gap: 10px; color: var(--text-faint); font-size: 13px; line-height: 1.5;
+    padding: 13px 15px; border: 1px dashed var(--border-strong); border-radius: var(--radius-m); background: var(--surface-2); }
+  .hint svg { width: 17px; height: 17px; flex: none; margin-top: 1px; stroke: var(--text-faint); fill: none; stroke-width: 1.7; }
 
   /* map is sticky so the glowing node stays in view while you work the call */
   .map-card { position: sticky; top: 78px; }
@@ -104,20 +136,57 @@
   .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 11.5px; color: var(--text-muted); margin-top: 10px; }
   .legend .k { display: inline-block; width: 16px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 5px; }
 
-  /* --- network nodes --- */
-  .node .core { fill: var(--surface); stroke: var(--border-strong); stroke-width: 1.5; cursor: pointer; transition: stroke .2s, fill .2s; }
-  .node text { fill: var(--text-faint); font-size: 9.5px; pointer-events: none; transition: fill .2s; }
+  /* --- knowledge-graph nodes (image-2 style: soft gradient ring + white core) --- */
+  .node { cursor: pointer; }
+  .node .ring { pointer-events: none; opacity: .9; transition: opacity .2s; }
+  .node .core { fill: var(--surface); stroke: #fff; stroke-width: 2; transition: stroke .2s, fill .2s; }
+  .node text { fill: var(--text-muted); font-size: 10px; font-weight: 550; pointer-events: none; transition: fill .2s; }
   .node .halo { fill: var(--accent); opacity: 0; transform-box: fill-box; transform-origin: center; pointer-events: none; }
-  .node:hover .core { stroke: var(--accent); }
-  .node.origin .core { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 2; }
-  .node.origin text { fill: var(--text-muted); font-weight: 600; }
+  .node:hover .core { stroke: var(--accent); } .node:hover text { fill: var(--text); }
+  .node:hover .ring { opacity: 1; }
+  .node.origin .core { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 2.5; }
+  .node.origin text { fill: var(--text); font-weight: 700; }
+  .node.selected .core { stroke: var(--accent); stroke-width: 3; }
   .node.active .core { stroke: var(--accent); stroke-width: 3; fill: var(--accent-tint); }
-  .node.active text { fill: var(--text); font-weight: 650; }
+  .node.active text { fill: var(--text); font-weight: 700; }
   .node.calling .halo { animation: ping 1.9s ease-out infinite; }
+  .node.faded { opacity: .1; transition: opacity .35s; pointer-events: none; }
+  .edge.faded { opacity: .05 !important; }
+  .node.updated .halo { animation: ping 1.3s ease-out; }
+  .node .core { transition: stroke .2s, fill .2s, r .3s; }
+
+  /* floating attribute card, anchored to a node on click (image-2 style).
+     .map-card is position:sticky (declared above), which already establishes the
+     containing block for this absolutely-positioned card — no extra rule needed. */
+  .kg-card { position: absolute; z-index: 8; width: 220px; background: var(--surface); border: 1px solid var(--border-strong);
+    border-radius: var(--radius-m); box-shadow: 0 8px 30px -8px rgba(20,34,32,.35); padding: 0; overflow: hidden;
+    opacity: 0; transform: translateY(4px); pointer-events: none; transition: opacity .16s, transform .16s; }
+  .kg-card.show { opacity: 1; transform: none; pointer-events: auto; }
+  .kg-card .kc-head { padding: 11px 13px 9px; border-bottom: 1px solid var(--border); position: relative; }
+  .kg-card .kc-ribbon { height: 4px; background: linear-gradient(90deg,#f6c99a,#f0a9c0,#c9a8e0); }
+  .kg-card .kc-name { font-weight: 700; font-size: 13.5px; letter-spacing: -.01em; padding-right: 16px; }
+  .kg-card .kc-level { font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); text-transform: uppercase;
+    letter-spacing: .05em; margin-top: 3px; }
+  .kg-card .kc-close { position: absolute; top: 8px; right: 9px; cursor: pointer; color: var(--text-faint); font-size: 16px; line-height: 1; }
+  .kg-card .kc-close:hover { color: var(--text); }
+  .kg-card .kc-body { padding: 6px 13px 11px; }
+  .kg-card .kc-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 5px 0;
+    font-size: 12.5px; border-bottom: 1px dashed var(--border); }
+  .kg-card .kc-row:last-child { border-bottom: none; }
+  .kg-card .kc-k { color: var(--text-faint); }
+  .kg-card .kc-v { font-weight: 650; color: var(--text); font-variant-numeric: tabular-nums; text-align: right; }
+  .kg-card .kc-v.warn { color: var(--warning); } .kg-card .kc-v.ok { color: var(--success); }
+  .kg-card .kc-foot { display: flex; align-items: center; gap: 6px; padding: 8px 13px; background: var(--surface-2);
+    font-size: 10.5px; color: var(--text-faint); font-family: var(--font-mono); border-top: 1px solid var(--border); }
+  .kg-card .kc-foot .fresh-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); flex: none; }
   @keyframes ping { 0% { opacity: .40; transform: scale(1); } 70% { opacity: 0; transform: scale(2.6); } 100% { opacity: 0; transform: scale(2.6); } }
 
-  .edge { fill: none; opacity: .38; transition: opacity .25s; }
+  .edge { fill: none; opacity: .38; transition: opacity .25s; pointer-events: none; }
   .edge.dim { opacity: .1; }
+  .edge.sel { opacity: 1; stroke-width: 3.5; }
+  /* fat transparent hit area so thin edges are easy to click */
+  .edge-hit { fill: none; stroke: transparent; stroke-width: 14; cursor: pointer; }
+  .edge-hit:hover + .edge { opacity: .8; stroke-width: 3; }
   .edge.hot { opacity: 1; stroke-width: 3; stroke-dasharray: 6 5; animation: flow 1s linear infinite; }
   @keyframes flow { to { stroke-dashoffset: -22; } }
 
@@ -125,8 +194,13 @@
   .flow-col { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
 
   /* patient */
-  .patient .name { font-weight: 650; font-size: 15px; }
-  .chips { display: flex; gap: 7px; flex-wrap: wrap; margin: 10px 0 14px; }
+  .case-head { display: flex; align-items: center; gap: 13px; margin-bottom: 2px; }
+  .case-head .avatar { width: 44px; height: 44px; border-radius: 12px; flex: none; background: var(--accent-tint);
+    color: var(--accent-strong); font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center;
+    letter-spacing: .02em; }
+  .patient .name { font-weight: 700; font-size: 17px; letter-spacing: -.01em; }
+  .patient .sub { color: var(--text-muted); font-size: 13px; margin-top: 1px; }
+  .chips { display: flex; gap: 7px; flex-wrap: wrap; margin: 12px 0 14px; }
   .chip { background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px;
     font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
 
@@ -138,8 +212,11 @@
   .btn:active { transform: translateY(1px); }
   .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   .btn-primary:hover { background: var(--accent-strong); border-color: var(--accent-strong); color: #fff; }
-  .btn:disabled { opacity: .5; cursor: not-allowed; border-color: var(--border); color: var(--text-faint); background: var(--surface-2); }
+  .btn-primary { box-shadow: 0 1px 2px rgba(20,34,32,.10), 0 8px 20px -10px rgba(31,111,107,.55); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; border-color: var(--border); color: var(--text-faint); background: var(--surface-2); box-shadow: none; }
   .btn-sm { padding: 6px 11px; font-size: 12.5px; }
+  .btn-block { width: 100%; }
+  @media (max-width: 720px) { .btn { padding: 11px 16px; } .mic-row .btn { flex: 1 1 auto; } }
 
   /* candidate rows */
   .cand { border: 1px solid var(--border); border-radius: var(--radius-m); padding: 12px 14px; margin-top: 9px;
@@ -200,6 +277,26 @@
   .det { border-radius: var(--radius-s); padding: 9px 12px; font-size: 13px; border-left: 3px solid var(--neutral); background: var(--surface-2); }
   .det.accepted { border-color: var(--success); } .det.declined { border-color: var(--critical); } .det.info_requested { border-color: var(--warning); }
   .live-foot { font-size: 11.5px; color: var(--text-faint); padding: 0 18px 16px; max-width: 66ch; }
+  /* contribute-to-graph confirmation (the privacy filter) */
+  .panel.contribute { border-color: var(--accent); background: var(--accent-tint); }
+  .boundary-note { display: flex; gap: 9px; font-size: 12px; line-height: 1.45; color: var(--accent-strong); margin-bottom: 11px; }
+  .boundary-note svg { width: 18px; height: 18px; flex: none; stroke: var(--accent-strong); fill: none; stroke-width: 1.6; margin-top: 1px; }
+  .cf-row { display: flex; align-items: center; gap: 9px; margin: 7px 0; font-size: 13px; }
+  .cf-row label { flex: 1; color: var(--text); }
+  .cf-row input[type=number] { width: 64px; padding: 5px 8px; border: 1px solid var(--border-strong); border-radius: var(--radius-s);
+    font-family: var(--font-mono); font-size: 13px; background: var(--surface); color: var(--text); }
+  .cf-row input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--accent); }
+  .cf-inst { font-family: var(--font-mono); font-size: 9.5px; color: var(--accent-strong); background: var(--surface);
+    border: 1px solid var(--accent); border-radius: 999px; padding: 1px 7px; }
+  .workspace-only { margin-top: 11px; padding: 9px 11px; border-radius: var(--radius-s); background: var(--surface);
+    border: 1px dashed var(--border-strong); font-size: 11.5px; color: var(--text-faint); }
+  .workspace-only b { color: var(--text-muted); }
+  /* two-store boundary labels */
+  .store-tag { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); font-weight: 600; margin-bottom: 8px; }
+  .store-tag .lock { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+  .store-tag.ephemeral { color: var(--warning); }
+  .store-tag.shared { color: var(--accent-strong); }
 
   .stagger { opacity: 0; animation: stagger .3s ease forwards; }
   @keyframes stagger { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
@@ -229,34 +326,93 @@
   .dot-flash span { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); animation: dotflash 1.1s ease-in-out infinite; }
   .dot-flash span:nth-child(2) { animation-delay: .15s; } .dot-flash span:nth-child(3) { animation-delay: .3s; }
   @keyframes dotflash { 0%,60%,100% { opacity: .25; } 30% { opacity: 1; } }
+  /* ---------- system map (Kumu-style full network) ---------- */
+  .sysmap { display: flex; flex-direction: column; height: calc(100vh - 52px); padding: 16px 24px 12px; gap: 12px; }
+  .sysmap[hidden] { display: none; }
+  .sysmap-bar { display: flex; align-items: center; gap: 16px; }
+  .sysmap-title { font-weight: 700; font-size: 16px; letter-spacing: -.01em; display: flex; align-items: center; gap: 8px; }
+  .sysmap-title .eyebrow { margin-left: 6px; }
+  .sysmap-search { margin-left: auto; width: 240px; max-width: 40vw; padding: 8px 12px; border: 1px solid var(--border-strong);
+    border-radius: 999px; font-size: 13px; font-family: inherit; background: var(--surface); color: var(--text); }
+  .sysmap-search:focus { outline: none; border-color: var(--accent); }
+  .sysmap-presets { display: flex; flex-wrap: wrap; gap: 7px; }
+  .preset { padding: 6px 13px; border-radius: 999px; border: 1px solid var(--border-strong); background: var(--surface);
+    font-size: 12.5px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: all .15s; display: inline-flex; align-items: center; gap: 6px; }
+  .preset:hover { border-color: var(--accent); color: var(--accent-strong); }
+  .preset.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .preset .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .preset .cnt { font-family: var(--font-mono); font-size: 10px; opacity: .7; }
+  .sysmap-body { display: grid; grid-template-columns: minmax(0,1fr) 288px; gap: 16px; flex: 1; min-height: 0; }
+  .sysmap-canvas { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-l);
+    box-shadow: var(--shadow); overflow: hidden; }
+  svg#sysmap { width: 100%; height: 100%; display: block; }
+  .sysmap-side { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
+  .sysmap-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-m); padding: 13px 15px; box-shadow: var(--shadow); }
+  .sysmap-panel h4 { font-size: 10.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
+  .legend-list { display: flex; flex-direction: column; gap: 7px; font-size: 12.5px; color: var(--text-muted); }
+  .legend-list .row { display: flex; align-items: center; gap: 9px; }
+  .legend-list .swatch { width: 14px; height: 14px; flex: none; }
+  .legend-list .eline { width: 22px; height: 0; border-top-width: 3px; border-top-style: solid; flex: none; }
+  .reco .rc { border: 1px solid var(--border); border-radius: var(--radius-s); padding: 9px 11px; margin-bottom: 8px; }
+  .reco .rc .pt { font-weight: 650; font-size: 13px; }
+  .reco .rc .to { color: var(--accent-strong); font-weight: 650; font-size: 13px; margin-top: 3px; }
+  .reco .rc .why { color: var(--text-faint); font-size: 11.5px; font-family: var(--font-mono); margin-top: 3px; }
+  /* system-map node/edge visuals */
+  #sysmap .snode { cursor: pointer; }
+  #sysmap .snode .shape { stroke: #fff; stroke-width: 1.5; transition: opacity .2s; }
+  #sysmap .snode text { font-size: 8px; fill: var(--text-faint); pointer-events: none; }
+  #sysmap .snode:hover .shape { stroke: var(--text); stroke-width: 2; }
+  #sysmap .snode.sel .shape { stroke: var(--text); stroke-width: 2.5; }
+  #sysmap .sedge { fill: none; pointer-events: none; transition: opacity .2s; }
+  #sysmap .sedge-hit { fill: none; stroke: transparent; stroke-width: 10; cursor: pointer; }
+  #sysmap.filtered .snode.dim { opacity: .12; }
+  #sysmap.filtered .sedge.dim { opacity: .04 !important; }
+  .hub-label { font-size: 11px; font-weight: 700; fill: var(--text); pointer-events: none; }
+  @media (max-width: 900px) { .sysmap-body { grid-template-columns: 1fr; } .sysmap-side { flex-direction: row; overflow-x: auto; } .sysmap-panel { min-width: 220px; } }
+
   @media (prefers-reduced-motion: reduce) { .agent-log-dot, .dot-flash span, .calling-banner .live-dot { animation: none; opacity: 1; } .node.calling .halo { animation: none; } .edge.hot { animation: none; } .stagger { animation: none; opacity: 1; } }
 </style>
 </head>
 <body>
 <div class="app">
-  <nav class="rail" aria-label="Workflow">
-    <div class="rail-mark">AA</div>
+  <nav class="rail" id="rail" aria-label="Workflow">
+    <div class="rail-brand">
+      <div class="rail-mark">AA</div>
+      <span class="name">Alora</span>
+      <button class="close" id="rail-close" aria-label="Close menu">&times;</button>
+    </div>
+    <div class="rail-eyebrow">Transition workflow</div>
     <button class="rail-step is-active" data-focus="map-card" aria-label="Network">
       <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.4"></circle><circle cx="18" cy="7" r="2.4"></circle><circle cx="12" cy="17" r="2.4"></circle><path d="M7.6 7.2l3.2 8M16.7 9l-3.8 6.4"></path></svg>
-      <span class="rail-label">Network</span>
+      <span class="rail-label">Network</span><span class="rail-num">1</span>
     </button>
     <button class="rail-step" data-focus="patient-card" aria-label="Match">
       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"></circle><path d="M20 20l-4.2-4.2"></path></svg>
-      <span class="rail-label">Match</span>
+      <span class="rail-label">Match</span><span class="rail-num">2</span>
     </button>
     <button class="rail-step" data-focus="brief-card" aria-label="Prep">
       <svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 15.5h7M9 8.5h4"></path></svg>
-      <span class="rail-label">Prep</span>
+      <span class="rail-label">Prep</span><span class="rail-num">3</span>
     </button>
     <button class="rail-step" data-focus="copilot-card" aria-label="Live call">
       <svg viewBox="0 0 24 24"><path d="M6 4h3l1.5 4-2 1.5a11 11 0 005 5l1.5-2 4 1.5V22a2 2 0 01-2 2A16 16 0 014 6a2 2 0 012-2z"></path></svg>
-      <span class="rail-label">Live</span>
+      <span class="rail-label">Live call</span><span class="rail-num">4</span>
+    </button>
+    <div class="rail-eyebrow" style="margin-top:14px">Explore</div>
+    <button class="rail-step" data-view="systemmap" aria-label="System map">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 3.5v3M12 17.5v3M3.5 12h3M17.5 12h3"></path></svg>
+      <span class="rail-label">System map</span>
     </button>
     <div class="rail-spacer"></div>
+    <div class="rail-foot">Alora preps &amp; listens.<br>You run the call.</div>
   </nav>
+  <div class="scrim" id="scrim"></div>
 
   <div class="main">
     <header class="topbar">
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+      </button>
       <span class="brand">AloraAI</span>
       <span class="tagline">the case manager makes the call — Alora preps her, listens, and keeps the board live</span>
       <span class="topbar-spacer"></span>
@@ -266,9 +422,11 @@
     <div class="workspace">
       <!-- LEFT: network map (spatial centerpiece) -->
       <section class="card card-pad map-card">
-        <div class="map-head"><h2>SF psychiatric network</h2><span class="eyebrow">referral flows · simulated</span></div>
+        <div class="store-tag shared"><svg class="lock" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"></path></svg>Knowledge graph · institution-level · shareable across hospitals</div>
+        <div class="map-head"><h2><span class="step-tag">1</span>SF psychiatric knowledge graph</h2><span class="eyebrow">click a node or edge · agent-monitored</span></div>
         <div class="calling-banner" id="calling-banner"><span class="live-dot"></span><span id="calling-text">On call</span></div>
         <svg id="map" viewBox="0 0 640 560" aria-label="Facility network"></svg>
+        <div class="kg-card" id="kg-card"></div>
         <div class="legend">
           <span><i class="k" style="background:var(--flow-stepdown)"></i>step-down</span>
           <span><i class="k" style="background:var(--flow-stepup)"></i>step-up</span>
@@ -279,11 +437,12 @@
 
       <!-- RIGHT: flow column — live conversation rises to the top when a call starts -->
       <div class="flow-col">
+        <div class="store-tag ephemeral"><svg class="lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 018 0v3"></path></svg>Patient workspace · ephemeral · this placement only, per hospital retention</div>
 
         <!-- LIVE CO-PILOT (top-right, prominent during a call) -->
         <section class="card live-card" id="copilot-card" style="display:none">
           <div class="live-head">
-            <h2>Live call</h2><span class="fac" id="cop-fac"></span>
+            <h2><span class="step-tag">4</span>Live call</h2><span class="fac" id="cop-fac"></span>
             <span class="live-head-spacer"></span>
             <span class="badge" id="mic-state">idle</span>
           </div>
@@ -304,31 +463,79 @@
               <div class="panel" id="p-gaps" style="display:none"><h4>Can't answer — gather</h4><ul class="gaps" id="gaps"></ul></div>
               <div class="panel" id="p-flags" style="display:none"><h4>Integrity check</h4><div id="flags"></div></div>
               <div class="panel" id="p-det" style="display:none"><h4>Outcome forming</h4><div id="det-outcome"></div></div>
+              <div class="panel contribute" id="p-contribute" style="display:none">
+                <h4>Contribute to the knowledge graph</h4>
+                <div class="boundary-note"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"></path><path d="M9.5 12l1.8 1.8 3.5-3.6"></path></svg>
+                  <span>Only <b>facility-level facts</b> cross into the graph. This patient's name, clinical detail, and the transcript stay in the workspace — never shared.</span></div>
+                <div id="contribute-fields"></div>
+                <div class="workspace-only" id="workspace-only"></div>
+                <div style="display:flex;gap:8px;margin-top:12px">
+                  <button class="btn btn-primary btn-sm" id="btn-confirm-contribute">Confirm &amp; record</button>
+                  <button class="btn btn-sm" id="btn-record-only">Record outcome only</button>
+                </div>
+              </div>
             </div>
           </div>
-          <p class="live-foot">Alora never speaks on the line. It listens, grounds every answer in the approved packet, and flags any oversell. You decide and you talk.</p>
+          <p class="live-foot">Alora never speaks on the line. It listens, grounds every answer in the approved packet, and flags any oversell. You decide and you talk. <b>Two stores, one boundary:</b> the patient workspace is ephemeral (this placement only, per hospital retention); the knowledge graph holds institution-level facts only.</p>
         </section>
 
         <!-- PRE-CALL BRIEF -->
         <section class="card card-pad brief" id="brief-card" style="display:none">
-          <div class="map-head" style="margin-bottom:2px"><h2>Pre-call brief</h2><span class="fac eyebrow" id="brief-fac" style="color:var(--text-muted)"></span></div>
+          <div class="map-head" style="margin-bottom:2px"><h2><span class="step-tag">3</span>Pre-call brief</h2><span class="fac eyebrow" id="brief-fac" style="color:var(--text-muted)"></span></div>
           <div id="brief-body"><span class="eyebrow">preparing…</span></div>
           <button class="btn btn-primary" id="btn-start-call" style="margin-top:14px;display:none">Start live call · Alora listens →</button>
         </section>
 
         <!-- PATIENT + MATCH -->
-        <section class="card card-pad patient">
-          <h2>Patient — demo</h2>
-          <div class="name">Maria G. · 34 · ZSFG inpatient psychiatry, day 4</div>
+        <section class="card card-pad patient" id="patient-card">
+          <h2><span class="step-tag">2</span>Patient &amp; match</h2>
+          <div class="case-head">
+            <div class="avatar">MG</div>
+            <div>
+              <div class="name">Maria G.</div>
+              <div class="sub">34 · ZSFG inpatient psychiatry · <strong>day 4</strong></div>
+            </div>
+          </div>
           <div class="chips">
             <span class="chip">Medi-Cal</span><span class="chip">Spanish-preferred</span>
             <span class="chip">voluntary · 5150 lapsed day 2</span><span class="chip">step-down candidate</span>
           </div>
-          <button class="btn btn-primary" id="btn-match">Find step-down placements</button>
-          <div id="candidates"></div>
+          <button class="btn btn-primary btn-block" id="btn-match">Find step-down placements</button>
+          <div id="candidates"><div class="hint" id="cand-hint"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg><span>Run a match to see the top step-down placements, ranked by fit. Pick one to have Alora prep your call.</span></div></div>
         </section>
       </div>
     </div>
+
+    <!-- SYSTEM MAP (Kumu-style full network) -->
+    <section class="sysmap" id="systemmap-view" hidden>
+      <div class="sysmap-bar">
+        <div class="sysmap-title"><span class="step-tag">◎</span> SF behavioral-health system map
+          <span class="eyebrow" id="sysmap-count"></span></div>
+        <input class="sysmap-search" id="sysmap-search" placeholder="Search facilities…" />
+      </div>
+      <div class="sysmap-presets" id="sysmap-presets"></div>
+      <div class="sysmap-body">
+        <div class="sysmap-canvas">
+          <svg id="sysmap" viewBox="0 0 1000 760" aria-label="SF behavioral-health system map"></svg>
+          <div class="kg-card" id="sys-card"></div>
+        </div>
+        <aside class="sysmap-side">
+          <div class="sysmap-panel">
+            <h4>Legend — facility type</h4>
+            <div id="sysmap-legend-nodes" class="legend-list"></div>
+          </div>
+          <div class="sysmap-panel">
+            <h4>Legend — referral edges</h4>
+            <div id="sysmap-legend-edges" class="legend-list"></div>
+          </div>
+          <div class="sysmap-panel reco">
+            <h4>New patients — Alora's next-step picks</h4>
+            <div class="eyebrow" style="margin-bottom:8px">agentic · ranked the moment they enter</div>
+            <div id="reco-list"><span class="dot-flash"><span></span><span></span><span></span></span></div>
+          </div>
+        </aside>
+      </div>
+    </section>
   </div>
 </div>
 
@@ -344,8 +551,8 @@
 <div id="toast-host"></div>
 
 <script>
-const API = location.protocol === "file:" ? "http://localhost:8011" : "";
-const ORIGIN_ID = "zsfg_inpatient";
+const API = location.protocol === "file:" ? "http://localhost:8000" : "";
+const ORIGIN_ID = "zsfg-pes";   // real-directory id; the ZSFG psychiatric hub the referrals flow from
 const FLOW = {step_down:"var(--flow-stepdown)",step_up:"var(--flow-stepup)",vertical:"var(--flow-vertical)",crisis_reentry:"var(--flow-crisis)"};
 const PATIENT = {patient_id:"maria_demo", direction:"step_down", payer:"medi-cal", language:"es", nurse_name:"J. Alvarez, RN"};
 const PACKET = JSON.stringify({
@@ -387,40 +594,223 @@ function logActivity(agent,text){
 document.getElementById("agent-log-head").onclick=()=>document.getElementById("agent-log").classList.toggle("is-open");
 
 function toast(msg){const h=document.getElementById("toast-host");const t=document.createElement("div");t.className="toast";t.textContent=msg;h.appendChild(t);setTimeout(()=>t.remove(),4000)}
+/* ---------- responsive drawer (Claude-style: hamburger top-left) ---------- */
+const rail=document.getElementById("rail"), scrim=document.getElementById("scrim"), hamburger=document.getElementById("hamburger");
+function openDrawer(){rail.classList.add("open");scrim.classList.add("show");hamburger.setAttribute("aria-expanded","true")}
+function closeDrawer(){rail.classList.remove("open");scrim.classList.remove("show");hamburger.setAttribute("aria-expanded","false")}
+hamburger.onclick=()=>rail.classList.contains("open")?closeDrawer():openDrawer();
+scrim.onclick=closeDrawer;
+document.getElementById("rail-close").onclick=closeDrawer;
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDrawer()});
+
 document.querySelectorAll(".rail-step").forEach(b=>b.onclick=()=>{
   document.querySelectorAll(".rail-step").forEach(x=>x.classList.remove("is-active")); b.classList.add("is-active");
   const el=document.getElementById(b.dataset.focus); if(el&&el.style.display!=="none")el.scrollIntoView({behavior:"smooth",block:"start"});
+  if(window.matchMedia("(max-width: 820px)").matches) closeDrawer();
 });
 
-/* ---------- network map ---------- */
+/* ---------- knowledge graph (real directory, image-2 style) ---------- */
 const NS="http://www.w3.org/2000/svg";
+let FAC_BY_ID={};   // id -> facility record, so the attribute card can read live KG fields
+let EDGE_BY_KEY={}; // "from|to" -> edge record, for the edge attribute card
+
+function svgDefs(){
+  const defs=document.createElementNS(NS,"defs");
+  defs.innerHTML=`<linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f6c99a"/><stop offset="0.5" stop-color="#f0a9c0"/><stop offset="1" stop-color="#c9a8e0"/>
+    </linearGradient>
+    <linearGradient id="ringGradOrigin" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7fd6d0"/><stop offset="1" stop-color="#1f6f6b"/>
+    </linearGradient>`;
+  return defs;
+}
+
 async function drawMap(){
-  const {facilities,edges}=await j("/api/facilities");
+  let {facilities,edges}=await j("/api/graph");   // the real KG the monitoring agent maintains
   document.getElementById("conn").textContent="live"; document.getElementById("conn").className="badge live";
-  const svg=document.getElementById("map"), cx=320,cy=270,R=205;
-  facilities.forEach((f,i)=>{const a=(i/facilities.length)*2*Math.PI-Math.PI/2; nodePos[f.id]=[cx+R*Math.cos(a),cy+R*Math.sin(a)]});
-  edges.edges.forEach(e=>{
+  FAC_BY_ID={}; facilities.forEach(f=>FAC_BY_ID[f.id]=f);
+  EDGE_BY_KEY={};
+  // Network page = a small curated neighborhood: origin + its top referral
+  // partners. The full SF network lives in the System-map view; here we keep it
+  // legible and call-focused.
+  const origEdges=(edges.edges||[]).filter(e=>e.from===ORIGIN_ID||e.to===ORIGIN_ID);
+  const partners=[...new Set(origEdges
+    .sort((a,b)=>(b.freq_sim||0)-(a.freq_sim||0))
+    .map(e=>e.from===ORIGIN_ID?e.to:e.from))].slice(0,7);
+  const shown=new Set([ORIGIN_ID, ...partners]);
+  const allEdges=(edges.edges||[]).filter(e=>shown.has(e.from)&&shown.has(e.to));
+  edges={edges:allEdges};
+  const nodes=facilities.filter(f=>shown.has(f.id));
+  const svg=document.getElementById("map"); svg.innerHTML=""; svg.appendChild(svgDefs());
+  const cx=320,cy=270,R=215; nodePos={};
+  // origin sits in the center; everyone else on the ring around it
+  const others=nodes.filter(f=>f.id!==ORIGIN_ID);
+  nodePos[ORIGIN_ID]=[cx,cy];
+  others.forEach((f,i)=>{const a=(i/others.length)*2*Math.PI-Math.PI/2; nodePos[f.id]=[cx+R*Math.cos(a),cy+R*Math.sin(a)]});
+
+  (edges.edges||[]).forEach(e=>{
     if(!nodePos[e.from]||!nodePos[e.to])return;
+    const key=e.from+"|"+e.to; EDGE_BY_KEY[key]=e;
     const[x1,y1]=nodePos[e.from],[x2,y2]=nodePos[e.to];
-    const mx=(x1+x2)/2+(cy-(y1+y2)/2)*0.25, my=(y1+y2)/2+((x1+x2)/2-cx)*0.25;
+    const mx=(x1+x2)/2+(cy-(y1+y2)/2)*0.18, my=(y1+y2)/2+((x1+x2)/2-cx)*0.18;
+    const d=`M${x1},${y1} Q${mx},${my} ${x2},${y2}`;
+    // fat invisible hit path so the thin edge is easy to click
+    const hit=document.createElementNS(NS,"path");
+    hit.setAttribute("d",d); hit.setAttribute("class","edge-hit"); hit.dataset.key=key;
+    hit.addEventListener("click",ev=>{ev.stopPropagation();showEdgeCard(key)});
     const p=document.createElementNS(NS,"path");
-    p.setAttribute("d",`M${x1},${y1} Q${mx},${my} ${x2},${y2}`);
-    p.setAttribute("class","edge"); p.dataset.from=e.from; p.dataset.to=e.to;
-    p.setAttribute("stroke",FLOW[e.type]||"var(--border-strong)"); p.setAttribute("stroke-width",1+ (e.freq_sim||1)*0.35);
-    svg.appendChild(p)});
-  facilities.forEach(f=>{
-    const[x,y]=nodePos[f.id], r=10+(f.beds_sim||2)*1.5;
-    const g=document.createElementNS(NS,"g"); g.setAttribute("class","node"+(f.id===ORIGIN_ID?" origin":"")); g.id="n-"+f.id;
-    const halo=document.createElementNS(NS,"circle"); halo.setAttribute("class","halo");
-    halo.setAttribute("cx",x); halo.setAttribute("cy",y); halo.setAttribute("r",r);
-    const c=document.createElementNS(NS,"circle"); c.setAttribute("class","core");
-    c.setAttribute("cx",x); c.setAttribute("cy",y); c.setAttribute("r",r);
-    const t=document.createElementNS(NS,"text");
-    t.setAttribute("x",x); t.setAttribute("y",y+(y>cy?r+14:-(r+6))); t.setAttribute("text-anchor","middle");
-    (f.name||f.id).split("(")[0].trim().split(" ").reduce((lines,w)=>{const l=lines[lines.length-1];
-      if((l+" "+w).length>20)lines.push(w);else lines[lines.length-1]=(l+" "+w).trim();return lines},[""])
-      .forEach((ln,k)=>{const ts=document.createElementNS(NS,"tspan");ts.setAttribute("x",x);ts.setAttribute("dy",k?11:0);ts.textContent=ln;t.appendChild(ts)});
-    g.append(halo,c,t); svg.appendChild(g)});
+    p.setAttribute("d",d);
+    p.setAttribute("class","edge"); p.dataset.from=e.from; p.dataset.to=e.to; p.dataset.key=key;
+    p.setAttribute("stroke",FLOW[e.type]||"var(--border-strong)"); p.setAttribute("stroke-width",1+(e.freq_sim||1)*0.3);
+    svg.append(hit,p)});
+
+  nodes.forEach(f=>{ const[x,y]=nodePos[f.id]; drawNode(f,x,y,f.id===ORIGIN_ID); });
+  logActivity("Knowledge graph",`Loaded ${nodes.length} facilities · ${(edges.edges||[]).length} referral edges (curated view)`);
+}
+
+const MAP_CY=270;
+function drawNode(f,x,y,isOrigin){
+  const svg=document.getElementById("map");
+  const beds=f?.simulated?.availability?.available_beds;
+  const r=isOrigin?22:16+(typeof beds==="number"?Math.min(beds,6):1)*1.1;
+  const g=document.createElementNS(NS,"g"); g.setAttribute("class","node"+(isOrigin?" origin":"")); g.id="n-"+f.id;
+  const halo=document.createElementNS(NS,"circle"); halo.setAttribute("class","halo");
+  halo.setAttribute("cx",x); halo.setAttribute("cy",y); halo.setAttribute("r",r);
+  const ring=document.createElementNS(NS,"circle"); ring.setAttribute("class","ring");
+  ring.setAttribute("cx",x); ring.setAttribute("cy",y); ring.setAttribute("r",r+4);
+  ring.setAttribute("fill",isOrigin?"url(#ringGradOrigin)":"url(#ringGrad)");
+  const c=document.createElementNS(NS,"circle"); c.setAttribute("class","core");
+  c.setAttribute("cx",x); c.setAttribute("cy",y); c.setAttribute("r",r);
+  const t=document.createElementNS(NS,"text");
+  t.setAttribute("x",x); t.setAttribute("y",y+(y>MAP_CY?r+15:-(r+8))); t.setAttribute("text-anchor","middle");
+  (f.name||f.id).replace(/\(.*?\)/g,"").split("-")[0].trim().split(" ").reduce((lines,w)=>{const l=lines[lines.length-1];
+    if((l+" "+w).length>18)lines.push(w);else lines[lines.length-1]=(l+" "+w).trim();return lines},[""])
+    .slice(0,2).forEach((ln,k)=>{const ts=document.createElementNS(NS,"tspan");ts.setAttribute("x",x);ts.setAttribute("dy",k?11:0);ts.textContent=ln;t.appendChild(ts)});
+  g.append(halo,ring,c,t);
+  g.addEventListener("click",ev=>{ev.stopPropagation();showKgCard(f.id)});
+  svg.appendChild(g);
+  return g;
+}
+/* ensure a called facility that isn't in the curated neighborhood still appears,
+   so the call can focus on origin ↔ this facility */
+function ensureNodeDrawn(fac){
+  if(nodePos[fac.id]) return;
+  FAC_BY_ID[fac.id]=FAC_BY_ID[fac.id]||fac;
+  const[ox,oy]=nodePos[ORIGIN_ID]||[320,270];
+  nodePos[fac.id]=[ox+150, oy-150];   // upper-right of origin
+  const g=drawNode(fac, ox+150, oy-150, false); g.dataset.temp="1";
+}
+
+/* image-2 style attribute card, anchored beside the clicked node */
+function fmtDate(s){ if(!s)return "—"; const d=new Date(s); return isNaN(d)?s:`${d.getMonth()+1}/${d.getDate()}`; }
+/* place the popover beside a node/edge, flipping to whichever side has room so
+   it visually connects to what was clicked (coords are svg viewBox units) */
+function placeCard(svg, card, pos){
+  const rect=svg.getBoundingClientRect(), vb=svg.viewBox.baseVal;
+  if(!pos){ card.classList.add("show"); return; }
+  const px=pos[0]/vb.width*rect.width, py=pos[1]/vb.height*rect.height;
+  const W=222;
+  let left = px < rect.width/2 ? px+18 : px-W-10;   // flip to the roomy side
+  left = Math.max(6, Math.min(left, rect.width-6));
+  const top = Math.max(6, py-26);
+  // <svg> has no offsetLeft/offsetTop; derive its offset within the positioned
+  // parent (.map-card) from bounding rects instead
+  const parent=card.offsetParent||svg.parentElement, prect=parent.getBoundingClientRect();
+  card.style.left=(rect.left-prect.left+left)+"px";
+  card.style.top=(rect.top-prect.top+top)+"px";
+  card.classList.add("show");
+}
+function cardRowsHTML(rows){return rows.map(([k,v,cls])=>`<div class="kc-row"><span class="kc-k">${esc(k)}</span><span class="kc-v ${cls||""}">${esc(v)}</span></div>`).join("")}
+function facilityCardHTML(f){
+  const av=f.simulated?.availability||{}, db=f.simulated?.decline_behavior||{};
+  const beds=av.available_beds, wait=av.estimated_wait_days, ar=db.accept_rate, rt=db.median_response_min_sim;
+  const rows=[
+    ["Available beds", beds==null?"unknown":beds, beds!=null&&beds<=0?"warn":(beds>0?"ok":"")],
+    ["Est. wait", wait==null?"—":(wait+"d"), wait!=null&&wait>=14?"warn":""],
+    ["Accept rate", ar==null?"—":Math.round(ar*100)+"%", ar!=null&&ar<0.4?"warn":(ar>=0.6?"ok":"")],
+    ["Response time", rt==null?"—":rt+" min", ""],
+    ["Staff on shift", f.simulated?.staff_on_shift ?? "—", ""],
+    ["Capacity", f.simulated?.capacity_pct!=null?f.simulated.capacity_pct+"%":"—", ""],
+    ["Languages", (f.languages||[]).slice(0,3).join(", ")||"—", ""],
+  ];
+  return `<div class="kc-ribbon"></div>
+    <div class="kc-head"><div class="kc-name">${esc(f.name)}</div>
+      <div class="kc-level">${esc((f.level_of_care||"").replace(/_/g," "))}</div>
+      <span class="kc-close" id="kc-close">&times;</span></div>
+    <div class="kc-body">${cardRowsHTML(rows)}</div>
+    <div class="kc-foot"><span class="fresh-dot"></span>updated ${esc(fmtDate(av.last_updated||f.verified_date))} · agent-monitored</div>`;
+}
+function showKgCard(id){
+  const f=FAC_BY_ID[id]; if(!f)return;
+  document.querySelectorAll(".node").forEach(n=>n.classList.toggle("selected",n.id==="n-"+id));
+  const card=document.getElementById("kg-card");
+  card.innerHTML=facilityCardHTML(f);
+  card.querySelector("#kc-close").onclick=e=>{e.stopPropagation();hideKgCard()};
+  placeCard(document.getElementById("map"), card, id ? nodePos[id] : null);
+}
+function hideKgCard(){const c=document.getElementById("kg-card");if(c){c.classList.remove("show");
+  document.querySelectorAll(".node.selected").forEach(n=>n.classList.remove("selected"));
+  document.querySelectorAll(".edge.sel").forEach(e=>e.classList.remove("sel"))}}
+document.getElementById("map").addEventListener("click",hideKgCard);
+
+const EDGE_TYPE_LABEL={step_down:"Step-down",step_up:"Step-up",vertical:"Vertical",crisis_reentry:"Crisis re-entry"};
+function edgeCardHTML(e){
+  const sim=e.simulated||{};
+  const ar=sim.accept_rate_observed, rt=sim.avg_response_time_min_observed;
+  const rows=[
+    ["Referral type", EDGE_TYPE_LABEL[e.type]||e.type||"—", ""],
+    ["Accept rate", ar==null?"—":Math.round(ar*100)+"%", ar!=null&&ar<0.4?"warn":(ar>=0.6?"ok":"")],
+    ["Avg response", rt==null?"—":rt+" min", rt!=null&&rt>90?"warn":""],
+    ["Referral volume", e.freq_sim!=null?e.freq_sim+"/mo (sim)":"—", ""],
+    ["Data source", sim.source||"—", ""],
+  ];
+  const fromN=(FAC_BY_ID[e.from]?.name||e.from).split("(")[0].trim();
+  const toN=(FAC_BY_ID[e.to]?.name||e.to).split("(")[0].trim();
+  return `<div class="kc-ribbon"></div>
+    <div class="kc-head"><div class="kc-name">${esc(fromN)} → ${esc(toN)}</div>
+      <div class="kc-level">referral edge</div>
+      <span class="kc-close" id="kc-close">&times;</span></div>
+    <div class="kc-body">${cardRowsHTML(rows)}</div>
+    <div class="kc-foot"><span class="fresh-dot"></span>updated ${esc(fmtDate(sim.last_updated))} · agent-monitored</div>`;
+}
+/* edge attribute card — referral relationship data the agent also monitors */
+function showEdgeCard(key){
+  const e=EDGE_BY_KEY[key]; if(!e)return;
+  document.querySelectorAll(".edge.sel").forEach(x=>x.classList.remove("sel"));
+  document.querySelectorAll(".node.selected").forEach(n=>n.classList.remove("selected"));
+  const path=document.querySelector(`.edge[data-key="${key}"]`); if(path)path.classList.add("sel");
+  const card=document.getElementById("kg-card");
+  card.innerHTML=edgeCardHTML(e);
+  card.querySelector("#kc-close").onclick=ev=>{ev.stopPropagation();hideKgCard()};
+  // anchor at the edge midpoint
+  const[x1,y1]=nodePos[e.from]||[0,0],[x2,y2]=nodePos[e.to]||[0,0];
+  placeCard(document.getElementById("map"), card, [(x1+x2)/2, (y1+y2)/2]);
+}
+
+/* ---------- KG monitoring agent → activity log (no panel, just traceable log) ---------- */
+function prettyField(p){return String(p||"").replace(/^simulated\./,"").replace(/\.observed$/,"").replace(/[._]/g," ").replace(/\bpct\b/,"%").replace(/\bsim\b/,"").trim();}
+function entityName(u){
+  if(u.entity_type==="edge"){const[a,b]=String(u.entity_id).split("|");
+    return (FAC_BY_ID[a]?.name||a).split("(")[0].trim()+" → "+(FAC_BY_ID[b]?.name||b).split("(")[0].trim();}
+  return (FAC_BY_ID[u.entity_id]?.name||u.entity_id).split("(")[0].trim();
+}
+function pulseNode(id){ const g=document.getElementById("n-"+id); if(!g)return;
+  g.classList.remove("updated"); void g.getBBox(); g.classList.add("updated");
+  setTimeout(()=>g.classList.remove("updated"),1400); }
+async function runMonitorScan(reason){
+  let res; try{ res=await j("/api/monitor/scan",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"}); }
+  catch(e){ return; }
+  const auto=res.auto_applied||[], queued=res.queued||[];
+  auto.forEach(u=>logActivity("KG agent",
+    `auto-updated ${entityName(u)} · ${prettyField(u.field_path)} ${u.old_value??"–"}→${u.new_value??"–"} (conf ${Math.round((u.effective_confidence||0)*100)}%, ${u.source_type})`));
+  queued.forEach(u=>logActivity("KG agent",
+    `flagged for review · ${entityName(u)} · ${prettyField(u.field_path)} ${u.old_value??"–"}→${u.new_value??"–"} (${u.source_type})`));
+  if(!auto.length&&!queued.length){ if(reason!=="tick")logActivity("KG agent","network scan · no new changes"); }
+  else { try{ const {facilities}=await j("/api/graph"); facilities.forEach(f=>FAC_BY_ID[f.id]=f); }catch(e){} }  // refresh card data in place
+  // dynamic feel: pulse any updated facility that's visible on the Network graph
+  [...auto,...queued].forEach(u=>pulseNode(u.entity_type==="edge"?String(u.entity_id).split("|")[1]:u.entity_id));
+  if(auto.length||queued.length)
+    toast(`KG agent: ${auto.length} auto-applied · ${queued.length} queued for review`);
 }
 
 /* a synthetic animated connector origin→called facility, so the referral flow
@@ -448,27 +838,39 @@ function highlight(facId, calling){
     const on = n.id==="n-"+facId || n.id==="n-"+ORIGIN_ID;
     n.classList.toggle("active", on);
     n.classList.toggle("calling", !!calling && n.id==="n-"+facId);
+    // during a call, fade everything except the two facilities on the line
+    n.classList.toggle("faded", !!calling && !on);
+  });
+  // fade non-connecting edges during a call
+  document.querySelectorAll(".edge,.edge-hit").forEach(e=>{
+    if(e.id==="live-flow")return;
+    const rel = (e.dataset.to===facId&&e.dataset.from===ORIGIN_ID)||(e.dataset.from===facId&&e.dataset.to===ORIGIN_ID);
+    e.classList.toggle("faded", !!calling && !rel);
   });
   setLiveFlow(calling ? facId : null);
 }
-function clearMap(){ document.querySelectorAll(".edge").forEach(e=>e.classList.remove("hot","dim"));
-  document.querySelectorAll(".node").forEach(n=>n.classList.remove("active","calling")); setLiveFlow(null); }
+function clearMap(){ document.querySelectorAll(".edge,.edge-hit").forEach(e=>e.classList.remove("hot","dim","faded"));
+  document.querySelectorAll(".node").forEach(n=>n.classList.remove("active","calling","faded")); setLiveFlow(null); }
 
 /* ---------- match + select ---------- */
 document.getElementById("btn-match").onclick=async()=>{
+  const btn=document.getElementById("btn-match"); btn.disabled=true;
   logActivity("Matcher","Ranking step-down facilities · Medi-Cal · Spanish");
-  const {candidates}=await j("/api/match",{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({direction:PATIENT.direction,payer:PATIENT.payer,language:PATIENT.language,exclude:[]})});
-  const el=document.getElementById("candidates"); el.innerHTML="";
-  candidates.slice(0,3).forEach(c=>{
-    const d=document.createElement("div"); d.className="cand";
-    const left=document.createElement("div");
-    left.innerHTML=`<div class="nm">${esc(c.facility.name)}</div><div class="why">${esc(c.reasons.join(" · "))}</div>`;
-    const b=document.createElement("button"); b.className="btn btn-sm"; b.textContent="Prep call";
-    b.onclick=()=>selectFacility(c.facility);
-    d.append(left,b); el.appendChild(d);
-  });
-  logActivity("Matcher",`${candidates.length} candidates · top: ${candidates[0]?.facility.name||"none"}`);
+  try{
+    const {candidates}=await j("/api/match-directory",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({direction:PATIENT.direction,payer:PATIENT.payer,language:PATIENT.language,exclude:[]})});
+    const el=document.getElementById("candidates"); el.innerHTML="";
+    candidates.slice(0,3).forEach(c=>{
+      const d=document.createElement("div"); d.className="cand";
+      const left=document.createElement("div");
+      left.innerHTML=`<div class="nm">${esc(c.facility.name)}</div><div class="why">${esc(c.reasons.join(" · "))}</div>`;
+      const b=document.createElement("button"); b.className="btn btn-sm"; b.textContent="Prep call";
+      b.onclick=()=>selectFacility(c.facility);
+      d.append(left,b); el.appendChild(d);
+    });
+    logActivity("Matcher",`${candidates.length} candidates · top: ${candidates[0]?.facility.name||"none"}`);
+  }catch(e){ toast("Match failed: "+e.message); logActivity("Matcher","match failed"); }
+  finally{ btn.disabled=false; }
 };
 
 async function selectFacility(fac){
@@ -514,7 +916,8 @@ document.getElementById("btn-start-call").onclick=()=>{
   const box=document.getElementById("live-transcript"); box.innerHTML='<span class="placeholder">Put the phone on speaker and hit Listen — or Play demo call.</span>'; delete box.dataset.started;
   document.querySelectorAll("#cop-panels .panel").forEach(p=>{if(p.id!=="p-check")p.style.display="none"});
   renderState(EMPTY_STATE);
-  highlight(selected.id, true);   // the node lights up + pulses: we're calling this hospital
+  ensureNodeDrawn(selected);       // make sure the called facility is on the map, even if outside the curated set
+  highlight(selected.id, true);   // fade everyone else; light up + pulse origin ↔ this hospital
   const banner=document.getElementById("calling-banner"); banner.classList.add("on");
   document.getElementById("calling-text").textContent="On call · "+selected.name;
   document.querySelector('.rail-step[data-focus="copilot-card"]').click();
@@ -543,7 +946,7 @@ async function runObserve(){
       body:JSON.stringify({patient_id:PATIENT.patient_id,facility_id:selected.id,packet_json:PACKET,transcript:transcriptText})});
     renderState(state);
     const g=(state.open_gaps||[]).length, f=(state.integrity_flags||[]).length;
-    logActivity("Alora · live",`Updated board${g?` · ${g} gap${g>1?"s":""}`:""}${f?` · ${f} integrity flag`:""}`);
+    logActivity("Alora · live",`Updated board${g?` · ${g} gap${g>1?"s":""}`:""}${f?` · ${f} integrity flag${f>1?"s":""}`:""}`);
   }catch(e){}
   observeInFlight=false; document.getElementById("mic-state").textContent=listening?"● listening":"idle";
   if(dirty)runObserve();
@@ -567,7 +970,7 @@ function renderState(s){
   document.getElementById("flags").innerHTML=flags.map(f=>`<div class="flag"><svg viewBox="0 0 24 24"><path d="M12 3l9 16H3z"></path><path d="M12 10v4M12 17h.01"></path></svg><span>${esc(f)}</span></div>`).join("");
   show("p-det",!!s.detected_outcome);
   if(s.detected_outcome){const o=s.detected_outcome;
-    document.getElementById("det-outcome").innerHTML=`<div class="det ${o.kind}"><strong>${o.kind.toUpperCase()}</strong>${o.reason?" — "+esc(o.reason):""}`+
+    document.getElementById("det-outcome").innerHTML=`<div class="det ${esc(o.kind)}"><strong>${esc(String(o.kind).toUpperCase())}</strong>${o.reason?" — "+esc(o.reason):""}`+
       (o.condition?`<div style="color:var(--warning);margin-top:3px">condition: ${esc(o.condition)}</div>`:"")+`</div>`}
 }
 function show(id,on){const el=document.getElementById(id);el.style.display=on?"block":"none";if(on&&!el.dataset.seen){el.classList.add("stagger");el.dataset.seen="1"}}
@@ -598,7 +1001,45 @@ document.getElementById("btn-demo").onclick=async()=>{
   btn.disabled=false;
 };
 
-document.getElementById("btn-finalize").onclick=async()=>{
+// Step 1: end call → show the contribution confirmation card (the privacy filter)
+document.getElementById("btn-finalize").onclick=()=>{
+  const f=FAC_BY_ID[selected.id]||{}, av=f.simulated?.availability||{}, s=_lastState||{};
+  const cond=s.detected_outcome?.condition;
+  const fields=document.getElementById("contribute-fields");
+  let html=`<div class="cf-row"><label>Beds open now</label><input type="number" id="cf-beds" min="0" value="${av.available_beds??""}"><span class="cf-inst">facility</span></div>`;
+  html+=`<div class="cf-row"><label>Est. wait (days)</label><input type="number" id="cf-wait" min="0" value="${av.estimated_wait_days??""}"><span class="cf-inst">facility</span></div>`;
+  if(cond) html+=`<div class="cf-row"><input type="checkbox" id="cf-req" checked><label>Requires: ${esc(cond)}</label><span class="cf-inst">facility</span></div>`;
+  fields.innerHTML=html;
+  document.getElementById("workspace-only").innerHTML=`<b>Stays in Maria G.'s workspace (never in the graph):</b> clinical status, risk history, the full call transcript, and this placement's patient-side outcome.`;
+  show("p-det", !!s.detected_outcome);
+  document.getElementById("p-contribute").style.display="block";
+  document.getElementById("p-contribute").scrollIntoView({behavior:"smooth",block:"nearest"});
+};
+
+async function contributeConfirmedFacts(){
+  const fid=selected.id, cur=FAC_BY_ID[fid]?.simulated||{}, av=cur.availability||{};
+  const tasks=[];
+  const beds=document.getElementById("cf-beds")?.value, wait=document.getElementById("cf-wait")?.value;
+  if(beds!==""&&beds!=null&&Number(beds)!==av.available_beds) tasks.push({field_path:"simulated.availability.available_beds",new_value:Number(beds)});
+  if(wait!==""&&wait!=null&&Number(wait)!==av.estimated_wait_days) tasks.push({field_path:"simulated.availability.estimated_wait_days",new_value:Number(wait)});
+  const reqEl=document.getElementById("cf-req");
+  if(reqEl&&reqEl.checked){ const cond=_lastState?.detected_outcome?.condition;
+    const list=(cur.intake_requirements||[]).slice();
+    if(cond&&!list.includes(cond)){ list.push(cond); tasks.push({field_path:"simulated.intake_requirements",new_value:list}); } }
+  let applied=0,queued=0;
+  for(const t of tasks){ try{
+    const r=await j("/api/monitor/contribute",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({entity_id:fid,source_detail:"case manager confirmed on call",...t})});
+    if(r.mode==="auto")applied++; else if(r.mode==="queued")queued++;
+    const shown=Array.isArray(t.new_value)?"+"+t.new_value[t.new_value.length-1]:t.new_value;
+    logActivity("KG agent",`call contribution · ${(FAC_BY_ID[fid]?.name||fid).split("(")[0].trim()} · ${prettyField(t.field_path)} → ${shown} (${r.mode})`);
+  }catch(e){} }
+  if(tasks.length) toast(`${tasks.length} facility fact(s) → graph · ${applied} applied · ${queued} for review`);
+  return tasks.length;
+}
+
+// Step 2: record the outcome (patient-side → workspace/learning ledgers only)
+async function doFinalize(){
   const s=_lastState||{}, o=s.detected_outcome;
   const kind=o?o.kind:prompt("Outcome? accepted / declined / info_requested","info_requested"); if(!kind)return;
   const body={patient_id:PATIENT.patient_id,facility_id:selected.id,outcome:kind,reason:o?o.reason:"",
@@ -608,17 +1049,232 @@ document.getElementById("btn-finalize").onclick=async()=>{
     direction:PATIENT.direction,payer:PATIENT.payer,language:PATIENT.language};
   try{
     const res=await j("/api/copilot/finalize",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
-    logActivity("Alora · learning","Recorded to facility memory + patient gap log");
-    let msg="Recorded to the learning ledgers.";
-    if(res.next_candidate){msg+=" Next candidate: "+res.next_candidate.facility.name; logActivity("Matcher","Suggested next candidate: "+res.next_candidate.facility.name);}
+    logActivity("Alora · learning","Patient-side outcome recorded to the workspace ledgers");
+    let msg="Recorded. Patient detail stayed in the workspace.";
+    if(res.next_candidate){msg+=" Next: "+res.next_candidate.facility.name; logActivity("Matcher","Suggested next candidate: "+res.next_candidate.facility.name);}
+    document.getElementById("p-contribute").style.display="none";
     document.getElementById("det-outcome").innerHTML+=`<div style="color:var(--text-muted);margin-top:6px;font-size:12px">✓ ${esc(msg)}</div>`;
     show("p-det",true); stopMic();
     document.getElementById("calling-banner").classList.remove("on"); highlight(selected.id,false);
     toast(msg);
   }catch(e){toast("finalize failed: "+e.message)}
-};
+}
+document.getElementById("btn-confirm-contribute").onclick=async()=>{ await contributeConfirmedFacts(); doFinalize(); };
+document.getElementById("btn-record-only").onclick=()=>{ document.getElementById("p-contribute").style.display="none"; doFinalize(); };
 
-drawMap().catch(()=>{document.getElementById("conn").textContent="API offline — start uvicorn"});
+/* ============ SYSTEM MAP (Kumu-style full network) ============ */
+// facility categories → color + shape (matches the legend)
+const CATS=[
+  {key:"crisis", label:"Crisis & ED", color:"#b1362f", shape:"diamond", levels:["ED_psych","crisis_stabilization"]},
+  {key:"inpatient", label:"Inpatient & subacute", color:"#7a4fbd", shape:"square", levels:["inpatient_psych","locked_subacute"]},
+  {key:"residential", label:"Residential", color:"#2f6fb1", shape:"hexagon", levels:["residential_tx","residential_stepdown"]},
+  {key:"stepdown", label:"PHP / IOP", color:"#1f6f6b", shape:"triangle", levels:["PHP","IOP"]},
+  {key:"community", label:"Community & respite", color:"#2f7a44", shape:"circle", levels:["outpatient","peer_respite","sobering"]},
+];
+const CAT_OF={}; CATS.forEach(c=>c.levels.forEach(l=>CAT_OF[l]=c));
+// referral frequency → color bucket (Kumu-style)
+function freqColor(f){ f=f||1; return f>=8?"#4b3fa8":f>=6?"#2f6fb1":f>=4?"#2f7a44":f>=3?"#b1362f":f>=2?"#c9760a":"#d8bf5a"; }
+const FREQ_LEGEND=[["Multiple/day","#4b3fa8"],["~Daily","#2f6fb1"],["Several/week","#2f7a44"],["Several/month","#b1362f"],["~Monthly","#c9760a"],["Rarely","#d8bf5a"]];
+
+let sysDrawn=false, sysPos={}, SYS_FAC={}, SYS_EDGES=[], activePreset="all";
+
+function shapePath(shape,x,y,r){
+  if(shape==="circle") return {tag:"circle",attrs:{cx:x,cy:y,r:r}};
+  if(shape==="square") return {tag:"rect",attrs:{x:x-r,y:y-r,width:r*2,height:r*2,rx:2}};
+  if(shape==="diamond") return {tag:"polygon",attrs:{points:`${x},${y-r} ${x+r},${y} ${x},${y+r} ${x-r},${y}`}};
+  if(shape==="triangle") return {tag:"polygon",attrs:{points:`${x},${y-r} ${x+r},${y+r} ${x-r},${y+r}`}};
+  if(shape==="hexagon"){const p=[];for(let i=0;i<6;i++){const a=Math.PI/6+i*Math.PI/3;p.push(`${(x+r*Math.cos(a)).toFixed(1)},${(y+r*Math.sin(a)).toFixed(1)}`);}return {tag:"polygon",attrs:{points:p.join(" ")}};}
+  return {tag:"circle",attrs:{cx:x,cy:y,r:r}};
+}
+
+async function drawSystemMap(){
+  const {facilities,edges}=await j("/api/graph");
+  SYS_FAC={}; facilities.forEach(f=>SYS_FAC[f.id]=f);
+  SYS_EDGES=edges.edges||[];
+  const svg=document.getElementById("sysmap"); svg.innerHTML="";
+  const cx=500,cy=380; sysPos={};
+  // cluster facilities by category into sectors around a big circle (Kumu-like)
+  const byCat={}; CATS.forEach(c=>byCat[c.key]=[]);
+  facilities.forEach(f=>{const c=CAT_OF[f.level_of_care]; if(c)byCat[c.key].push(f);});
+  CATS.forEach((c,ci)=>{
+    const members=byCat[c.key]; const base=(ci/CATS.length)*2*Math.PI-Math.PI/2;
+    const spread=Math.PI/CATS.length*0.95;
+    members.forEach((f,i)=>{
+      const t=members.length>1?i/(members.length-1):0.5;
+      const a=base-spread+t*spread*2;
+      const rr=190+((i*47)%110);            // deterministic radial jitter for organic feel
+      sysPos[f.id]=[cx+rr*Math.cos(a), cy+rr*Math.sin(a)];
+    });
+    // category hub label near the sector's outer edge
+    const la=base, lr=330;
+    const lbl=document.createElementNS(NS,"text"); lbl.setAttribute("class","hub-label");
+    lbl.setAttribute("x",cx+lr*Math.cos(la)); lbl.setAttribute("y",cy+lr*Math.sin(la));
+    lbl.setAttribute("text-anchor","middle"); lbl.setAttribute("fill",c.color); lbl.textContent=c.label;
+    svg.appendChild(lbl);
+  });
+  // edges (draw first, under nodes)
+  SYS_EDGES.forEach(e=>{
+    if(!sysPos[e.from]||!sysPos[e.to])return;
+    const key=e.from+"|"+e.to;
+    const[x1,y1]=sysPos[e.from],[x2,y2]=sysPos[e.to];
+    const mx=(x1+x2)/2+(cy-(y1+y2)/2)*0.12, my=(y1+y2)/2+((x1+x2)/2-cx)*0.12;
+    const d=`M${x1},${y1} Q${mx},${my} ${x2},${y2}`;
+    const hit=document.createElementNS(NS,"path"); hit.setAttribute("d",d); hit.setAttribute("class","sedge-hit"); hit.dataset.key=key;
+    hit.addEventListener("click",ev=>{ev.stopPropagation();sysShowEdgeCard(key)});
+    const p=document.createElementNS(NS,"path"); p.setAttribute("d",d); p.setAttribute("class","sedge");
+    p.dataset.from=e.from; p.dataset.to=e.to; p.dataset.type=e.type; p.dataset.key=key;
+    p.setAttribute("stroke",freqColor(e.freq_sim)); p.setAttribute("stroke-width",e.type==="step_up"?2.4:e.type==="vertical"?1.6:1);
+    p.setAttribute("opacity", .22);
+    svg.append(hit,p);
+  });
+  // nodes
+  facilities.forEach(f=>{
+    if(!sysPos[f.id])return;
+    const c=CAT_OF[f.level_of_care]||{color:"#888",shape:"circle"};
+    const[x,y]=sysPos[f.id];
+    const beds=f?.simulated?.availability?.available_beds;
+    const r=8+(typeof beds==="number"?Math.min(beds,6):1)*0.7;
+    const g=document.createElementNS(NS,"g"); g.setAttribute("class","snode"); g.id="s-"+f.id;
+    g.dataset.cat=c.key; g.dataset.level=f.level_of_care;
+    g.dataset.payers=(f.payers||[]).join(","); g.dataset.langs=(f.languages||[]).join(",");
+    g.dataset.beds=(typeof beds==="number"?beds:"");
+    g.dataset.name=(f.name||"").toLowerCase();
+    const sp=shapePath(c.shape,x,y,r);
+    const sh=document.createElementNS(NS,sp.tag); sh.setAttribute("class","shape");
+    Object.entries(sp.attrs).forEach(([k,v])=>sh.setAttribute(k,v)); sh.setAttribute("fill",c.color);
+    const t=document.createElementNS(NS,"text"); t.setAttribute("x",x); t.setAttribute("y",y+r+8); t.setAttribute("text-anchor","middle");
+    t.textContent=(f.name||f.id).replace(/\(.*?\)/g,"").split("-")[0].trim().slice(0,22);
+    g.append(sh,t);
+    g.addEventListener("click",ev=>{ev.stopPropagation();sysShowNodeCard(f.id)});
+    svg.appendChild(g);
+  });
+  svg.addEventListener("click",()=>{const c=document.getElementById("sys-card"); c.classList.remove("show");
+    document.querySelectorAll("#sysmap .snode.sel,#sysmap .sedge.sel").forEach(n=>n.classList.remove("sel"))});
+  document.getElementById("sysmap-count").textContent=`${facilities.length} facilities · ${SYS_EDGES.length} referral edges · agent-monitored`;
+  buildPresets(byCat); buildLegends(); loadRecommendations();
+  sysDrawn=true;
+}
+
+function sysShowNodeCard(id){
+  const f=SYS_FAC[id]; if(!f)return;
+  document.querySelectorAll("#sysmap .snode.sel,#sysmap .sedge.sel").forEach(n=>n.classList.remove("sel"));
+  const g=document.getElementById("s-"+id); if(g)g.classList.add("sel");
+  const card=document.getElementById("sys-card"); card.innerHTML=facilityCardHTML(f);
+  card.querySelector("#kc-close").onclick=e=>{e.stopPropagation();card.classList.remove("show")};
+  placeCard(document.getElementById("sysmap"), card, sysPos[id]);
+}
+function sysShowEdgeCard(key){
+  const e=SYS_EDGES.find(x=>x.from+"|"+x.to===key); if(!e)return;
+  document.querySelectorAll("#sysmap .snode.sel,#sysmap .sedge.sel").forEach(n=>n.classList.remove("sel"));
+  const p=document.querySelector(`#sysmap .sedge[data-key="${key}"]`); if(p)p.classList.add("sel");
+  const card=document.getElementById("sys-card");
+  // edgeCardHTML reads FAC_BY_ID for names; SYS_FAC has same ids, temporarily merge
+  const savedFrom=FAC_BY_ID[e.from], savedTo=FAC_BY_ID[e.to];
+  FAC_BY_ID[e.from]=FAC_BY_ID[e.from]||SYS_FAC[e.from]; FAC_BY_ID[e.to]=FAC_BY_ID[e.to]||SYS_FAC[e.to];
+  card.innerHTML=edgeCardHTML(e);
+  if(!savedFrom)delete FAC_BY_ID[e.from]; if(!savedTo)delete FAC_BY_ID[e.to];
+  card.querySelector("#kc-close").onclick=ev=>{ev.stopPropagation();card.classList.remove("show")};
+  const[x1,y1]=sysPos[e.from]||[0,0],[x2,y2]=sysPos[e.to]||[0,0];
+  placeCard(document.getElementById("sysmap"), card, [(x1+x2)/2,(y1+y2)/2]);
+}
+
+// preset filters — category + live "beds now"; recompute counts each build so they
+// track the agent's updates
+function buildPresets(byCat){
+  const host=document.getElementById("sysmap-presets");
+  const bedsNow=Object.values(SYS_FAC).filter(f=>(f?.simulated?.availability?.available_beds||0)>0).length;
+  const presets=[
+    {key:"all",label:"All",count:Object.keys(SYS_FAC).length,color:"var(--text-muted)"},
+    ...CATS.map(c=>({key:c.key,label:c.label,count:(byCat[c.key]||[]).length,color:c.color})),
+    {key:"beds",label:"Beds available now",count:bedsNow,color:"var(--success)",live:true},
+    {key:"med--cal",label:"Medi-Cal",count:Object.values(SYS_FAC).filter(f=>(f.payers||[]).includes("medi-cal")).length,color:"var(--accent)"},
+    {key:"spanish",label:"Spanish",count:Object.values(SYS_FAC).filter(f=>(f.languages||[]).includes("Spanish")).length,color:"var(--accent)"},
+  ];
+  host.innerHTML="";
+  presets.forEach(p=>{
+    const b=document.createElement("button"); b.className="preset"+(p.key===activePreset?" on":""); b.dataset.key=p.key;
+    b.innerHTML=`<span class="dot" style="background:${p.color}"></span>${esc(p.label)} <span class="cnt">${p.count}</span>`;
+    b.onclick=()=>applyPreset(p.key); host.appendChild(b);
+  });
+}
+function nodeMatches(g,preset){
+  if(preset==="all")return true;
+  if(preset==="beds")return (parseInt(g.dataset.beds||"0",10)||0)>0;
+  if(preset==="med--cal")return g.dataset.payers.split(",").includes("medi-cal");
+  if(preset==="spanish")return g.dataset.langs.split(",").includes("Spanish");
+  return g.dataset.cat===preset;   // a category key
+}
+function applyPreset(key){
+  activePreset=key;
+  document.querySelectorAll("#sysmap-presets .preset").forEach(b=>b.classList.toggle("on",b.dataset.key===key));
+  const svg=document.getElementById("sysmap");
+  const q=(document.getElementById("sysmap-search").value||"").trim().toLowerCase();
+  const shownIds=new Set();
+  svg.querySelectorAll(".snode").forEach(g=>{
+    const on=nodeMatches(g,key)&&(!q||g.dataset.name.includes(q));
+    g.classList.toggle("dim",!on); if(on)shownIds.add(g.id.slice(2));
+  });
+  svg.querySelectorAll(".sedge").forEach(p=>{
+    const on=shownIds.has(p.dataset.from)&&shownIds.has(p.dataset.to);
+    p.classList.toggle("dim",!on);
+  });
+  svg.classList.toggle("filtered", key!=="all"||!!q);
+}
+
+function buildLegends(){
+  const nl=document.getElementById("sysmap-legend-nodes");
+  nl.innerHTML=CATS.map(c=>`<div class="row"><svg width="16" height="16" viewBox="0 0 16 16"><g>${legendShape(c.shape,c.color)}</g></svg><span>${esc(c.label)}</span></div>`).join("")
+    + `<div class="row" style="margin-top:4px;color:var(--text-faint);font-size:11px">shape = type · size = open beds</div>`;
+  const el=document.getElementById("sysmap-legend-edges");
+  el.innerHTML=FREQ_LEGEND.map(([lab,col])=>`<div class="row"><span class="eline" style="border-top-color:${col}"></span><span>${esc(lab)}</span></div>`).join("")
+    + `<div class="row" style="margin-top:4px;color:var(--text-faint);font-size:11px">thickness: step-up &gt; vertical &gt; step-down</div>`;
+}
+function legendShape(shape,color){
+  if(shape==="square")return `<rect x="3" y="3" width="10" height="10" rx="1.5" fill="${color}"/>`;
+  if(shape==="diamond")return `<polygon points="8,2 14,8 8,14 2,8" fill="${color}"/>`;
+  if(shape==="triangle")return `<polygon points="8,2 14,14 2,14" fill="${color}"/>`;
+  if(shape==="hexagon")return `<polygon points="12,4.5 12,11.5 8,14 4,11.5 4,4.5 8,2" fill="${color}"/>`;
+  return `<circle cx="8" cy="8" r="6" fill="${color}"/>`;
+}
+
+async function loadRecommendations(){
+  const host=document.getElementById("reco-list");
+  let patients=[]; try{ patients=(await j("/api/patients")).patients||[]; }catch(e){ host.textContent="—"; return; }
+  const picks=patients.slice(0,4);
+  const recos=await Promise.all(picks.map(async p=>{ try{ return {p, r:await j("/api/recommend/"+p.id)}; }catch(e){ return {p, r:null}; } }));
+  host.innerHTML=recos.map(({p,r})=>{
+    const top=r&&r.top&&r.top[0];
+    const label=p.id==="maria"?"Maria G.":p.id.replace("patient_","Patient ");
+    if(!top)return `<div class="rc"><div class="pt">${esc(label)}</div><div class="why">no match found</div></div>`;
+    return `<div class="rc" data-fid="${esc(top.facility.id)}"><div class="pt">${esc(label)} · ${esc(p.insurance||"")} · ${esc(p.language||"")}</div>`+
+      `<div class="to">→ ${esc(top.facility.name)}</div>`+
+      `<div class="why">${esc((top.reasons||[]).slice(0,2).join(" · "))}</div></div>`;
+  }).join("");
+  host.querySelectorAll(".rc[data-fid]").forEach(el=>el.onclick=()=>{const id=el.dataset.fid; if(sysPos[id]){sysShowNodeCard(id);}});
+  logActivity("Alora · triage",`Ranked next-step placements for ${recos.length} incoming patients`);
+}
+
+// view switching: rail items with data-view toggle the system map overlay
+function showView(view){
+  const isMap=view==="systemmap";
+  document.querySelector(".workspace").style.display=isMap?"none":"";
+  document.getElementById("systemmap-view").hidden=!isMap;
+  if(isMap&&!sysDrawn) drawSystemMap().catch(()=>toast("System map failed to load"));
+}
+document.querySelectorAll(".rail-step[data-view]").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".rail-step").forEach(x=>x.classList.remove("is-active")); b.classList.add("is-active");
+  showView(b.dataset.view);
+  if(window.matchMedia("(max-width: 820px)").matches) closeDrawer();
+});
+// workflow rail steps should return to the workspace view
+document.querySelectorAll(".rail-step[data-focus]").forEach(b=>b.addEventListener("click",()=>showView("workspace"),true));
+document.getElementById("sysmap-search").addEventListener("input",()=>applyPreset(activePreset));
+
+drawMap()
+  .then(()=>{ logActivity("KG agent","monitoring the network — scanning web / phone / EHR feeds");
+    setTimeout(()=>runMonitorScan("load"),1400);                 // first pass shortly after load
+    setInterval(()=>runMonitorScan("tick"),90000); })           // keeps working on its own, quietly
+  .catch(()=>{document.getElementById("conn").textContent="API offline — start uvicorn"});
 logActivity("System","Co-pilot ready — human runs the call, Alora assists");
 </script>
 </body>
