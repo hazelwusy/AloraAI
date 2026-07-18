@@ -1,91 +1,3484 @@
 {
-  "_provenance": "Referral-flow edges over the REAL 74-facility directory (data/facilities.json), for the knowledge-graph monitoring feature. Separate from the legacy data/edges.json, which pairs with the older facilities_demo.json mock set used by the existing network-map UI — that file is left untouched. `freq_sim` here is a static demo baseline; the `simulated` block per edge is what pipeline/monitor.py updates over time via (simulated) monitoring. Never treat either as real referral-volume data.",
-  "edge_types": {
-    "step_down": "higher acuity -> lower acuity",
-    "step_up": "lower acuity -> higher acuity",
-    "vertical": "same level, different facility/program",
-    "crisis_reentry": "community/outpatient -> crisis services"
-  },
   "edges": [
     {
-      "from": "zsfg-pes", "to": "cpmc-davies-inpatient", "type": "step_up", "freq_sim": 9,
-      "simulated": {"accept_rate_observed": 0.52, "avg_response_time_min_observed": 95, "last_updated": "2026-07-18", "source": "baseline"}
+      "from": "zsfg-pes",
+      "to": "cpmc-davies-inpatient",
+      "type": "step_up",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.52,
+        "avg_response_time_min_observed": 95,
+        "last_updated": "2026-07-18",
+        "source": "baseline"
+      }
     },
     {
-      "from": "zsfg-pes", "to": "dore-urgent-care", "type": "step_down", "freq_sim": 8,
-      "simulated": {"accept_rate_observed": 0.68, "avg_response_time_min_observed": 40, "last_updated": "2026-07-18", "source": "baseline"}
+      "from": "zsfg-pes",
+      "to": "dore-urgent-care",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.68,
+        "avg_response_time_min_observed": 40,
+        "last_updated": "2026-07-18",
+        "source": "baseline"
+      }
     },
     {
-      "from": "zsfg-pes", "to": "hummingbird-potrero", "type": "step_down", "freq_sim": 6,
-      "simulated": {"accept_rate_observed": 0.61, "avg_response_time_min_observed": 55, "last_updated": "2026-07-18", "source": "baseline"}
+      "from": "zsfg-pes",
+      "to": "hummingbird-potrero",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.61,
+        "avg_response_time_min_observed": 55,
+        "last_updated": "2026-07-18",
+        "source": "baseline"
+      }
     },
     {
-      "from": "zsfg-pes", "to": "progress-dore-house", "type": "step_down", "freq_sim": 5,
-      "simulated": {"accept_rate_observed": 0.58, "avg_response_time_min_observed": 60, "last_updated": "2026-07-18", "source": "baseline"}
+      "from": "zsfg-pes",
+      "to": "progress-dore-house",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.58,
+        "avg_response_time_min_observed": 60,
+        "last_updated": "2026-07-18",
+        "source": "baseline"
+      }
     },
     {
-      "from": "cpmc-davies-inpatient", "to": "progress-dore-house", "type": "step_down", "freq_sim": 6,
-      "simulated": {"accept_rate_observed": 0.55, "avg_response_time_min_observed": 70, "last_updated": "2026-07-18", "source": "baseline"}
+      "from": "cpmc-davies-inpatient",
+      "to": "progress-dore-house",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.55,
+        "avg_response_time_min_observed": 70,
+        "last_updated": "2026-07-18",
+        "source": "baseline"
+      }
     },
     {
-      "from": "cpmc-davies-inpatient", "to": "minna-project", "type": "step_down", "freq_sim": 4,
-      "simulated": {"accept_rate_observed": 0.60, "avg_response_time_min_observed": 80, "last_updated": "2026-07-18", "source": "baseline"}
+      "from": "cpmc-davies-inpatient",
+      "to": "minna-project",
+      "type": "step_down",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.6,
+        "avg_response_time_min_observed": 80,
+        "last_updated": "2026-07-18",
+        "source": "baseline"
+      }
     },
     {
-      "from": "cpmc-davies-inpatient", "to": "treasure-island-stepdown", "type": "step_down", "freq_sim": 5,
-      "simulated": {"accept_rate_observed": 0.63, "avg_response_time_min_observed": 65, "last_updated": "2026-07-18", "source": "baseline"}
+      "from": "cpmc-davies-inpatient",
+      "to": "treasure-island-stepdown",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.63,
+        "avg_response_time_min_observed": 65,
+        "last_updated": "2026-07-18",
+        "source": "baseline"
+      }
     },
     {
-      "from": "cpmc-davies-inpatient", "to": "ucsf-langley-porter-mtzion", "type": "vertical", "freq_sim": 2,
-      "simulated": {"accept_rate_observed": 0.50, "avg_response_time_min_observed": 90, "last_updated": "2026-07-18", "source": "baseline"}
+      "from": "cpmc-davies-inpatient",
+      "to": "ucsf-langley-porter-mtzion",
+      "type": "vertical",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.5,
+        "avg_response_time_min_observed": 90,
+        "last_updated": "2026-07-18",
+        "source": "baseline"
+      }
     },
     {
-      "from": "ucsf-langley-porter-mtzion", "to": "ucsf-php-divisadero", "type": "step_down", "freq_sim": 5,
-      "simulated": {"accept_rate_observed": 0.71, "avg_response_time_min_observed": 45, "last_updated": "2026-07-18", "source": "baseline"}
+      "from": "ucsf-langley-porter-mtzion",
+      "to": "ucsf-php-divisadero",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.71,
+        "avg_response_time_min_observed": 45,
+        "last_updated": "2026-07-18",
+        "source": "baseline"
+      }
     },
     {
-      "from": "dore-urgent-care", "to": "zsfg-pes", "type": "step_up", "freq_sim": 4,
-      "simulated": {"accept_rate_observed": 0.47, "avg_response_time_min_observed": 100, "last_updated": "2026-07-18", "source": "baseline"}
+      "from": "dore-urgent-care",
+      "to": "zsfg-pes",
+      "type": "step_up",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.47,
+        "avg_response_time_min_observed": 100,
+        "last_updated": "2026-07-18",
+        "source": "baseline"
+      }
     },
     {
-      "from": "dore-urgent-care", "to": "soma-rise", "type": "step_down", "freq_sim": 7,
-      "simulated": {"accept_rate_observed": 0.66, "avg_response_time_min_observed": 35, "last_updated": "2026-07-18", "source": "baseline"}
+      "from": "dore-urgent-care",
+      "to": "soma-rise",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.66,
+        "avg_response_time_min_observed": 35,
+        "last_updated": "2026-07-18",
+        "source": "baseline"
+      }
     },
     {
-      "from": "hummingbird-potrero", "to": "zsfg-pes", "type": "crisis_reentry", "freq_sim": 3,
-      "simulated": {"accept_rate_observed": 0.44, "avg_response_time_min_observed": 105, "last_updated": "2026-07-18", "source": "baseline"}
+      "from": "hummingbird-potrero",
+      "to": "zsfg-pes",
+      "type": "crisis_reentry",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.44,
+        "avg_response_time_min_observed": 105,
+        "last_updated": "2026-07-18",
+        "source": "baseline"
+      }
     },
     {
-      "from": "soma-rise", "to": "zsfg-pes", "type": "crisis_reentry", "freq_sim": 5,
-      "simulated": {"accept_rate_observed": 0.49, "avg_response_time_min_observed": 90, "last_updated": "2026-07-18", "source": "baseline"}
+      "from": "soma-rise",
+      "to": "zsfg-pes",
+      "type": "crisis_reentry",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.49,
+        "avg_response_time_min_observed": 90,
+        "last_updated": "2026-07-18",
+        "source": "baseline"
+      }
     },
     {
-      "from": "minna-project", "to": "zsfg-pes", "type": "crisis_reentry", "freq_sim": 4,
-      "simulated": {"accept_rate_observed": 0.46, "avg_response_time_min_observed": 95, "last_updated": "2026-07-18", "source": "baseline"}
+      "from": "minna-project",
+      "to": "zsfg-pes",
+      "type": "crisis_reentry",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.46,
+        "avg_response_time_min_observed": 95,
+        "last_updated": "2026-07-18",
+        "source": "baseline"
+      }
     },
     {
-      "from": "progress-dore-house", "to": "cpmc-davies-inpatient", "type": "step_up", "freq_sim": 2,
-      "simulated": {"accept_rate_observed": 0.42, "avg_response_time_min_observed": 110, "last_updated": "2026-07-18", "source": "baseline"}
+      "from": "progress-dore-house",
+      "to": "cpmc-davies-inpatient",
+      "type": "step_up",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.42,
+        "avg_response_time_min_observed": 110,
+        "last_updated": "2026-07-18",
+        "source": "baseline"
+      }
     },
     {
-      "from": "treasure-island-stepdown", "to": "minna-project", "type": "step_down", "freq_sim": 5,
-      "simulated": {"accept_rate_observed": 0.64, "avg_response_time_min_observed": 50, "last_updated": "2026-07-18", "source": "baseline"}
+      "from": "treasure-island-stepdown",
+      "to": "minna-project",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.64,
+        "avg_response_time_min_observed": 50,
+        "last_updated": "2026-07-18",
+        "source": "baseline"
+      }
     },
     {
-      "from": "ucsf-php-divisadero", "to": "ucsf-iop-divisadero", "type": "step_down", "freq_sim": 6,
-      "simulated": {"accept_rate_observed": 0.75, "avg_response_time_min_observed": 30, "last_updated": "2026-07-18", "source": "baseline"}
+      "from": "ucsf-php-divisadero",
+      "to": "ucsf-iop-divisadero",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.75,
+        "avg_response_time_min_observed": 30,
+        "last_updated": "2026-07-18",
+        "source": "baseline"
+      }
     },
     {
-      "from": "ucsf-iop-divisadero", "to": "ucsf-adult-psychiatry-clinic", "type": "step_down", "freq_sim": 7,
-      "simulated": {"accept_rate_observed": 0.80, "avg_response_time_min_observed": 20, "last_updated": "2026-07-18", "source": "baseline"}
+      "from": "ucsf-iop-divisadero",
+      "to": "ucsf-adult-psychiatry-clinic",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.8,
+        "avg_response_time_min_observed": 20,
+        "last_updated": "2026-07-18",
+        "source": "baseline"
+      }
     },
     {
-      "from": "bhac-1380-howard", "to": "zsfg-pes", "type": "step_up", "freq_sim": 3,
-      "simulated": {"accept_rate_observed": 0.45, "avg_response_time_min_observed": 100, "last_updated": "2026-07-18", "source": "baseline"}
+      "from": "bhac-1380-howard",
+      "to": "zsfg-pes",
+      "type": "step_up",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.45,
+        "avg_response_time_min_observed": 100,
+        "last_updated": "2026-07-18",
+        "source": "baseline"
+      }
     },
     {
-      "from": "bhac-1380-howard", "to": "soma-rise", "type": "vertical", "freq_sim": 4,
-      "simulated": {"accept_rate_observed": 0.62, "avg_response_time_min_observed": 40, "last_updated": "2026-07-18", "source": "baseline"}
+      "from": "bhac-1380-howard",
+      "to": "soma-rise",
+      "type": "vertical",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.62,
+        "avg_response_time_min_observed": 40,
+        "last_updated": "2026-07-18",
+        "source": "baseline"
+      }
+    },
+    {
+      "from": "zsfg-pes",
+      "to": "progress-shrader-house",
+      "type": "step_down",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.46,
+        "avg_response_time_min_observed": 47,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "zsfg-pes",
+      "to": "alameda-john-george",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.65,
+        "avg_response_time_min_observed": 23,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "zsfg-pes",
+      "to": "ucsf-stanyan-mcauley",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.53,
+        "avg_response_time_min_observed": 89,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "cpmc-davies-ed",
+      "to": "alameda-john-george",
+      "type": "step_down",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.6,
+        "avg_response_time_min_observed": 65,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "cpmc-davies-ed",
+      "to": "sanmateo-cordilleras",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.69,
+        "avg_response_time_min_observed": 25,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "cpmc-davies-ed",
+      "to": "ucsfh-hyde-stfrancis",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.63,
+        "avg_response_time_min_observed": 35,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "cpmc-davies-ed",
+      "to": "progress-hummingbird-carroll",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.48,
+        "avg_response_time_min_observed": 57,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "cpmc-davies-ed",
+      "to": "ucsf-parnassus-ed",
+      "type": "vertical",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.41,
+        "avg_response_time_min_observed": 59,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-parnassus-ed",
+      "to": "ucsf-langley-porter-mtzion",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.72,
+        "avg_response_time_min_observed": 29,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-parnassus-ed",
+      "to": "kaiser-sf-psych",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.7,
+        "avg_response_time_min_observed": 88,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-parnassus-ed",
+      "to": "alameda-john-george",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.55,
+        "avg_response_time_min_observed": 79,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-parnassus-ed",
+      "to": "cpmc-davies-ed",
+      "type": "vertical",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.65,
+        "avg_response_time_min_observed": 37,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "dore-urgent-care",
+      "to": "baker-odyssey-house",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.67,
+        "avg_response_time_min_observed": 53,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "dore-urgent-care",
+      "to": "hr360-h360-tay-village-res",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.68,
+        "avg_response_time_min_observed": 71,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "dore-urgent-care",
+      "to": "sf-behavioral-health-center",
+      "type": "step_up",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.63,
+        "avg_response_time_min_observed": 44,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "bhac-1380-howard",
+      "to": "hr360-womens-hope",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.8,
+        "avg_response_time_min_observed": 53,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "bhac-1380-howard",
+      "to": "hr360-acceptance-place",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.75,
+        "avg_response_time_min_observed": 84,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "bhac-1380-howard",
+      "to": "minna-project",
+      "type": "step_down",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.8,
+        "avg_response_time_min_observed": 58,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "bhac-1380-howard",
+      "to": "progress-dore-house",
+      "type": "step_up",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.56,
+        "avg_response_time_min_observed": 97,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "bhac-1380-howard",
+      "to": "sanmateo-cordilleras",
+      "type": "step_up",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.58,
+        "avg_response_time_min_observed": 92,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "soma-rise",
+      "to": "baker-diamond-street",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.57,
+        "avg_response_time_min_observed": 67,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "soma-rise",
+      "to": "hr360-acceptance-place",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.81,
+        "avg_response_time_min_observed": 77,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "mission-street-sobering",
+      "to": "hr360-tay-village",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.53,
+        "avg_response_time_min_observed": 32,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "mission-street-sobering",
+      "to": "rams-inc",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.62,
+        "avg_response_time_min_observed": 74,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "mission-street-sobering",
+      "to": "hr360-integrated-outpatient-soma",
+      "type": "step_up",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.42,
+        "avg_response_time_min_observed": 73,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "soma-rise-sobering",
+      "to": "hr360-vanness-clinic",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.61,
+        "avg_response_time_min_observed": 81,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "soma-rise-sobering",
+      "to": "mha-warmline",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.8,
+        "avg_response_time_min_observed": 27,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "soma-rise-sobering",
+      "to": "mission-street-sobering",
+      "type": "vertical",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.53,
+        "avg_response_time_min_observed": 92,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hummingbird-valencia",
+      "to": "progress-foundation-outpatient",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.48,
+        "avg_response_time_min_observed": 28,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hummingbird-valencia",
+      "to": "westside-outpatient-clinic",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.79,
+        "avg_response_time_min_observed": 71,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hummingbird-valencia",
+      "to": "telecare-sanmateo-crisis",
+      "type": "crisis_reentry",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.75,
+        "avg_response_time_min_observed": 30,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hummingbird-potrero",
+      "to": "westside-outpatient-clinic",
+      "type": "step_down",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.8,
+        "avg_response_time_min_observed": 67,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hummingbird-potrero",
+      "to": "hr360-tay-village",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.51,
+        "avg_response_time_min_observed": 89,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hummingbird-potrero",
+      "to": "swords-to-plowshares-mh",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.57,
+        "avg_response_time_min_observed": 87,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hummingbird-potrero",
+      "to": "alameda-willow-rock",
+      "type": "crisis_reentry",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.57,
+        "avg_response_time_min_observed": 36,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-langley-porter-mtzion",
+      "to": "bhac-1380-howard",
+      "type": "step_down",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.58,
+        "avg_response_time_min_observed": 36,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-langley-porter-mtzion",
+      "to": "telecare-sanmateo-crisis",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.84,
+        "avg_response_time_min_observed": 40,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-langley-porter-mtzion",
+      "to": "zsfg-pes",
+      "type": "step_up",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.4,
+        "avg_response_time_min_observed": 39,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-langley-porter-mtzion",
+      "to": "ucsf-parnassus-ed",
+      "type": "step_up",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.56,
+        "avg_response_time_min_observed": 77,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-stanyan-mcauley",
+      "to": "samsan-mateo-crc",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.77,
+        "avg_response_time_min_observed": 51,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-stanyan-mcauley",
+      "to": "dore-urgent-care",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.51,
+        "avg_response_time_min_observed": 33,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-stanyan-mcauley",
+      "to": "progress-hummingbird-carroll",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.8,
+        "avg_response_time_min_observed": 80,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-stanyan-mcauley",
+      "to": "sf-behavioral-health-center",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.53,
+        "avg_response_time_min_observed": 78,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-stanyan-mcauley",
+      "to": "ucsf-parnassus-ed",
+      "type": "step_up",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.41,
+        "avg_response_time_min_observed": 54,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-stanyan-mcauley",
+      "to": "kaiser-sf-psych",
+      "type": "vertical",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.59,
+        "avg_response_time_min_observed": 81,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsfh-hyde-stfrancis",
+      "to": "progress-hummingbird-carroll",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.62,
+        "avg_response_time_min_observed": 60,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsfh-hyde-stfrancis",
+      "to": "sanmateo-cordilleras",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.69,
+        "avg_response_time_min_observed": 85,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsfh-hyde-stfrancis",
+      "to": "bhac-1380-howard",
+      "type": "step_down",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.6,
+        "avg_response_time_min_observed": 44,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsfh-hyde-stfrancis",
+      "to": "telecare-sanmateo-crisis",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.47,
+        "avg_response_time_min_observed": 75,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsfh-hyde-stfrancis",
+      "to": "alameda-john-george",
+      "type": "vertical",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.6,
+        "avg_response_time_min_observed": 45,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "kaiser-sf-psych",
+      "to": "zsfg-pes",
+      "type": "step_up",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.5,
+        "avg_response_time_min_observed": 119,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "kaiser-sf-psych",
+      "to": "ucsf-stanyan-mcauley",
+      "type": "vertical",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.6,
+        "avg_response_time_min_observed": 52,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "sf-behavioral-health-center",
+      "to": "alameda-willow-rock",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.48,
+        "avg_response_time_min_observed": 85,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "sf-behavioral-health-center",
+      "to": "hr360-h360-tay-village-res",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.7,
+        "avg_response_time_min_observed": 62,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "sf-behavioral-health-center",
+      "to": "soma-rise",
+      "type": "step_down",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.78,
+        "avg_response_time_min_observed": 50,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "sf-behavioral-health-center",
+      "to": "hr360-womens-hope",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.57,
+        "avg_response_time_min_observed": 45,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "sf-behavioral-health-center",
+      "to": "progress-hummingbird-carroll",
+      "type": "vertical",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.62,
+        "avg_response_time_min_observed": 79,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-shrader-house",
+      "to": "telecare-sanmateo-crisis",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.7,
+        "avg_response_time_min_observed": 84,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-shrader-house",
+      "to": "hr360-walden-house",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.78,
+        "avg_response_time_min_observed": 90,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-shrader-house",
+      "to": "hr360-safe-passages",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.81,
+        "avg_response_time_min_observed": 80,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-shrader-house",
+      "to": "alameda-john-george",
+      "type": "step_up",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.55,
+        "avg_response_time_min_observed": 60,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-shrader-house",
+      "to": "sanmateo-cordilleras",
+      "type": "vertical",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.48,
+        "avg_response_time_min_observed": 70,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-dore-house",
+      "to": "progress-older-adult",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.45,
+        "avg_response_time_min_observed": 65,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-dore-house",
+      "to": "baker-odyssey-house",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.75,
+        "avg_response_time_min_observed": 73,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-dore-house",
+      "to": "hr360-h360-tay-village-res",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.75,
+        "avg_response_time_min_observed": 89,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-dore-house",
+      "to": "baker-jo-ruffin-place",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.81,
+        "avg_response_time_min_observed": 82,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-la-posada",
+      "to": "progress-carroll-house",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.69,
+        "avg_response_time_min_observed": 23,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-la-posada",
+      "to": "treasure-island-stepdown",
+      "type": "step_down",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.71,
+        "avg_response_time_min_observed": 37,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-la-posada",
+      "to": "conard-house-transitional",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.52,
+        "avg_response_time_min_observed": 53,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-la-posada",
+      "to": "westside-php",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.58,
+        "avg_response_time_min_observed": 78,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-la-posada",
+      "to": "dore-urgent-care",
+      "type": "step_up",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.54,
+        "avg_response_time_min_observed": 99,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-street-house",
+      "to": "progress-carroll-house",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.52,
+        "avg_response_time_min_observed": 34,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-street-house",
+      "to": "conard-house-transitional",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.84,
+        "avg_response_time_min_observed": 33,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-street-house",
+      "to": "ucsf-php-divisadero",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.46,
+        "avg_response_time_min_observed": 59,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-street-house",
+      "to": "bhac-1380-howard",
+      "type": "step_up",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.58,
+        "avg_response_time_min_observed": 110,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-street-house",
+      "to": "dore-urgent-care",
+      "type": "step_up",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.43,
+        "avg_response_time_min_observed": 68,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-robertson-place",
+      "to": "conard-house-sh",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.52,
+        "avg_response_time_min_observed": 86,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-robertson-place",
+      "to": "treasure-island-stepdown",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.56,
+        "avg_response_time_min_observed": 88,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-robertson-place",
+      "to": "alameda-willow-rock",
+      "type": "step_up",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.48,
+        "avg_response_time_min_observed": 87,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-jo-ruffin-place",
+      "to": "conard-house-sh",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.83,
+        "avg_response_time_min_observed": 30,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-jo-ruffin-place",
+      "to": "treasure-island-stepdown",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.74,
+        "avg_response_time_min_observed": 82,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-jo-ruffin-place",
+      "to": "ucsf-php-divisadero",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.75,
+        "avg_response_time_min_observed": 80,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-jo-ruffin-place",
+      "to": "bhac-1380-howard",
+      "type": "step_up",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.47,
+        "avg_response_time_min_observed": 118,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-jo-ruffin-place",
+      "to": "soma-rise",
+      "type": "step_up",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.49,
+        "avg_response_time_min_observed": 104,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-jo-ruffin-place",
+      "to": "bonita-house-alameda",
+      "type": "vertical",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.62,
+        "avg_response_time_min_observed": 70,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-odyssey-house",
+      "to": "ucsf-php-divisadero",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.64,
+        "avg_response_time_min_observed": 87,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-odyssey-house",
+      "to": "conard-house-transitional",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.56,
+        "avg_response_time_min_observed": 32,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-mens-residential-890hayes",
+      "to": "conard-house-sh",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.83,
+        "avg_response_time_min_observed": 81,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-mens-residential-890hayes",
+      "to": "progress-carroll-house",
+      "type": "step_down",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.78,
+        "avg_response_time_min_observed": 71,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-mens-residential-890hayes",
+      "to": "treasure-island-stepdown",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.48,
+        "avg_response_time_min_observed": 26,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-acceptance-place",
+      "to": "ucsf-php-divisadero",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.71,
+        "avg_response_time_min_observed": 40,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-acceptance-place",
+      "to": "progress-carroll-house",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.52,
+        "avg_response_time_min_observed": 29,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-acceptance-place",
+      "to": "conard-house-transitional",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.45,
+        "avg_response_time_min_observed": 77,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-acceptance-place",
+      "to": "conard-house-sh",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.69,
+        "avg_response_time_min_observed": 57,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-womens-hope",
+      "to": "ucsf-php-divisadero",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.73,
+        "avg_response_time_min_observed": 71,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-womens-hope",
+      "to": "treasure-island-stepdown",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.65,
+        "avg_response_time_min_observed": 83,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-womens-hope",
+      "to": "samsan-mateo-crc",
+      "type": "step_up",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.48,
+        "avg_response_time_min_observed": 41,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-walden-house",
+      "to": "progress-carroll-house",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.58,
+        "avg_response_time_min_observed": 33,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-walden-house",
+      "to": "conard-house-transitional",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.58,
+        "avg_response_time_min_observed": 83,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-walden-house",
+      "to": "conard-house-sh",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.72,
+        "avg_response_time_min_observed": 71,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-walden-house",
+      "to": "westside-php",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.46,
+        "avg_response_time_min_observed": 31,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-walden-house",
+      "to": "alameda-willow-rock",
+      "type": "step_up",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.54,
+        "avg_response_time_min_observed": 36,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "minna-project",
+      "to": "ucsf-php-divisadero",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.67,
+        "avg_response_time_min_observed": 90,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "minna-project",
+      "to": "westside-php",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.49,
+        "avg_response_time_min_observed": 34,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "minna-project",
+      "to": "telecare-sanmateo-crisis",
+      "type": "step_up",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.61,
+        "avg_response_time_min_observed": 83,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "minna-project",
+      "to": "hr360-mens-residential-890hayes",
+      "type": "vertical",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.48,
+        "avg_response_time_min_observed": 68,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "treasure-island-stepdown",
+      "to": "ucsf-php-divisadero",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.58,
+        "avg_response_time_min_observed": 89,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "treasure-island-stepdown",
+      "to": "westside-php",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.63,
+        "avg_response_time_min_observed": 61,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "treasure-island-stepdown",
+      "to": "hr360-integrated-outpatient-soma",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.84,
+        "avg_response_time_min_observed": 50,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "treasure-island-stepdown",
+      "to": "progress-carroll-house",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.6,
+        "avg_response_time_min_observed": 72,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "conard-house-sh",
+      "to": "westside-php",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.59,
+        "avg_response_time_min_observed": 70,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "conard-house-sh",
+      "to": "westside-iop",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.48,
+        "avg_response_time_min_observed": 62,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "conard-house-sh",
+      "to": "hr360-h360-tay-village-res",
+      "type": "step_up",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.69,
+        "avg_response_time_min_observed": 111,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "conard-house-sh",
+      "to": "minna-project",
+      "type": "step_up",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.53,
+        "avg_response_time_min_observed": 118,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "conard-house-sh",
+      "to": "conard-house-transitional",
+      "type": "vertical",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.5,
+        "avg_response_time_min_observed": 37,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "conard-house-transitional",
+      "to": "hr360-iop-mission",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.72,
+        "avg_response_time_min_observed": 43,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "conard-house-transitional",
+      "to": "westside-iop",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.52,
+        "avg_response_time_min_observed": 68,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "conard-house-transitional",
+      "to": "ucsf-php-divisadero",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.72,
+        "avg_response_time_min_observed": 83,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "conard-house-transitional",
+      "to": "hr360-acceptance-place",
+      "type": "step_up",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.7,
+        "avg_response_time_min_observed": 68,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "conard-house-transitional",
+      "to": "baker-diamond-street",
+      "type": "step_up",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.61,
+        "avg_response_time_min_observed": 88,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "conard-house-transitional",
+      "to": "conard-house-sh",
+      "type": "vertical",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.66,
+        "avg_response_time_min_observed": 43,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-php-divisadero",
+      "to": "westside-iop",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.57,
+        "avg_response_time_min_observed": 57,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-php-divisadero",
+      "to": "progress-carroll-house",
+      "type": "vertical",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.65,
+        "avg_response_time_min_observed": 66,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-php-divisadero",
+      "to": "zsfg-pes",
+      "type": "crisis_reentry",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.76,
+        "avg_response_time_min_observed": 57,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "kaiser-sf-php",
+      "to": "ucsf-iop-divisadero",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.7,
+        "avg_response_time_min_observed": 25,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "kaiser-sf-php",
+      "to": "ucsf-php-divisadero",
+      "type": "vertical",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.57,
+        "avg_response_time_min_observed": 46,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "kaiser-sf-php",
+      "to": "ucsf-parnassus-ed",
+      "type": "crisis_reentry",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.76,
+        "avg_response_time_min_observed": 26,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-carroll-house",
+      "to": "hr360-integrated-outpatient-soma",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.84,
+        "avg_response_time_min_observed": 57,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-carroll-house",
+      "to": "westside-iop",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.8,
+        "avg_response_time_min_observed": 34,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-carroll-house",
+      "to": "conard-house-sh",
+      "type": "step_up",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.66,
+        "avg_response_time_min_observed": 116,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-carroll-house",
+      "to": "ucsf-php-divisadero",
+      "type": "vertical",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.64,
+        "avg_response_time_min_observed": 31,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-carroll-house",
+      "to": "zsfg-pes",
+      "type": "crisis_reentry",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.74,
+        "avg_response_time_min_observed": 45,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-iop-divisadero",
+      "to": "conard-house-outpatient",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.72,
+        "avg_response_time_min_observed": 89,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-iop-divisadero",
+      "to": "hr360-vanness-clinic",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.68,
+        "avg_response_time_min_observed": 39,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-iop-divisadero",
+      "to": "westside-php",
+      "type": "step_up",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.41,
+        "avg_response_time_min_observed": 77,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-iop-divisadero",
+      "to": "bhac-1380-howard",
+      "type": "crisis_reentry",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.64,
+        "avg_response_time_min_observed": 27,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "westside-iop",
+      "to": "progress-foundation-outpatient",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.79,
+        "avg_response_time_min_observed": 38,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "westside-iop",
+      "to": "naomi-project",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.67,
+        "avg_response_time_min_observed": 42,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "westside-iop",
+      "to": "bhac-1380-howard",
+      "type": "crisis_reentry",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.54,
+        "avg_response_time_min_observed": 19,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-iop-mission",
+      "to": "hummingbird-valencia",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.51,
+        "avg_response_time_min_observed": 36,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-iop-mission",
+      "to": "bayview-hunters-point-fdn",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.7,
+        "avg_response_time_min_observed": 90,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-iop-mission",
+      "to": "mission-mental-health",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.58,
+        "avg_response_time_min_observed": 87,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-iop-mission",
+      "to": "ucsf-php-divisadero",
+      "type": "step_up",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.64,
+        "avg_response_time_min_observed": 44,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-iop-mission",
+      "to": "cpmc-davies-ed",
+      "type": "crisis_reentry",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.65,
+        "avg_response_time_min_observed": 57,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "mission-mental-health",
+      "to": "mission-street-sobering",
+      "type": "step_up",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.43,
+        "avg_response_time_min_observed": 40,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "mission-mental-health",
+      "to": "dore-urgent-care",
+      "type": "crisis_reentry",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.58,
+        "avg_response_time_min_observed": 42,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "chinatown-northbeach-mh",
+      "to": "hummingbird-potrero",
+      "type": "step_up",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.45,
+        "avg_response_time_min_observed": 119,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "chinatown-northbeach-mh",
+      "to": "soma-rise-sobering",
+      "type": "step_up",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.68,
+        "avg_response_time_min_observed": 74,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "chinatown-northbeach-mh",
+      "to": "soma-rise",
+      "type": "crisis_reentry",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.66,
+        "avg_response_time_min_observed": 42,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "southeast-child-family",
+      "to": "mission-street-sobering",
+      "type": "step_up",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.63,
+        "avg_response_time_min_observed": 44,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "southeast-child-family",
+      "to": "hummingbird-valencia",
+      "type": "step_up",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.53,
+        "avg_response_time_min_observed": 66,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "southeast-child-family",
+      "to": "hr360-tay-village",
+      "type": "vertical",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.56,
+        "avg_response_time_min_observed": 59,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "southeast-child-family",
+      "to": "ucsf-parnassus-ed",
+      "type": "crisis_reentry",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.8,
+        "avg_response_time_min_observed": 51,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "westside-outpatient-clinic",
+      "to": "mission-street-sobering",
+      "type": "step_up",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.43,
+        "avg_response_time_min_observed": 32,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "westside-outpatient-clinic",
+      "to": "soma-rise-sobering",
+      "type": "step_up",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.45,
+        "avg_response_time_min_observed": 109,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "westside-outpatient-clinic",
+      "to": "rams-inc",
+      "type": "vertical",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.51,
+        "avg_response_time_min_observed": 48,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "westside-outpatient-clinic",
+      "to": "telecare-sanmateo-crisis",
+      "type": "crisis_reentry",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.53,
+        "avg_response_time_min_observed": 55,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "cbhs-1380-howard",
+      "to": "mission-street-sobering",
+      "type": "step_up",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.45,
+        "avg_response_time_min_observed": 38,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "cbhs-1380-howard",
+      "to": "hr360-tay-village",
+      "type": "vertical",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.67,
+        "avg_response_time_min_observed": 54,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "cbhs-1380-howard",
+      "to": "ucsf-parnassus-ed",
+      "type": "crisis_reentry",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.53,
+        "avg_response_time_min_observed": 56,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "conard-house-outpatient",
+      "to": "cbhs-1380-howard",
+      "type": "vertical",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.5,
+        "avg_response_time_min_observed": 48,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "conard-house-outpatient",
+      "to": "alameda-willow-rock",
+      "type": "crisis_reentry",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.7,
+        "avg_response_time_min_observed": 56,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "citywide-casc",
+      "to": "starvista-sanmateo",
+      "type": "vertical",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.58,
+        "avg_response_time_min_observed": 49,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "citywide-casc",
+      "to": "zsfg-pes",
+      "type": "crisis_reentry",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.64,
+        "avg_response_time_min_observed": 58,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-adult-psychiatry-clinic",
+      "to": "chinatown-northbeach-mh",
+      "type": "vertical",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.66,
+        "avg_response_time_min_observed": 36,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "ucsf-adult-psychiatry-clinic",
+      "to": "cpmc-davies-ed",
+      "type": "crisis_reentry",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.53,
+        "avg_response_time_min_observed": 25,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "kaiser-sf-outpatient-therapy",
+      "to": "ucsf-parnassus-ed",
+      "type": "crisis_reentry",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.79,
+        "avg_response_time_min_observed": 37,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hridge-sf-methadone",
+      "to": "hummingbird-potrero",
+      "type": "step_up",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.52,
+        "avg_response_time_min_observed": 40,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hridge-sf-methadone",
+      "to": "rams-inc",
+      "type": "vertical",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.63,
+        "avg_response_time_min_observed": 60,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hridge-sf-methadone",
+      "to": "soma-rise",
+      "type": "crisis_reentry",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.71,
+        "avg_response_time_min_observed": 16,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "bayview-hunters-point-fdn",
+      "to": "hummingbird-potrero",
+      "type": "step_up",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.53,
+        "avg_response_time_min_observed": 108,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "bayview-hunters-point-fdn",
+      "to": "mission-street-sobering",
+      "type": "step_up",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.47,
+        "avg_response_time_min_observed": 83,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "bayview-hunters-point-fdn",
+      "to": "samsan-mateo-crc",
+      "type": "crisis_reentry",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.66,
+        "avg_response_time_min_observed": 59,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-vanness-clinic",
+      "to": "hummingbird-potrero",
+      "type": "step_up",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.41,
+        "avg_response_time_min_observed": 55,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-vanness-clinic",
+      "to": "hummingbird-valencia",
+      "type": "step_up",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.64,
+        "avg_response_time_min_observed": 35,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-vanness-clinic",
+      "to": "ucsf-adult-psychiatry-clinic",
+      "type": "vertical",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.5,
+        "avg_response_time_min_observed": 53,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-vanness-clinic",
+      "to": "dore-urgent-care",
+      "type": "crisis_reentry",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.65,
+        "avg_response_time_min_observed": 26,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-foundation-outpatient",
+      "to": "soma-rise-sobering",
+      "type": "step_up",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.6,
+        "avg_response_time_min_observed": 69,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-foundation-outpatient",
+      "to": "ucsf-adult-psychiatry-clinic",
+      "type": "vertical",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.44,
+        "avg_response_time_min_observed": 86,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-foundation-outpatient",
+      "to": "dore-urgent-care",
+      "type": "crisis_reentry",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.55,
+        "avg_response_time_min_observed": 43,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "swords-to-plowshares-mh",
+      "to": "soma-rise-sobering",
+      "type": "step_up",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.51,
+        "avg_response_time_min_observed": 70,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "swords-to-plowshares-mh",
+      "to": "bayview-hunters-point-fdn",
+      "type": "vertical",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.45,
+        "avg_response_time_min_observed": 86,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "swords-to-plowshares-mh",
+      "to": "dore-urgent-care",
+      "type": "crisis_reentry",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.75,
+        "avg_response_time_min_observed": 59,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "rams-inc",
+      "to": "samsan-mateo-crc",
+      "type": "crisis_reentry",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.81,
+        "avg_response_time_min_observed": 50,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "naomi-project",
+      "to": "hummingbird-valencia",
+      "type": "step_up",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.67,
+        "avg_response_time_min_observed": 37,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "naomi-project",
+      "to": "hummingbird-potrero",
+      "type": "step_up",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.56,
+        "avg_response_time_min_observed": 68,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "naomi-project",
+      "to": "cpmc-davies-ed",
+      "type": "crisis_reentry",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.53,
+        "avg_response_time_min_observed": 56,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "felton-institute",
+      "to": "mission-street-sobering",
+      "type": "step_up",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.59,
+        "avg_response_time_min_observed": 93,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "felton-institute",
+      "to": "larkin-street-tay",
+      "type": "vertical",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.69,
+        "avg_response_time_min_observed": 46,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "felton-institute",
+      "to": "bhac-1380-howard",
+      "type": "crisis_reentry",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.55,
+        "avg_response_time_min_observed": 18,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-tay-village",
+      "to": "soma-rise-sobering",
+      "type": "step_up",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.68,
+        "avg_response_time_min_observed": 70,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-tay-village",
+      "to": "ucsf-parnassus-ed",
+      "type": "crisis_reentry",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.63,
+        "avg_response_time_min_observed": 40,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "larkin-street-tay",
+      "to": "citywide-casc",
+      "type": "vertical",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.46,
+        "avg_response_time_min_observed": 95,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "larkin-street-tay",
+      "to": "soma-rise",
+      "type": "crisis_reentry",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.71,
+        "avg_response_time_min_observed": 47,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-older-adult",
+      "to": "treasure-island-stepdown",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.58,
+        "avg_response_time_min_observed": 85,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-older-adult",
+      "to": "progress-carroll-house",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.65,
+        "avg_response_time_min_observed": 58,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-older-adult",
+      "to": "bhac-1380-howard",
+      "type": "step_up",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.58,
+        "avg_response_time_min_observed": 118,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "samsan-mateo-crc",
+      "to": "minna-project",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.58,
+        "avg_response_time_min_observed": 81,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "samsan-mateo-crc",
+      "to": "baker-odyssey-house",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.6,
+        "avg_response_time_min_observed": 42,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "samsan-mateo-crc",
+      "to": "sf-behavioral-health-center",
+      "type": "step_up",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.58,
+        "avg_response_time_min_observed": 54,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "alameda-john-george",
+      "to": "telecare-sanmateo-crisis",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.78,
+        "avg_response_time_min_observed": 38,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "alameda-john-george",
+      "to": "progress-shrader-house",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.47,
+        "avg_response_time_min_observed": 30,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "alameda-john-george",
+      "to": "sf-behavioral-health-center",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.82,
+        "avg_response_time_min_observed": 52,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "alameda-john-george",
+      "to": "ucsf-parnassus-ed",
+      "type": "step_up",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.65,
+        "avg_response_time_min_observed": 64,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "alameda-john-george",
+      "to": "zsfg-pes",
+      "type": "step_up",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.61,
+        "avg_response_time_min_observed": 47,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "alameda-willow-rock",
+      "to": "hr360-walden-house",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.58,
+        "avg_response_time_min_observed": 27,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "alameda-willow-rock",
+      "to": "progress-older-adult",
+      "type": "step_down",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.71,
+        "avg_response_time_min_observed": 49,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "alameda-willow-rock",
+      "to": "edgewood-center-tay",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.75,
+        "avg_response_time_min_observed": 24,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "alameda-willow-rock",
+      "to": "hr360-safe-passages",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.62,
+        "avg_response_time_min_observed": 42,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "sanmateo-cordilleras",
+      "to": "hr360-womens-hope",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.69,
+        "avg_response_time_min_observed": 71,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "sanmateo-cordilleras",
+      "to": "baker-robertson-place",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.66,
+        "avg_response_time_min_observed": 31,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "sanmateo-cordilleras",
+      "to": "progress-la-posada",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.72,
+        "avg_response_time_min_observed": 43,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-h360-outpatient-oakland",
+      "to": "hummingbird-potrero",
+      "type": "step_up",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.6,
+        "avg_response_time_min_observed": 118,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-h360-outpatient-oakland",
+      "to": "dore-urgent-care",
+      "type": "crisis_reentry",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.66,
+        "avg_response_time_min_observed": 60,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "bonita-house-alameda",
+      "to": "conard-house-sh",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.66,
+        "avg_response_time_min_observed": 41,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "bonita-house-alameda",
+      "to": "conard-house-transitional",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.79,
+        "avg_response_time_min_observed": 76,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "bonita-house-alameda",
+      "to": "ucsf-php-divisadero",
+      "type": "step_down",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.72,
+        "avg_response_time_min_observed": 82,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "bonita-house-alameda",
+      "to": "progress-older-adult",
+      "type": "vertical",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.61,
+        "avg_response_time_min_observed": 99,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "horizon-services-alameda",
+      "to": "hr360-tay-village",
+      "type": "vertical",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.62,
+        "avg_response_time_min_observed": 58,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "horizon-services-alameda",
+      "to": "samsan-mateo-crc",
+      "type": "crisis_reentry",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.63,
+        "avg_response_time_min_observed": 29,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "telecare-sanmateo-crisis",
+      "to": "baker-robertson-place",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.75,
+        "avg_response_time_min_observed": 71,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "telecare-sanmateo-crisis",
+      "to": "hr360-womens-hope",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.54,
+        "avg_response_time_min_observed": 47,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "telecare-sanmateo-crisis",
+      "to": "alameda-willow-rock",
+      "type": "vertical",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.49,
+        "avg_response_time_min_observed": 37,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "starvista-sanmateo",
+      "to": "ucsf-parnassus-ed",
+      "type": "crisis_reentry",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.7,
+        "avg_response_time_min_observed": 23,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "edgewood-center-tay",
+      "to": "progress-carroll-house",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.79,
+        "avg_response_time_min_observed": 31,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "edgewood-center-tay",
+      "to": "treasure-island-stepdown",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.74,
+        "avg_response_time_min_observed": 44,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "edgewood-center-tay",
+      "to": "ucsf-php-divisadero",
+      "type": "step_down",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.56,
+        "avg_response_time_min_observed": 25,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "edgewood-center-tay",
+      "to": "baker-diamond-street",
+      "type": "vertical",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.56,
+        "avg_response_time_min_observed": 75,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-safe-passages",
+      "to": "progress-carroll-house",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.64,
+        "avg_response_time_min_observed": 60,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-safe-passages",
+      "to": "treasure-island-stepdown",
+      "type": "step_down",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.6,
+        "avg_response_time_min_observed": 72,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-safe-passages",
+      "to": "conard-house-sh",
+      "type": "step_down",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.68,
+        "avg_response_time_min_observed": 48,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-safe-passages",
+      "to": "alameda-willow-rock",
+      "type": "step_up",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.45,
+        "avg_response_time_min_observed": 72,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-safe-passages",
+      "to": "telecare-sanmateo-crisis",
+      "type": "step_up",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.51,
+        "avg_response_time_min_observed": 61,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-safe-passages",
+      "to": "edgewood-center-tay",
+      "type": "vertical",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.68,
+        "avg_response_time_min_observed": 99,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-hummingbird-carroll",
+      "to": "telecare-sanmateo-crisis",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.65,
+        "avg_response_time_min_observed": 20,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-hummingbird-carroll",
+      "to": "hr360-acceptance-place",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.67,
+        "avg_response_time_min_observed": 21,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-hummingbird-carroll",
+      "to": "progress-la-posada",
+      "type": "step_down",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.66,
+        "avg_response_time_min_observed": 55,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-hummingbird-carroll",
+      "to": "baker-robertson-place",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.84,
+        "avg_response_time_min_observed": 22,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-hummingbird-carroll",
+      "to": "ucsf-stanyan-mcauley",
+      "type": "step_up",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.56,
+        "avg_response_time_min_observed": 60,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-hummingbird-carroll",
+      "to": "ucsfh-hyde-stfrancis",
+      "type": "step_up",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.59,
+        "avg_response_time_min_observed": 62,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "progress-hummingbird-carroll",
+      "to": "sanmateo-cordilleras",
+      "type": "vertical",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.69,
+        "avg_response_time_min_observed": 88,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-diamond-street",
+      "to": "progress-carroll-house",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.85,
+        "avg_response_time_min_observed": 24,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-diamond-street",
+      "to": "treasure-island-stepdown",
+      "type": "step_down",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.61,
+        "avg_response_time_min_observed": 68,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-diamond-street",
+      "to": "ucsf-php-divisadero",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.64,
+        "avg_response_time_min_observed": 21,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-diamond-street",
+      "to": "conard-house-transitional",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.52,
+        "avg_response_time_min_observed": 83,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-diamond-street",
+      "to": "bhac-1380-howard",
+      "type": "step_up",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.46,
+        "avg_response_time_min_observed": 118,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "baker-diamond-street",
+      "to": "baker-jo-ruffin-place",
+      "type": "vertical",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.68,
+        "avg_response_time_min_observed": 68,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-h360-tay-village-res",
+      "to": "treasure-island-stepdown",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.75,
+        "avg_response_time_min_observed": 37,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-h360-tay-village-res",
+      "to": "westside-php",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.74,
+        "avg_response_time_min_observed": 84,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-h360-tay-village-res",
+      "to": "telecare-sanmateo-crisis",
+      "type": "step_up",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.5,
+        "avg_response_time_min_observed": 108,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-h360-tay-village-res",
+      "to": "samsan-mateo-crc",
+      "type": "step_up",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.52,
+        "avg_response_time_min_observed": 71,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "mha-warmline",
+      "to": "hummingbird-valencia",
+      "type": "step_up",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.51,
+        "avg_response_time_min_observed": 111,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "mha-warmline",
+      "to": "soma-rise-sobering",
+      "type": "step_up",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.62,
+        "avg_response_time_min_observed": 70,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "mha-warmline",
+      "to": "larkin-street-tay",
+      "type": "vertical",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.51,
+        "avg_response_time_min_observed": 41,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "mha-warmline",
+      "to": "alameda-willow-rock",
+      "type": "crisis_reentry",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.64,
+        "avg_response_time_min_observed": 20,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-integrated-outpatient-soma",
+      "to": "progress-foundation-outpatient",
+      "type": "step_down",
+      "freq_sim": 8,
+      "simulated": {
+        "accept_rate_observed": 0.7,
+        "avg_response_time_min_observed": 78,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-integrated-outpatient-soma",
+      "to": "hr360-tay-village",
+      "type": "step_down",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.5,
+        "avg_response_time_min_observed": 20,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-integrated-outpatient-soma",
+      "to": "felton-institute",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.58,
+        "avg_response_time_min_observed": 68,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-integrated-outpatient-soma",
+      "to": "hr360-vanness-clinic",
+      "type": "step_down",
+      "freq_sim": 6,
+      "simulated": {
+        "accept_rate_observed": 0.63,
+        "avg_response_time_min_observed": 75,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-integrated-outpatient-soma",
+      "to": "progress-carroll-house",
+      "type": "step_up",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.5,
+        "avg_response_time_min_observed": 118,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-integrated-outpatient-soma",
+      "to": "ucsf-php-divisadero",
+      "type": "step_up",
+      "freq_sim": 2,
+      "simulated": {
+        "accept_rate_observed": 0.54,
+        "avg_response_time_min_observed": 52,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-integrated-outpatient-soma",
+      "to": "ucsf-iop-divisadero",
+      "type": "vertical",
+      "freq_sim": 4,
+      "simulated": {
+        "accept_rate_observed": 0.69,
+        "avg_response_time_min_observed": 61,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "hr360-integrated-outpatient-soma",
+      "to": "cpmc-davies-ed",
+      "type": "crisis_reentry",
+      "freq_sim": 3,
+      "simulated": {
+        "accept_rate_observed": 0.85,
+        "avg_response_time_min_observed": 26,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "westside-php",
+      "to": "hr360-iop-mission",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.72,
+        "avg_response_time_min_observed": 37,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "westside-php",
+      "to": "hummingbird-potrero",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.57,
+        "avg_response_time_min_observed": 52,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "westside-php",
+      "to": "mission-street-sobering",
+      "type": "step_down",
+      "freq_sim": 9,
+      "simulated": {
+        "accept_rate_observed": 0.51,
+        "avg_response_time_min_observed": 74,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "westside-php",
+      "to": "hummingbird-valencia",
+      "type": "step_down",
+      "freq_sim": 7,
+      "simulated": {
+        "accept_rate_observed": 0.48,
+        "avg_response_time_min_observed": 81,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "westside-php",
+      "to": "treasure-island-stepdown",
+      "type": "step_up",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.41,
+        "avg_response_time_min_observed": 76,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "westside-php",
+      "to": "conard-house-transitional",
+      "type": "step_up",
+      "freq_sim": 5,
+      "simulated": {
+        "accept_rate_observed": 0.58,
+        "avg_response_time_min_observed": 40,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
+    },
+    {
+      "from": "westside-php",
+      "to": "samsan-mateo-crc",
+      "type": "crisis_reentry",
+      "freq_sim": 1,
+      "simulated": {
+        "accept_rate_observed": 0.5,
+        "avg_response_time_min_observed": 31,
+        "last_updated": "2026-07-18",
+        "source": "simulated_topology"
+      }
     }
   ]
 }

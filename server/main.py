@@ -188,6 +188,33 @@ def list_patients():
     return {"patients": out}
 
 
+_PAYER_MAP = {"medi-cal": "medi-cal", "medicare": "medicare", "private": "private",
+              "uninsured": "uninsured", "county": "county_funded"}
+_LANG_MAP = {"english": "en", "spanish": "es", "cantonese": "zh", "mandarin": "zh", "chinese": "zh"}
+
+
+def _demo_to_need(demo: dict, direction: str) -> dict:
+    ins = str(demo.get("insurance", "")).strip().lower()
+    payer = next((v for k, v in _PAYER_MAP.items() if k in ins), None)
+    lang = _LANG_MAP.get(str(demo.get("language", "")).strip().lower())
+    return {"direction": direction, "payer": payer, "language": lang, "exclude": []}
+
+
+@app.get("/api/recommend/{patient_id}")
+def recommend(patient_id: str, direction: str = "step_down"):
+    """Agentic next-step recommendation for a patient just entering the system:
+    read demographics, rank the real directory by fit, return the top options the
+    case manager should pursue — computed the moment the patient shows up."""
+    demo_path = ROOT / "data" / "patients" / patient_id / "demographics.json"
+    if not demo_path.exists():
+        raise HTTPException(404, "unknown patient")
+    demo = json.loads(demo_path.read_text())
+    need = _demo_to_need(demo, direction)
+    candidates = match_directory(need)
+    return {"patient_id": patient_id, "need": need,
+            "top": candidates[:3], "n_considered": len(candidates)}
+
+
 @app.get("/api/decline-routing")
 def decline_routing():
     return DECLINE_ROUTING
