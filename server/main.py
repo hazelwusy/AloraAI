@@ -12,9 +12,10 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from pipeline import llm
-from pipeline.call_sim import run_call
+from pipeline.copilot import observe, precall_brief
+from pipeline.learning import record_call
 from pipeline.matcher import load_facilities, match
+from pipeline.schemas import CallOutcome, CallResult
 
 ROOT = Path(__file__).parent.parent
 STATE_PATH = ROOT / "out" / "state.json"
@@ -54,51 +55,76 @@ def referrals():
     return _state()
 
 
-@app.post("/api/call")
-def place_call(body: dict):
-    """body = {patient_id, facility_id, packet_json, nurse_name, mode: "agent"|"self"}
-    mode=self returns a call script for the nurse instead of running the agent."""
-    fac = next((f for f in load_facilities() if f["id"] == body["facility_id"]), None)
+def _facility(facility_id: str) -> dict:
+    fac = next((f for f in load_facilities() if f["id"] == facility_id), None)
     if not fac:
         raise HTTPException(404, "unknown facility")
+    return fac
+
+
+@app.post("/api/precall")
+def do_precall(body: dict):
+    """Job 1 — what to say. body = {patient_id, facility_id, packet_json}.
+    Alora preps the case manager; she makes the call herself."""
+    fac = _facility(body["facility_id"])
+    brief = precall_brief(body["packet_json"], fac, body["patient_id"])
+    return {"facility": fac, "brief": brief.model_dump()}
+
+
+@app.post("/api/copilot/observe")
+def do_observe(body: dict):
+    """Job 2 — one live tick. body = {patient_id, facility_id, packet_json, transcript}.
+    The case manager is on the line; Alora reads the rolling transcript and
+    returns the dashboard state to render."""
+    fac = _facility(body["facility_id"])
+    state = observe(body.get("transcript", ""), body["packet_json"], fac, body["patient_id"])
+    return {"state": state.model_dump()}
+
+
+@app.post("/api/copilot/finalize")
+def do_finalize(body: dict):
+    """Job 3 — capture + learn. The case manager confirms the outcome (she is the
+    source of truth); Alora records it into both learning ledgers and suggests a
+    next candidate on decline.
+    body = {patient_id, facility_id, outcome, reason, reason_category, condition,
+            questions_asked_by_intake, flagged_questions, next_step_for_nurse,
+            transcript, direction, payer, language}"""
+    fac = _facility(body["facility_id"])
+    outcome = CallOutcome(
+        outcome=body["outcome"],
+        reason=body.get("reason", ""),
+        reason_category=body.get("reason_category"),
+        condition=body.get("condition"),
+        questions_asked_by_intake=body.get("questions_asked_by_intake", []),
+        documents_requested=body.get("documents_requested", []),
+        callback=body.get("callback"),
+        next_step_for_nurse=body.get("next_step_for_nurse", ""),
+        flagged_questions=body.get("flagged_questions", []),
+    )
+    transcript = body.get("transcript", [])
+    if isinstance(transcript, str):
+        transcript = [{"speaker": "call", "text": transcript}]
+    result = CallResult(facility_id=fac["id"], transcript=transcript,
+                        outcome=outcome, simulated_far_end=False)
+    record_call(body["patient_id"], result)  # updates facility memory + patient gaps
 
     state = _state()
     ref = {"patient_id": body["patient_id"], "facility_id": fac["id"],
-           "status": "authorized", "events": [{"ts": _now(), "status": "authorized",
-                                              "facility_id": fac["id"],
-                                              "note": f"authorized by {body['nurse_name']} (mode={body['mode']})"}]}
-
-    if body["mode"] == "self":
-        # nurse calls herself: agent contributes the talking-points script only
-        resp = llm.client().messages.create(
-            model=llm.MODEL, max_tokens=800,
-            system="Write a 30-second phone script (bullet points) a nurse can read to this facility's intake line, from this packet. Lead with level of care, legal status, payer, medical clearance.",
-            messages=[{"role": "user", "content": f"facility: {json.dumps(fac)}\n\npacket: {body['packet_json']}"}],
-        )
-        ref["status"] = "calling"
-        ref["events"].append({"ts": _now(), "status": "calling", "facility_id": fac["id"],
-                              "note": "nurse dialing herself", "script": resp.content[0].text})
-        state["referrals"].append(ref)
-        _save(state)
-        return {"mode": "self", "script": resp.content[0].text, "referral": ref}
-
-    result = run_call(body["packet_json"], fac, body["nurse_name"], patient_id=body["patient_id"])
-    ref["status"] = result.outcome.outcome
-    ref["events"].append({"ts": _now(), "status": result.outcome.outcome,
-                          "facility_id": fac["id"], "note": result.outcome.reason,
-                          "call": result.model_dump()})
+           "status": outcome.outcome,
+           "events": [{"ts": _now(), "status": outcome.outcome, "facility_id": fac["id"],
+                       "note": outcome.reason, "call": result.model_dump()}]}
     state["referrals"].append(ref)
     _save(state)
 
     nxt = None
-    if result.outcome.outcome == "declined":
+    if outcome.outcome == "declined":
         exclude = [r["facility_id"] for r in state["referrals"] if r["patient_id"] == body["patient_id"]]
         candidates = match({"direction": body.get("direction", "step_down"),
                             "payer": body.get("payer"), "language": body.get("language"),
                             "exclude": exclude})
         nxt = candidates[0] if candidates else None
 
-    return {"mode": "agent", "result": result.model_dump(), "next_candidate": nxt}
+    return {"recorded": True, "next_candidate": nxt}
 
 
 

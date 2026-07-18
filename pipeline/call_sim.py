@@ -22,7 +22,7 @@ def _turn(system: str, history: list[dict], max_tokens: int = 300) -> str:
     resp = llm.client().messages.create(
         model=llm.MODEL, max_tokens=max_tokens, system=system, messages=history
     )
-    return resp.content[0].text.strip()
+    return llm.text_of(resp)
 
 
 def run_call(packet_json: str, facility: dict, nurse_name: str, patient_id: str = "maria") -> CallResult:

@@ -32,23 +32,59 @@ def load_prompt(name: str) -> str:
     return (PROMPTS / f"{name}.md").read_text()
 
 
-def call_json(system_prompt: str, user_content: str, out_model: type[T], max_tokens: int = 4096) -> T:
-    """One-shot call expecting a single JSON object matching `out_model`."""
+def text_of(resp) -> str:
+    """Concatenate the text blocks of a response, skipping thinking/tool blocks.
+    (Models may emit a ThinkingBlock before the text, so content[0].text is unsafe.)"""
+    return "".join(b.text for b in resp.content if getattr(b, "type", None) == "text").strip()
+
+
+def _parse_json(raw: str):
+    """Try to load a JSON object from model text: whole string first, then the
+    largest brace-delimited span. Returns a dict/list or None."""
+    candidates = [raw]
+    match = re.search(r"\{.*\}", raw, re.S)
+    if match:
+        candidates.append(match.group(0))
+    for candidate in candidates:
+        try:
+            return json.loads(candidate)
+        except Exception:
+            continue
+    return None
+
+
+def _repair_json(raw: str, max_tokens: int):
+    """Last resort: ask the model to re-emit the payload as strictly valid JSON.
+    Handles the occasional unescaped quote / missing delimiter in a long brief."""
     resp = client().messages.create(
         model=MODEL,
         max_tokens=max_tokens,
-        system=system_prompt,
-        messages=[
-            {"role": "user", "content": user_content},
-            {"role": "assistant", "content": "{"},  # prefill: force JSON from the first byte
-        ],
+        system=("You are a JSON repair tool. The user message is meant to be a single "
+                "JSON object but has syntax errors (unescaped quotes, missing commas, "
+                "trailing text, code fences). Output ONLY the corrected, strictly valid "
+                "JSON object — no prose, no markdown."),
+        messages=[{"role": "user", "content": raw}],
     )
-    raw = "{" + resp.content[0].text
-    try:
-        return out_model.model_validate_json(raw)
-    except Exception:
-        # salvage the largest JSON object in the output before giving up
-        match = re.search(r"\{.*\}", raw, re.S)
-        if match:
-            return out_model.model_validate(json.loads(match.group(0)))
-        raise
+    return _parse_json(text_of(resp))
+
+
+def call_json(system_prompt: str, user_content: str, out_model: type[T], max_tokens: int = 4096) -> T:
+    """One-shot call expecting a single JSON object matching `out_model`.
+
+    Note: no assistant-message prefill — the current default models reject it
+    ("conversation must end with a user message"). We instruct the prompt to emit
+    JSON only, salvage the object if the model wraps it in prose, and fall back to
+    a one-shot repair pass if the JSON itself is malformed."""
+    resp = client().messages.create(
+        model=MODEL,
+        max_tokens=max_tokens,
+        system=system_prompt + "\n\nRespond with the JSON object only — no prose, no markdown fences. Escape any double-quotes that appear inside string values.",
+        messages=[{"role": "user", "content": user_content}],
+    )
+    raw = text_of(resp)
+    obj = _parse_json(raw)
+    if obj is None:
+        obj = _repair_json(raw, max_tokens)
+    if obj is None:
+        raise ValueError(f"could not parse JSON from model output: {raw[:300]!r}")
+    return out_model.model_validate(obj)
