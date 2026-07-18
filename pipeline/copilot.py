@@ -89,9 +89,22 @@ def observe(transcript: str, packet_json: str, facility: dict, patient_id: str) 
     return _fallback_observe(transcript, _packet(packet_json))
 
 
+# intake-question cue -> (label, packet key, evidence channel). This is how the
+# deterministic board shows Alora synthesizing an answer from the right source.
+_ANSWER_MAP = [
+    (["risk", "suicidal", "ideation", "assessment"], "Last risk assessment / SI?", "risk", "nursing reassessment note"),
+    (["substance", "tox", "drug", "alcohol", "72 hour", "72 hours"], "Substance use in last 72h?", "substance_use", "EHR labs (day-0 tox)"),
+    (["cleared", "medically", "medical"], "Medically cleared?", "medical_clearance", "IM clearance note"),
+    (["insurance", "medi-cal", "medicaid", "payer", "coverage"], "Insurance / payer?", "insurance", "eligibility portal"),
+    (["language", "spanish", "interpret"], "Language / interpreter?", "language_support", "demographics"),
+    (["medication", "meds", "prn"], "Current medications?", "medications", "MAR"),
+]
+
+
 def _fallback_observe(transcript: str, pkt: dict) -> CoPilotState:
     """Deterministic live board from keyword cues in the transcript — no LLM.
-    Enough to demo the co-pilot end to end offline."""
+    Surfaces a grounded, source-cited answer for each intake question so the demo
+    shows Alora pulling evidence across channels and answering everything."""
     t = (transcript or "").lower()
     essentials = [("level of care sought", ["step-down", "step down", "bed", "placement"]),
                   ("legal status", ["voluntary", "5150", "hold", "conservat"]),
@@ -99,18 +112,30 @@ def _fallback_observe(transcript: str, pkt: dict) -> CoPilotState:
                   ("medical clearance", ["cleared", "medically", "labs"]),
                   ("acuity one-liner", ["risk", "suicidal", "ideation", "psychosis", "stable"])]
     covered = [CoveredItem(label=lbl, covered=any(k in t for k in keys)) for lbl, keys in essentials]
+
+    surfaced, gaps = [], []
+    for keys, label, pk, source in _ANSWER_MAP:
+        if not any(k in t for k in keys):
+            continue
+        val = pkt.get(pk)
+        if val:
+            surfaced.append(SurfacedAnswer(intake_question=label, in_packet=True,
+                                           packet_answer=str(val), citation=f"{source}: {val}"))
+        else:
+            gaps.append(f"{label} — asked by intake, not in packet")
+
     outcome = None
-    if any(k in t for k in ["fax", "faxed", "send", "before i can", "need the", "updated risk"]):
-        outcome = DetectedOutcome(kind="info_requested", reason="facility requested documentation before holding a bed",
-                                  condition="updated risk assessment faxed before holding a bed")
-    elif any(k in t for k in ["we can take", "we'll accept", "go ahead", "we have a bed for"]):
-        outcome = DetectedOutcome(kind="accepted", reason="facility indicated acceptance")
+    if any(k in t for k in ["we have a bed", "we can take", "we'll accept", "we'll hold", "hold it for", "that's everything i need", "go ahead"]):
+        outcome = DetectedOutcome(kind="accepted", reason="bed offered — send current risk assessment + med rec",
+                                  condition="fax current risk assessment and med rec to confirm the hold")
     elif any(k in t for k in ["can't take", "cannot take", "no capacity", "we're full", "decline"]):
         outcome = DetectedOutcome(kind="declined", reason="facility indicated no capacity / not a fit")
-    gaps = []
-    if "substance" in t:
-        gaps.append("substance use in last 72h — asked by intake, not in packet")
-    nxt = "Confirm the last risk assessment date and offer to fax it now." if outcome and outcome.kind == "info_requested" \
-        else "State the payer and confirm medical clearance to move things forward."
-    return CoPilotState(covered=covered, surfaced_answers=[], open_gaps=gaps,
+    elif any(k in t for k in ["fax", "faxed", "before i can", "need the updated"]):
+        outcome = DetectedOutcome(kind="info_requested", reason="facility requested documentation before holding a bed",
+                                  condition="updated risk assessment faxed before holding a bed")
+
+    nxt = ("Confirm you're faxing the risk assessment and med rec now to lock the bed."
+           if outcome and outcome.kind == "accepted"
+           else "Offer the tox screen and clearance note proactively to move things forward.")
+    return CoPilotState(covered=covered, surfaced_answers=surfaced, open_gaps=gaps,
                         suggested_next_line=nxt, detected_outcome=outcome)

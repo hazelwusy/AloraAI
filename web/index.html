@@ -421,6 +421,21 @@
   .pm-reco .to { font-weight: 700; font-size: 14px; color: var(--accent-strong); }
   .pm-reason { font-size: 13px; color: var(--text); line-height: 1.5; margin: 8px 0 10px; }
   .pm-alt { font-size: 12.5px; margin: 5px 0; color: var(--text-muted); }
+  /* call-summary modal */
+  .prio-chip.out-accepted { background: var(--success-tint); color: var(--success); }
+  .prio-chip.out-declined { background: var(--critical-tint); color: var(--critical); }
+  .prio-chip.out-info_requested { background: var(--warning-tint); color: var(--warning); }
+  .sm-scroll { padding: 16px 20px; max-height: 56vh; overflow-y: auto; }
+  .sm-scroll h5 { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-faint); margin: 0 0 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .sm-answers { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media (max-width: 560px){ .sm-answers { grid-template-columns: 1fr; } }
+  .sm-a { border: 1px solid var(--border); border-left: 3px solid var(--success); border-radius: var(--radius-s); padding: 8px 10px; background: var(--surface-2); }
+  .sm-a .q { font-size: 11px; color: var(--text-faint); } .sm-a .a { font-size: 12.5px; margin: 2px 0; }
+  .sm-a .src { font-family: var(--font-mono); font-size: 9.5px; color: var(--accent-strong); }
+  .sm-foot { display: flex; justify-content: flex-end; gap: 10px; padding: 14px 20px; border-top: 1px solid var(--border); }
+  .sm-done { text-align: center; padding: 40px 28px; }
+  .sm-check { width: 52px; height: 52px; border-radius: 50%; background: var(--success); color: #fff; font-size: 26px;
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
   #sysmap .sedge { fill: none; pointer-events: none; transition: opacity .2s; }
   #sysmap .sedge-hit { fill: none; stroke: transparent; stroke-width: 10; cursor: pointer; }
   #sysmap.filtered .snode.dim { opacity: .12; }
@@ -517,21 +532,10 @@
             <div class="panels" id="cop-panels">
               <div class="panel" id="p-check"><h4>Cover these</h4><div id="checklist"></div></div>
               <div class="panel" id="p-next" style="display:none"><h4>Say next</h4><div id="nextline"></div></div>
-              <div class="panel" id="p-ans" style="display:none"><h4>They asked — packet says</h4><div id="answers"></div></div>
+              <div class="panel" id="p-ans" style="display:none"><h4>They asked — Alora answers (sourced)</h4><div id="answers"></div></div>
               <div class="panel" id="p-gaps" style="display:none"><h4>Can't answer — gather</h4><ul class="gaps" id="gaps"></ul></div>
               <div class="panel" id="p-flags" style="display:none"><h4>Integrity check</h4><div id="flags"></div></div>
               <div class="panel" id="p-det" style="display:none"><h4>Outcome forming</h4><div id="det-outcome"></div></div>
-              <div class="panel contribute" id="p-contribute" style="display:none">
-                <h4>Contribute to the knowledge graph</h4>
-                <div class="boundary-note"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"></path><path d="M9.5 12l1.8 1.8 3.5-3.6"></path></svg>
-                  <span>Only <b>facility-level facts</b> cross into the graph. This patient's name, clinical detail, and the transcript stay in the workspace — never shared.</span></div>
-                <div id="contribute-fields"></div>
-                <div class="workspace-only" id="workspace-only"></div>
-                <div style="display:flex;gap:8px;margin-top:12px">
-                  <button class="btn btn-primary btn-sm" id="btn-confirm-contribute">Confirm &amp; record</button>
-                  <button class="btn btn-sm" id="btn-record-only">Record outcome only</button>
-                </div>
-              </div>
             </div>
           </div>
           <p class="live-foot">Alora never speaks on the line. It listens, grounds every answer in the approved packet, and flags any oversell. You decide and you talk. <b>Two stores, one boundary:</b> the patient workspace is ephemeral (this placement only, per hospital retention); the knowledge graph holds institution-level facts only.</p>
@@ -600,6 +604,7 @@
 </div>
 
 <div class="patient-modal" id="patient-modal"><div class="pm-card" id="pm-body"></div></div>
+<div class="patient-modal" id="summary-modal"><div class="pm-card" id="sm-body"></div></div>
 
 <div class="agent-log" id="agent-log">
   <div class="agent-log-head" id="agent-log-head">
@@ -620,22 +625,31 @@ const PATIENT = {patient_id:"maria_demo", direction:"step_down", payer:"medi-cal
 const PACKET = JSON.stringify({
   one_liner:"34F, voluntary, day 4 ZSFG inpatient; mood stabilized on current regimen, sleeping 6h, engaging in groups; step-down to crisis-stabilization level sought.",
   legal_status:"voluntary (5150 expired day 2, not renewed)",
+  risk:"risk reassessed today 09:50 — no SI, no plan; no behavioral incidents; ambulatory, independent ADLs",
+  substance_use:"tox screen negative on admission (day-0 ED labs); no substance use documented since",
   medications:"quetiapine 200mg qhs (unchanged x3 days); no PRNs x48h",
-  risk:"no SI since day 1 reassessment; no behavioral incidents; ambulatory, independent ADLs",
-  medical_clearance:"cleared day 3, labs unremarkable",
-  psychosocial:"Medi-Cal; Spanish-preferred; sister in Excelsior is support; housing unstable (staying with sister)",
+  medical_clearance:"cleared day 3 by IM; labs unremarkable",
+  insurance:"Medi-Cal active — verified day 0 via eligibility portal",
+  language_support:"Spanish-preferred; sister available to interpret; interpreter line on file",
+  psychosocial:"sister in Excelsior is support; housing unstable (staying with sister)",
   aftercare_needs:"med continuity, Spanish-capable programming, warm handoff to ICM"
 });
+// A clean, evidence-led call: Alora has every answer pre-sourced from the packet,
+// the EHR labs, and the nursing notes — so the case manager answers confidently
+// and the bed is offered. (Shows Alora synthesizing across channels, no fumbles.)
 const DEMO_CALL = [
   {who:"intake", text:"Crisis stabilization intake, this is Dana."},
   {who:"cm", text:"Hi Dana, J. Alvarez, RN at ZSFG inpatient psych. I'm looking for a crisis-stabilization step-down bed for a 34-year-old, voluntary, Medi-Cal, Spanish-preferred."},
   {who:"intake", text:"Okay. Is the hold discontinued, and when was the last risk assessment?"},
-  {who:"cm", text:"Yes — the 5150 expired day 2 and wasn't renewed, she's fully voluntary. No suicidal ideation since the day-1 reassessment."},
+  {who:"cm", text:"Yes — the 5150 expired day 2 and wasn't renewed, she's fully voluntary. Risk was reassessed this morning at 9:50: no suicidal ideation, no plan, no behavioral incidents."},
   {who:"intake", text:"Any substance use in the last 72 hours?"},
-  {who:"cm", text:"Um, I'd have to check on that one."},
+  {who:"cm", text:"None — her tox screen was negative on admission and there's no substance use documented anywhere in the chart since. I have the day-0 ED labs in front of me."},
   {who:"intake", text:"And is she medically cleared? We can't take anyone who isn't."},
-  {who:"cm", text:"Cleared day 3, labs unremarkable."},
-  {who:"intake", text:"We may have something but I'd need the updated risk assessment faxed before I can hold a bed."},
+  {who:"cm", text:"Cleared day 3 by internal medicine, labs unremarkable. Meds are quetiapine 200 at night, unchanged three days, no PRNs in 48 hours."},
+  {who:"intake", text:"Insurance and language?"},
+  {who:"cm", text:"Medi-Cal, active and verified day 0. She's Spanish-preferred — her sister can interpret and we have the interpreter line on file."},
+  {who:"intake", text:"Great — that's everything I need. We have a bed opening this afternoon. Send the current risk assessment and med rec and we'll hold it for her."},
+  {who:"cm", text:"Sending both now. Thank you, Dana."},
 ];
 
 let selected=null, nodePos={};
@@ -1027,7 +1041,7 @@ function renderState(s){
   if(s.suggested_next_line)document.getElementById("nextline").innerHTML=`<div class="nextline">“${esc(s.suggested_next_line)}”</div>`;
   const ans=s.surfaced_answers||[]; show("p-ans",ans.length>0);
   document.getElementById("answers").innerHTML=ans.map(a=>`<div class="ans${a.in_packet?"":" gap"}"><div class="q">${esc(a.intake_question)}</div>`+
-    (a.in_packet?`<div class="a">${esc(a.packet_answer)}</div>`+(a.citation?`<div class="cite">packet: “${esc(a.citation)}”</div>`:"")
+    (a.in_packet?`<div class="a">${esc(a.packet_answer)}</div>`+(a.citation?`<div class="cite">source · ${esc((a.citation||"").split(":")[0])}</div>`:"")
       :`<div class="a" style="color:var(--warning)">not in packet — say the team is gathering this</div>`)+`</div>`).join("");
   const gaps=s.open_gaps||[]; show("p-gaps",gaps.length>0);
   document.getElementById("gaps").innerHTML=gaps.map(g=>`<li>${esc(g)}</li>`).join("");
@@ -1066,20 +1080,65 @@ document.getElementById("btn-demo").onclick=async()=>{
   btn.disabled=false;
 };
 
-// Step 1: end call → show the contribution confirmation card (the privacy filter)
-document.getElementById("btn-finalize").onclick=()=>{
+// End call → a summary popup the case manager reviews and confirms before anything is recorded
+document.getElementById("btn-finalize").onclick=()=>openSummaryModal();
+
+const OUTCOME_LABEL={accepted:"Bed accepted",declined:"Declined",info_requested:"Info requested"};
+function openSummaryModal(){
   const f=FAC_BY_ID[selected.id]||{}, av=f.simulated?.availability||{}, s=_lastState||{};
-  const cond=s.detected_outcome?.condition;
-  const fields=document.getElementById("contribute-fields");
-  let html=`<div class="cf-row"><label>Beds open now</label><input type="number" id="cf-beds" min="0" value="${av.available_beds??""}"><span class="cf-inst">facility</span></div>`;
-  html+=`<div class="cf-row"><label>Est. wait (days)</label><input type="number" id="cf-wait" min="0" value="${av.estimated_wait_days??""}"><span class="cf-inst">facility</span></div>`;
-  if(cond) html+=`<div class="cf-row"><input type="checkbox" id="cf-req" checked><label>Requires: ${esc(cond)}</label><span class="cf-inst">facility</span></div>`;
-  fields.innerHTML=html;
-  document.getElementById("workspace-only").innerHTML=`<b>Stays in Maria G.'s workspace (never in the graph):</b> clinical status, risk history, the full call transcript, and this placement's patient-side outcome.`;
-  show("p-det", !!s.detected_outcome);
-  document.getElementById("p-contribute").style.display="block";
-  document.getElementById("p-contribute").scrollIntoView({behavior:"smooth",block:"nearest"});
-};
+  const o=s.detected_outcome, kind=o?o.kind:"info_requested", cond=o?.condition;
+  const answered=(s.surfaced_answers||[]).filter(a=>a.in_packet);
+  const covered=(s.covered||[]).filter(c=>c.covered).length, total=(s.covered||[]).length||5;
+  const modal=document.getElementById("summary-modal"), body=document.getElementById("sm-body");
+  body.innerHTML=`
+    <div class="pm-head">
+      <div><div class="pm-name">Call summary — ${esc(f.name||selected.name)}</div>
+        <div class="pm-sub">Maria G. · Alora listened and grounded every answer</div></div>
+      <span class="prio-chip out-${esc(kind)}">${esc(OUTCOME_LABEL[kind]||kind)}</span>
+      <span class="pm-close" id="sm-close">&times;</span>
+    </div>
+    <div class="sm-scroll">
+      <h5>What Alora answered <span class="ai-badge">${answered.length} grounded · ${covered}/${total} essentials covered</span></h5>
+      <div class="sm-answers">${answered.length?answered.map(a=>`<div class="sm-a"><div class="q">${esc(a.intake_question)}</div><div class="a">${esc(a.packet_answer)}</div><div class="src">source · ${esc((a.citation||"").split(":")[0])}</div></div>`).join(""):`<div class="why">No intake questions surfaced yet.</div>`}</div>
+
+      <h5 style="margin-top:16px">Contribute to the knowledge graph
+        <span class="ai-badge">facility-level only</span></h5>
+      <div class="boundary-note"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"></path><path d="M9.5 12l1.8 1.8 3.5-3.6"></path></svg>
+        <span>Review what crosses into the shared graph. Patient detail below never leaves the workspace.</span></div>
+      <div id="contribute-fields">
+        <div class="cf-row"><label>Beds open now</label><input type="number" id="cf-beds" min="0" value="${av.available_beds??""}"><span class="cf-inst">facility</span></div>
+        <div class="cf-row"><label>Est. wait (days)</label><input type="number" id="cf-wait" min="0" value="${av.estimated_wait_days??""}"><span class="cf-inst">facility</span></div>
+        ${cond?`<div class="cf-row"><input type="checkbox" id="cf-req" checked><label>Requires: ${esc(cond)}</label><span class="cf-inst">facility</span></div>`:""}
+      </div>
+      <div class="workspace-only"><b>Stays in Maria G.'s workspace (never in the graph):</b> clinical status, risk history, the full call transcript, and this placement's patient-side outcome.</div>
+    </div>
+    <div class="sm-foot">
+      <button class="btn" id="sm-cancel">Cancel</button>
+      <button class="btn btn-primary" id="sm-confirm">Confirm &amp; record</button>
+    </div>`;
+  document.getElementById("sm-close").onclick=()=>modal.classList.remove("show");
+  document.getElementById("sm-cancel").onclick=()=>modal.classList.remove("show");
+  document.getElementById("sm-confirm").onclick=confirmSummary;
+  modal.classList.add("show");
+}
+
+async function confirmSummary(){
+  const btn=document.getElementById("sm-confirm"); btn.disabled=true; btn.textContent="Recording…";
+  const n=await contributeConfirmedFacts();
+  await doFinalize();
+  const s=_lastState||{}, o=s.detected_outcome, kind=o?o.kind:"info_requested";
+  document.getElementById("sm-body").innerHTML=`
+    <div class="sm-done">
+      <div class="sm-check">✓</div>
+      <div class="pm-name">Recorded</div>
+      <div class="pm-sub" style="margin-top:6px;max-width:44ch">
+        Outcome <b>${esc(OUTCOME_LABEL[kind]||kind)}</b> saved to Maria's workspace.
+        ${n?`<b>${n}</b> facility-level fact${n>1?"s":""} contributed to the knowledge graph.`:"No graph changes."}
+        Patient detail stayed in the workspace.</div>
+      <button class="btn btn-primary" id="sm-ok" style="margin-top:16px">Done</button>
+    </div>`;
+  document.getElementById("sm-ok").onclick=()=>document.getElementById("summary-modal").classList.remove("show");
+}
 
 async function contributeConfirmedFacts(){
   const fid=selected.id, cur=FAC_BY_ID[fid]?.simulated||{}, av=cur.availability||{};
@@ -1115,17 +1174,11 @@ async function doFinalize(){
   try{
     const res=await j("/api/copilot/finalize",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
     logActivity("Alora · learning","Patient-side outcome recorded to the workspace ledgers");
-    let msg="Recorded. Patient detail stayed in the workspace.";
-    if(res.next_candidate){msg+=" Next: "+res.next_candidate.facility.name; logActivity("Matcher","Suggested next candidate: "+res.next_candidate.facility.name);}
-    document.getElementById("p-contribute").style.display="none";
-    document.getElementById("det-outcome").innerHTML+=`<div style="color:var(--text-muted);margin-top:6px;font-size:12px">✓ ${esc(msg)}</div>`;
-    show("p-det",true); stopMic();
+    if(res.next_candidate){logActivity("Matcher","Suggested next candidate: "+res.next_candidate.facility.name);}
+    stopMic();
     document.getElementById("calling-banner").classList.remove("on"); highlight(selected.id,false);
-    toast(msg);
   }catch(e){toast("finalize failed: "+e.message)}
 }
-document.getElementById("btn-confirm-contribute").onclick=async()=>{ await contributeConfirmedFacts(); doFinalize(); };
-document.getElementById("btn-record-only").onclick=()=>{ document.getElementById("p-contribute").style.display="none"; doFinalize(); };
 
 /* ============ SYSTEM MAP (Kumu-style full network) ============ */
 // facility categories → color + shape (matches the legend)
@@ -1402,9 +1455,9 @@ document.getElementById("btn-rescan").onclick=async(e)=>{
   await loadRecommendations(true);   // diff even if the scan auto-applied nothing new
   b.disabled=false; b.textContent="↻ Re-scan";
 };
-// patient modal: click backdrop or Esc to close
-document.getElementById("patient-modal").addEventListener("click",e=>{ if(e.target.id==="patient-modal")e.currentTarget.classList.remove("show"); });
-document.addEventListener("keydown",e=>{ if(e.key==="Escape")document.getElementById("patient-modal").classList.remove("show"); });
+// modals: click backdrop or Esc to close
+["patient-modal","summary-modal"].forEach(id=>document.getElementById(id).addEventListener("click",e=>{ if(e.target.id===id)e.currentTarget.classList.remove("show"); }));
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"){document.getElementById("patient-modal").classList.remove("show");document.getElementById("summary-modal").classList.remove("show");} });
 
 drawMap()
   .then(()=>{ logActivity("KG agent","monitoring the network — scanning web / phone / EHR feeds");
