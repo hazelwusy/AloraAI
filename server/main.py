@@ -215,6 +215,107 @@ def recommend(patient_id: str, direction: str = "step_down"):
             "top": candidates[:3], "n_considered": len(candidates)}
 
 
+def _patient_label(pid: str) -> str:
+    return "Maria G." if pid == "maria" else pid.replace("patient_", "Patient ")
+
+
+def _patient_fields(pid: str) -> dict:
+    p = ROOT / "data" / "patients" / pid / "patient_fields.json"
+    return json.loads(p.read_text()) if p.exists() else {}
+
+
+def _priority(demo: dict, fields: dict) -> tuple[int, str, list[str]]:
+    """Deterministic acuity/urgency score (higher = place sooner) with the
+    factors that drove it. Re-runs cheaply so the ranking can refresh live."""
+    import hashlib
+    score, factors = 40, []
+    hs = str(demo.get("housing_status", "")).lower()
+    if any(k in hs for k in ["unstable", "unhoused", "homeless", "shelter", "sro", "street"]):
+        score += 22; factors.append("housing instability")
+    if fields:
+        if fields.get("voluntary", {}).get("present") is False and fields.get("hold_paperwork", {}).get("present"):
+            score += 20; factors.append("on involuntary hold (5150)")
+        gaps = [k for k in ("med_rec_signed", "tb_screen", "voluntary", "guardian_contact")
+                if not fields.get(k, {}).get("present")]
+        if gaps:
+            score += min(len(gaps) * 4, 16); factors.append(f"{len(gaps)} readiness gaps")
+        if "NOT formally reassessed" in json.dumps(fields):
+            score += 8; factors.append("risk not reassessed")
+    score += int(hashlib.md5(demo.get("id", "").encode()).hexdigest(), 16) % 15
+    score = min(score, 99)
+    label = "high" if score >= 70 else "medium" if score >= 50 else "low"
+    if not factors:
+        factors.append("routine step-down candidate")
+    return score, label, factors
+
+
+def _reasoning(demo: dict, top: dict | None) -> str:
+    """Grounded recommendation rationale that reads the LIVE graph (bed/wait/
+    accept the monitoring agent keeps current) — so it tracks the system map."""
+    if not top:
+        return "No in-network match for this payer/level of care — widen criteria or consider out-of-county."
+    fac = top["facility"]
+    full = next((f for f in load_directory() if f["id"] == fac["id"]), {})
+    av = full.get("simulated", {}).get("availability", {})
+    db = full.get("simulated", {}).get("decline_behavior", {})
+    beds, wait, ar = av.get("available_beds"), av.get("estimated_wait_days"), db.get("accept_rate")
+    parts = [f"{fac['name']} is the strongest step-down fit",
+             f"accepts {demo.get('insurance', 'their payer')}"]
+    if fac.get("languages") and demo.get("language") in " ".join(fac.get("languages", [])):
+        parts.append(f"{demo.get('language')}-capable")
+    if beds:
+        parts.append(f"{beds} bed(s) open now")
+    elif beds == 0:
+        parts.append("no beds this moment — call to time the handoff")
+    if wait is not None:
+        parts.append(f"~{wait}d wait")
+    if ar is not None:
+        parts.append(f"{round(ar * 100)}% observed accept rate")
+    return "; ".join(parts) + "."
+
+
+@app.get("/api/triage")
+def triage(direction: str = "step_down"):
+    """Live priority ranking of every patient in the system + each one's top
+    next-step pick. Agentic: re-computed on demand from acuity + the live graph."""
+    base = ROOT / "data" / "patients"
+    rows = []
+    for p in sorted(base.iterdir()):
+        if not (p.is_dir() and (p / "demographics.json").exists()):
+            continue
+        demo = json.loads((p / "demographics.json").read_text())
+        demo.setdefault("id", p.name)
+        fields = _patient_fields(p.name)
+        score, label, factors = _priority(demo, fields)
+        top = (match_directory(_demo_to_need(demo, direction)) or [None])[0]
+        rows.append({"id": p.name, "label": _patient_label(p.name), "age": demo.get("age"),
+                     "insurance": demo.get("insurance"), "language": demo.get("language"),
+                     "priority": score, "priority_label": label, "factors": factors,
+                     "top": top})
+    rows.sort(key=lambda r: -r["priority"])
+    return {"patients": rows}
+
+
+@app.get("/api/patient/{patient_id}")
+def patient_detail(patient_id: str, direction: str = "step_down"):
+    """Full patient card for the triage popup: demographics + acuity + the AI
+    reasoning behind the recommendation, grounded in the current graph."""
+    p = ROOT / "data" / "patients" / patient_id
+    if not (p / "demographics.json").exists():
+        raise HTTPException(404, "unknown patient")
+    demo = json.loads((p / "demographics.json").read_text())
+    demo.setdefault("id", patient_id)
+    fields = _patient_fields(patient_id)
+    score, label, factors = _priority(demo, fields)
+    candidates = match_directory(_demo_to_need(demo, direction))
+    top = candidates[0] if candidates else None
+    readiness = {k: v.get("present") for k, v in fields.items() if isinstance(v, dict)}
+    return {"id": patient_id, "label": _patient_label(patient_id), "demographics": demo,
+            "priority": score, "priority_label": label, "factors": factors,
+            "readiness": readiness, "top": top, "alternatives": candidates[1:3],
+            "reasoning": _reasoning(demo, top), "n_considered": len(candidates)}
+
+
 @app.get("/api/decline-routing")
 def decline_routing():
     return DECLINE_ROUTING

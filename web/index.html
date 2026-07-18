@@ -363,6 +363,52 @@
   #sysmap .snode text { font-size: 8px; fill: var(--text-faint); pointer-events: none; }
   #sysmap .snode:hover .shape { stroke: var(--text); stroke-width: 2; }
   #sysmap .snode.sel .shape { stroke: var(--text); stroke-width: 2.5; }
+  #sysmap .self-halo { fill: none; stroke: var(--accent); stroke-width: 2; opacity: .5; animation: selfpulse 2.2s ease-in-out infinite; }
+  #sysmap .self-label { font-size: 9.5px; font-weight: 700; fill: var(--accent-strong); }
+  @keyframes selfpulse { 0%,100%{opacity:.5;r:26} 50%{opacity:.15} }
+  /* collapsible legend panels */
+  .sysmap-panel.collapsible h4 { cursor: pointer; display: flex; align-items: center; justify-content: space-between; margin-bottom: 0; }
+  .sysmap-panel.collapsible h4::after { content: "▾"; font-size: 10px; transition: transform .15s; }
+  .sysmap-panel.collapsible.collapsed h4::after { transform: rotate(-90deg); }
+  .sysmap-panel.collapsible.collapsed .legend-list { display: none; }
+  .sysmap-panel.collapsible:not(.collapsed) h4 { margin-bottom: 10px; }
+  /* patient triage list */
+  .reco.priority { border-color: var(--accent); }
+  .rc { cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+  .rc:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+  .rc-head { display: flex; align-items: center; gap: 8px; }
+  .rc-head .pt { font-weight: 650; font-size: 13px; }
+  .rc-head .rc-meta { margin-left: auto; font-size: 10.5px; color: var(--text-faint); font-family: var(--font-mono); }
+  .prio-chip { font-family: var(--font-mono); font-size: 11px; font-weight: 700; border-radius: 6px; padding: 1px 7px; flex: none; }
+  .prio-chip.prio-high { background: var(--critical-tint); color: var(--critical); }
+  .prio-chip.prio-medium { background: var(--warning-tint); color: var(--warning); }
+  .prio-chip.prio-low { background: var(--neutral-tint); color: var(--neutral); }
+  .rc.prio-high { border-left: 3px solid var(--critical); }
+  .rc.prio-medium { border-left: 3px solid var(--warning); }
+  .rc.prio-low { border-left: 3px solid var(--neutral); }
+  /* patient popup modal */
+  .patient-modal { position: fixed; inset: 0; z-index: 70; background: rgba(10,18,17,.5); display: none;
+    align-items: center; justify-content: center; padding: 24px; opacity: 0; transition: opacity .18s; }
+  .patient-modal.show { display: flex; opacity: 1; }
+  .pm-card { background: var(--surface); border-radius: var(--radius-l); box-shadow: 0 20px 60px -12px rgba(0,0,0,.4);
+    width: 720px; max-width: 100%; max-height: 88vh; overflow-y: auto; }
+  .pm-head { display: flex; align-items: center; gap: 12px; padding: 18px 20px; border-bottom: 1px solid var(--border); }
+  .pm-name { font-weight: 700; font-size: 18px; letter-spacing: -.01em; }
+  .pm-sub { color: var(--text-muted); font-size: 13px; margin-top: 2px; }
+  .pm-close { margin-left: 6px; cursor: pointer; font-size: 22px; color: var(--text-faint); line-height: 1; }
+  .pm-close:hover { color: var(--text); }
+  .pm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 18px 20px; }
+  @media (max-width: 640px) { .pm-grid { grid-template-columns: 1fr; } }
+  .pm-col h5 { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-faint); margin: 0 0 8px; display: flex; align-items: center; gap: 8px; }
+  .pm-list { margin: 0 0 14px; padding-left: 18px; font-size: 13px; } .pm-list li { margin: 3px 0; }
+  .pm-kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; padding: 5px 0; border-bottom: 1px dashed var(--border); }
+  .pm-kv b.warn { color: var(--warning); }
+  .store-mini { font-family: var(--font-mono); font-size: 8.5px; color: var(--warning); border: 1px solid var(--warning); border-radius: 999px; padding: 1px 6px; text-transform: none; letter-spacing: 0; }
+  .ai-badge { font-family: var(--font-mono); font-size: 8.5px; color: var(--accent-strong); background: var(--accent-tint); border-radius: 999px; padding: 1px 7px; text-transform: none; letter-spacing: 0; }
+  .pm-reco { border: 1px solid var(--accent); background: var(--accent-tint); border-radius: var(--radius-m); padding: 12px 14px; }
+  .pm-reco .to { font-weight: 700; font-size: 14px; color: var(--accent-strong); }
+  .pm-reason { font-size: 13px; color: var(--text); line-height: 1.5; margin: 8px 0 10px; }
+  .pm-alt { font-size: 12.5px; margin: 5px 0; color: var(--text-muted); }
   #sysmap .sedge { fill: none; pointer-events: none; transition: opacity .2s; }
   #sysmap .sedge-hit { fill: none; stroke: transparent; stroke-width: 10; cursor: pointer; }
   #sysmap.filtered .snode.dim { opacity: .12; }
@@ -520,24 +566,26 @@
           <div class="kg-card" id="sys-card"></div>
         </div>
         <aside class="sysmap-side">
-          <div class="sysmap-panel">
+          <div class="sysmap-panel reco priority">
+            <h4>Patient triage — Alora's live priority ranking</h4>
+            <div class="eyebrow" style="margin-bottom:8px">agentic · re-ranked as acuity &amp; the graph change · click a patient</div>
+            <div id="reco-list"><span class="dot-flash"><span></span><span></span><span></span></span></div>
+          </div>
+          <div class="sysmap-panel collapsible collapsed">
             <h4>Legend — facility type</h4>
             <div id="sysmap-legend-nodes" class="legend-list"></div>
           </div>
-          <div class="sysmap-panel">
+          <div class="sysmap-panel collapsible collapsed">
             <h4>Legend — referral edges</h4>
             <div id="sysmap-legend-edges" class="legend-list"></div>
-          </div>
-          <div class="sysmap-panel reco">
-            <h4>New patients — Alora's next-step picks</h4>
-            <div class="eyebrow" style="margin-bottom:8px">agentic · ranked the moment they enter</div>
-            <div id="reco-list"><span class="dot-flash"><span></span><span></span><span></span></span></div>
           </div>
         </aside>
       </div>
     </section>
   </div>
 </div>
+
+<div class="patient-modal" id="patient-modal"><div class="pm-card" id="pm-body"></div></div>
 
 <div class="agent-log" id="agent-log">
   <div class="agent-log-head" id="agent-log-head">
@@ -636,7 +684,7 @@ async function drawMap(){
   const origEdges=(edges.edges||[]).filter(e=>e.from===ORIGIN_ID||e.to===ORIGIN_ID);
   const partners=[...new Set(origEdges
     .sort((a,b)=>(b.freq_sim||0)-(a.freq_sim||0))
-    .map(e=>e.from===ORIGIN_ID?e.to:e.from))].slice(0,7);
+    .map(e=>e.from===ORIGIN_ID?e.to:e.from))].slice(0,15);
   const shown=new Set([ORIGIN_ID, ...partners]);
   const allEdges=(edges.edges||[]).filter(e=>shown.has(e.from)&&shown.has(e.to));
   edges={edges:allEdges};
@@ -1139,11 +1187,19 @@ async function drawSystemMap(){
     g.dataset.payers=(f.payers||[]).join(","); g.dataset.langs=(f.languages||[]).join(",");
     g.dataset.beds=(typeof beds==="number"?beds:"");
     g.dataset.name=(f.name||"").toLowerCase();
-    const sp=shapePath(c.shape,x,y,r);
+    const isSelf=f.id===ORIGIN_ID;
+    const rr=isSelf?r+5:r;
+    if(isSelf){ g.classList.add("self");
+      const halo=document.createElementNS(NS,"circle"); halo.setAttribute("class","self-halo");
+      halo.setAttribute("cx",x); halo.setAttribute("cy",y); halo.setAttribute("r",rr+9); g.appendChild(halo); }
+    const sp=shapePath(c.shape,x,y,rr);
     const sh=document.createElementNS(NS,sp.tag); sh.setAttribute("class","shape");
-    Object.entries(sp.attrs).forEach(([k,v])=>sh.setAttribute(k,v)); sh.setAttribute("fill",c.color);
-    const t=document.createElementNS(NS,"text"); t.setAttribute("x",x); t.setAttribute("y",y+r+8); t.setAttribute("text-anchor","middle");
-    t.textContent=(f.name||f.id).replace(/\(.*?\)/g,"").split("-")[0].trim().slice(0,22);
+    Object.entries(sp.attrs).forEach(([k,v])=>sh.setAttribute(k,v));
+    sh.setAttribute("fill",isSelf?"var(--accent)":c.color);
+    if(isSelf)sh.setAttribute("stroke","var(--accent-strong)"),sh.setAttribute("stroke-width",2.5);
+    const t=document.createElementNS(NS,"text"); t.setAttribute("x",x); t.setAttribute("y",y+rr+8); t.setAttribute("text-anchor","middle");
+    if(isSelf){ t.setAttribute("class","self-label"); t.textContent="◆ OUR FACILITY · ZSFG"; }
+    else t.textContent=(f.name||f.id).replace(/\(.*?\)/g,"").split("-")[0].trim().slice(0,22);
     g.append(sh,t);
     g.addEventListener("click",ev=>{ev.stopPropagation();sysShowNodeCard(f.id)});
     svg.appendChild(g);
@@ -1239,19 +1295,55 @@ function legendShape(shape,color){
 
 async function loadRecommendations(){
   const host=document.getElementById("reco-list");
-  let patients=[]; try{ patients=(await j("/api/patients")).patients||[]; }catch(e){ host.textContent="—"; return; }
-  const picks=patients.slice(0,4);
-  const recos=await Promise.all(picks.map(async p=>{ try{ return {p, r:await j("/api/recommend/"+p.id)}; }catch(e){ return {p, r:null}; } }));
-  host.innerHTML=recos.map(({p,r})=>{
-    const top=r&&r.top&&r.top[0];
-    const label=p.id==="maria"?"Maria G.":p.id.replace("patient_","Patient ");
-    if(!top)return `<div class="rc"><div class="pt">${esc(label)}</div><div class="why">no match found</div></div>`;
-    return `<div class="rc" data-fid="${esc(top.facility.id)}"><div class="pt">${esc(label)} · ${esc(p.insurance||"")} · ${esc(p.language||"")}</div>`+
-      `<div class="to">→ ${esc(top.facility.name)}</div>`+
-      `<div class="why">${esc((top.reasons||[]).slice(0,2).join(" · "))}</div></div>`;
+  let patients=[]; try{ patients=(await j("/api/triage")).patients||[]; }catch(e){ host.textContent="—"; return; }
+  host.innerHTML=patients.map(p=>{
+    const top=p.top&&p.top.facility;
+    return `<div class="rc prio-${esc(p.priority_label)}" data-pid="${esc(p.id)}" data-fid="${top?esc(top.id):""}">
+      <div class="rc-head"><span class="prio-chip prio-${esc(p.priority_label)}">${p.priority}</span>
+        <span class="pt">${esc(p.label)}</span><span class="rc-meta">${esc(p.insurance||"")} · ${esc(p.language||"")}</span></div>
+      ${top?`<div class="to">→ ${esc(top.name)}</div>`:`<div class="why">no in-network match</div>`}
+      <div class="why">${esc((p.factors||[]).slice(0,2).join(" · "))}</div></div>`;
   }).join("");
-  host.querySelectorAll(".rc[data-fid]").forEach(el=>el.onclick=()=>{const id=el.dataset.fid; if(sysPos[id]){sysShowNodeCard(id);}});
-  logActivity("Alora · triage",`Ranked next-step placements for ${recos.length} incoming patients`);
+  host.querySelectorAll(".rc[data-pid]").forEach(el=>el.onclick=()=>openPatientModal(el.dataset.pid));
+  logActivity("Alora · triage",`Re-ranked ${patients.length} patients by live acuity · highest: ${patients[0]?.label||"—"}`);
+}
+
+async function openPatientModal(pid){
+  const modal=document.getElementById("patient-modal"), body=document.getElementById("pm-body");
+  modal.classList.add("show");
+  body.innerHTML='<div style="padding:24px"><span class="dot-flash"><span></span><span></span><span></span></span> Alora is reasoning over the live system map…</div>';
+  let d; try{ d=await j("/api/patient/"+pid); }catch(e){ body.innerHTML='<div style="padding:24px;color:var(--critical)">Failed to load patient.</div>'; return; }
+  const dem=d.demographics||{}, top=d.top&&d.top.facility;
+  const gaps=Object.entries(d.readiness||{}).filter(([k,v])=>v===false).map(([k])=>k.replace(/_/g," "));
+  body.innerHTML=`
+    <div class="pm-head">
+      <div><div class="pm-name">${esc(d.label)}</div>
+        <div class="pm-sub">${esc(dem.age||"")} · ${esc(dem.gender||"")} · ${esc(dem.insurance||"")} · ${esc(dem.language||"")}</div></div>
+      <span class="prio-chip prio-${esc(d.priority_label)}">priority ${d.priority} · ${esc(d.priority_label)}</span>
+      <span class="pm-close" id="pm-close">&times;</span>
+    </div>
+    <div class="pm-grid">
+      <div class="pm-col">
+        <h5>Why this priority</h5>
+        <ul class="pm-list">${(d.factors||[]).map(f=>`<li>${esc(f)}</li>`).join("")}</ul>
+        <h5>Patient snapshot <span class="store-mini">workspace-only</span></h5>
+        <div class="pm-kv"><span>Housing</span><b>${esc(dem.housing_status||"—")}</b></div>
+        <div class="pm-kv"><span>Home meds</span><b>${esc((dem.medications_home||[]).length)} on file</b></div>
+        ${gaps.length?`<div class="pm-kv"><span>Readiness gaps</span><b class="warn">${esc(gaps.join(", "))}</b></div>`:""}
+      </div>
+      <div class="pm-col">
+        <h5>Alora's recommendation <span class="ai-badge">AI reasoning · live graph</span></h5>
+        ${top?`<div class="pm-reco"><div class="to">→ ${esc(top.name)}</div>
+          <div class="pm-reason">${esc(d.reasoning)}</div>
+          <button class="btn btn-sm" id="pm-locate">Locate on map</button></div>`:`<div class="why">${esc(d.reasoning)}</div>`}
+        ${(d.alternatives||[]).length?`<h5 style="margin-top:12px">Alternatives</h5>`+
+          d.alternatives.map(a=>`<div class="pm-alt">→ ${esc(a.facility.name)} <span class="why">${esc((a.reasons||[]).slice(0,1).join(""))}</span></div>`).join(""):""}
+      </div>
+    </div>`;
+  document.getElementById("pm-close").onclick=()=>modal.classList.remove("show");
+  const loc=document.getElementById("pm-locate");
+  if(loc&&top)loc.onclick=()=>{ modal.classList.remove("show"); if(sysPos[top.id])sysShowNodeCard(top.id); };
+  logActivity("Alora · triage",`Reasoned over ${d.n_considered} facilities for ${d.label} → ${top?top.name:"no match"}`);
 }
 
 // view switching: rail items with data-view toggle the system map overlay
@@ -1269,6 +1361,11 @@ document.querySelectorAll(".rail-step[data-view]").forEach(b=>b.onclick=()=>{
 // workflow rail steps should return to the workspace view
 document.querySelectorAll(".rail-step[data-focus]").forEach(b=>b.addEventListener("click",()=>showView("workspace"),true));
 document.getElementById("sysmap-search").addEventListener("input",()=>applyPreset(activePreset));
+// collapsible legend panels
+document.querySelectorAll(".sysmap-panel.collapsible h4").forEach(h=>h.onclick=()=>h.parentElement.classList.toggle("collapsed"));
+// patient modal: click backdrop or Esc to close
+document.getElementById("patient-modal").addEventListener("click",e=>{ if(e.target.id==="patient-modal")e.currentTarget.classList.remove("show"); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape")document.getElementById("patient-modal").classList.remove("show"); });
 
 drawMap()
   .then(()=>{ logActivity("KG agent","monitoring the network — scanning web / phone / EHR feeds");
