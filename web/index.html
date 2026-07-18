@@ -150,6 +150,10 @@
   .node.active .core { stroke: var(--accent); stroke-width: 3; fill: var(--accent-tint); }
   .node.active text { fill: var(--text); font-weight: 700; }
   .node.calling .halo { animation: ping 1.9s ease-out infinite; }
+  .node.faded { opacity: .1; transition: opacity .35s; pointer-events: none; }
+  .edge.faded { opacity: .05 !important; }
+  .node.updated .halo { animation: ping 1.3s ease-out; }
+  .node .core { transition: stroke .2s, fill .2s, r .3s; }
 
   /* floating attribute card, anchored to a node on click (image-2 style).
      .map-card is position:sticky (declared above), which already establishes the
@@ -304,6 +308,7 @@
   @keyframes dotflash { 0%,60%,100% { opacity: .25; } 30% { opacity: 1; } }
   /* ---------- system map (Kumu-style full network) ---------- */
   .sysmap { display: flex; flex-direction: column; height: calc(100vh - 52px); padding: 16px 24px 12px; gap: 12px; }
+  .sysmap[hidden] { display: none; }
   .sysmap-bar { display: flex; align-items: center; gap: 16px; }
   .sysmap-title { font-weight: 700; font-size: 16px; letter-spacing: -.01em; display: flex; align-items: center; gap: 8px; }
   .sysmap-title .eyebrow { margin-left: 6px; }
@@ -592,11 +597,14 @@ async function drawMap(){
   document.getElementById("conn").textContent="live"; document.getElementById("conn").className="badge live";
   FAC_BY_ID={}; facilities.forEach(f=>FAC_BY_ID[f.id]=f);
   EDGE_BY_KEY={};
-  // draw the whole connected referral graph — every facility that has at least
-  // one referral edge, plus the origin. (The agent monitors all 74; only the
-  // isolated, edge-less rows are hidden to keep the picture legible.)
-  const shown=new Set([ORIGIN_ID]);
-  (edges.edges||[]).forEach(e=>{ shown.add(e.from); shown.add(e.to); });
+  // Network page = a small curated neighborhood: origin + its top referral
+  // partners. The full SF network lives in the System-map view; here we keep it
+  // legible and call-focused.
+  const origEdges=(edges.edges||[]).filter(e=>e.from===ORIGIN_ID||e.to===ORIGIN_ID);
+  const partners=[...new Set(origEdges
+    .sort((a,b)=>(b.freq_sim||0)-(a.freq_sim||0))
+    .map(e=>e.from===ORIGIN_ID?e.to:e.from))].slice(0,7);
+  const shown=new Set([ORIGIN_ID, ...partners]);
   const allEdges=(edges.edges||[]).filter(e=>shown.has(e.from)&&shown.has(e.to));
   edges={edges:allEdges};
   const nodes=facilities.filter(f=>shown.has(f.id));
@@ -623,27 +631,41 @@ async function drawMap(){
     p.setAttribute("stroke",FLOW[e.type]||"var(--border-strong)"); p.setAttribute("stroke-width",1+(e.freq_sim||1)*0.3);
     svg.append(hit,p)});
 
-  nodes.forEach(f=>{
-    const[x,y]=nodePos[f.id], isOrigin=f.id===ORIGIN_ID;
-    const beds=f?.simulated?.availability?.available_beds;
-    const r=isOrigin?22:16+(typeof beds==="number"?Math.min(beds,6):1)*1.1;
-    const g=document.createElementNS(NS,"g"); g.setAttribute("class","node"+(isOrigin?" origin":"")); g.id="n-"+f.id;
-    const halo=document.createElementNS(NS,"circle"); halo.setAttribute("class","halo");
-    halo.setAttribute("cx",x); halo.setAttribute("cy",y); halo.setAttribute("r",r);
-    const ring=document.createElementNS(NS,"circle"); ring.setAttribute("class","ring");
-    ring.setAttribute("cx",x); ring.setAttribute("cy",y); ring.setAttribute("r",r+4);
-    ring.setAttribute("fill",isOrigin?"url(#ringGradOrigin)":"url(#ringGrad)");
-    const c=document.createElementNS(NS,"circle"); c.setAttribute("class","core");
-    c.setAttribute("cx",x); c.setAttribute("cy",y); c.setAttribute("r",r);
-    const t=document.createElementNS(NS,"text");
-    t.setAttribute("x",x); t.setAttribute("y",y+(y>cy?r+15:-(r+8))); t.setAttribute("text-anchor","middle");
-    (f.name||f.id).replace(/\(.*?\)/g,"").split("-")[0].trim().split(" ").reduce((lines,w)=>{const l=lines[lines.length-1];
-      if((l+" "+w).length>18)lines.push(w);else lines[lines.length-1]=(l+" "+w).trim();return lines},[""])
-      .slice(0,2).forEach((ln,k)=>{const ts=document.createElementNS(NS,"tspan");ts.setAttribute("x",x);ts.setAttribute("dy",k?11:0);ts.textContent=ln;t.appendChild(ts)});
-    g.append(halo,ring,c,t);
-    g.addEventListener("click",ev=>{ev.stopPropagation();showKgCard(f.id)});
-    svg.appendChild(g)});
-  logActivity("Knowledge graph",`Loaded ${nodes.length} connected facilities · ${(edges.edges||[]).length} referral edges`);
+  nodes.forEach(f=>{ const[x,y]=nodePos[f.id]; drawNode(f,x,y,f.id===ORIGIN_ID); });
+  logActivity("Knowledge graph",`Loaded ${nodes.length} facilities · ${(edges.edges||[]).length} referral edges (curated view)`);
+}
+
+const MAP_CY=270;
+function drawNode(f,x,y,isOrigin){
+  const svg=document.getElementById("map");
+  const beds=f?.simulated?.availability?.available_beds;
+  const r=isOrigin?22:16+(typeof beds==="number"?Math.min(beds,6):1)*1.1;
+  const g=document.createElementNS(NS,"g"); g.setAttribute("class","node"+(isOrigin?" origin":"")); g.id="n-"+f.id;
+  const halo=document.createElementNS(NS,"circle"); halo.setAttribute("class","halo");
+  halo.setAttribute("cx",x); halo.setAttribute("cy",y); halo.setAttribute("r",r);
+  const ring=document.createElementNS(NS,"circle"); ring.setAttribute("class","ring");
+  ring.setAttribute("cx",x); ring.setAttribute("cy",y); ring.setAttribute("r",r+4);
+  ring.setAttribute("fill",isOrigin?"url(#ringGradOrigin)":"url(#ringGrad)");
+  const c=document.createElementNS(NS,"circle"); c.setAttribute("class","core");
+  c.setAttribute("cx",x); c.setAttribute("cy",y); c.setAttribute("r",r);
+  const t=document.createElementNS(NS,"text");
+  t.setAttribute("x",x); t.setAttribute("y",y+(y>MAP_CY?r+15:-(r+8))); t.setAttribute("text-anchor","middle");
+  (f.name||f.id).replace(/\(.*?\)/g,"").split("-")[0].trim().split(" ").reduce((lines,w)=>{const l=lines[lines.length-1];
+    if((l+" "+w).length>18)lines.push(w);else lines[lines.length-1]=(l+" "+w).trim();return lines},[""])
+    .slice(0,2).forEach((ln,k)=>{const ts=document.createElementNS(NS,"tspan");ts.setAttribute("x",x);ts.setAttribute("dy",k?11:0);ts.textContent=ln;t.appendChild(ts)});
+  g.append(halo,ring,c,t);
+  g.addEventListener("click",ev=>{ev.stopPropagation();showKgCard(f.id)});
+  svg.appendChild(g);
+  return g;
+}
+/* ensure a called facility that isn't in the curated neighborhood still appears,
+   so the call can focus on origin ↔ this facility */
+function ensureNodeDrawn(fac){
+  if(nodePos[fac.id]) return;
+  FAC_BY_ID[fac.id]=FAC_BY_ID[fac.id]||fac;
+  const[ox,oy]=nodePos[ORIGIN_ID]||[320,270];
+  nodePos[fac.id]=[ox+150, oy-150];   // upper-right of origin
+  const g=drawNode(fac, ox+150, oy-150, false); g.dataset.temp="1";
 }
 
 /* image-2 style attribute card, anchored beside the clicked node */
@@ -739,6 +761,9 @@ function entityName(u){
     return (FAC_BY_ID[a]?.name||a).split("(")[0].trim()+" → "+(FAC_BY_ID[b]?.name||b).split("(")[0].trim();}
   return (FAC_BY_ID[u.entity_id]?.name||u.entity_id).split("(")[0].trim();
 }
+function pulseNode(id){ const g=document.getElementById("n-"+id); if(!g)return;
+  g.classList.remove("updated"); void g.getBBox(); g.classList.add("updated");
+  setTimeout(()=>g.classList.remove("updated"),1400); }
 async function runMonitorScan(reason){
   let res; try{ res=await j("/api/monitor/scan",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"}); }
   catch(e){ return; }
@@ -749,6 +774,8 @@ async function runMonitorScan(reason){
     `flagged for review · ${entityName(u)} · ${prettyField(u.field_path)} ${u.old_value??"–"}→${u.new_value??"–"} (${u.source_type})`));
   if(!auto.length&&!queued.length){ if(reason!=="tick")logActivity("KG agent","network scan · no new changes"); }
   else { try{ const {facilities}=await j("/api/graph"); facilities.forEach(f=>FAC_BY_ID[f.id]=f); }catch(e){} }  // refresh card data in place
+  // dynamic feel: pulse any updated facility that's visible on the Network graph
+  [...auto,...queued].forEach(u=>pulseNode(u.entity_type==="edge"?String(u.entity_id).split("|")[1]:u.entity_id));
   if(auto.length||queued.length)
     toast(`KG agent: ${auto.length} auto-applied · ${queued.length} queued for review`);
 }
@@ -778,11 +805,19 @@ function highlight(facId, calling){
     const on = n.id==="n-"+facId || n.id==="n-"+ORIGIN_ID;
     n.classList.toggle("active", on);
     n.classList.toggle("calling", !!calling && n.id==="n-"+facId);
+    // during a call, fade everything except the two facilities on the line
+    n.classList.toggle("faded", !!calling && !on);
+  });
+  // fade non-connecting edges during a call
+  document.querySelectorAll(".edge,.edge-hit").forEach(e=>{
+    if(e.id==="live-flow")return;
+    const rel = (e.dataset.to===facId&&e.dataset.from===ORIGIN_ID)||(e.dataset.from===facId&&e.dataset.to===ORIGIN_ID);
+    e.classList.toggle("faded", !!calling && !rel);
   });
   setLiveFlow(calling ? facId : null);
 }
-function clearMap(){ document.querySelectorAll(".edge").forEach(e=>e.classList.remove("hot","dim"));
-  document.querySelectorAll(".node").forEach(n=>n.classList.remove("active","calling")); setLiveFlow(null); }
+function clearMap(){ document.querySelectorAll(".edge,.edge-hit").forEach(e=>e.classList.remove("hot","dim","faded"));
+  document.querySelectorAll(".node").forEach(n=>n.classList.remove("active","calling","faded")); setLiveFlow(null); }
 
 /* ---------- match + select ---------- */
 document.getElementById("btn-match").onclick=async()=>{
@@ -848,7 +883,8 @@ document.getElementById("btn-start-call").onclick=()=>{
   const box=document.getElementById("live-transcript"); box.innerHTML='<span class="placeholder">Put the phone on speaker and hit Listen — or Play demo call.</span>'; delete box.dataset.started;
   document.querySelectorAll("#cop-panels .panel").forEach(p=>{if(p.id!=="p-check")p.style.display="none"});
   renderState(EMPTY_STATE);
-  highlight(selected.id, true);   // the node lights up + pulses: we're calling this hospital
+  ensureNodeDrawn(selected);       // make sure the called facility is on the map, even if outside the curated set
+  highlight(selected.id, true);   // fade everyone else; light up + pulse origin ↔ this hospital
   const banner=document.getElementById("calling-banner"); banner.classList.add("on");
   document.getElementById("calling-text").textContent="On call · "+selected.name;
   document.querySelector('.rail-step[data-focus="copilot-card"]').click();
