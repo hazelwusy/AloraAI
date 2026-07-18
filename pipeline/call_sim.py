@@ -12,6 +12,7 @@ import json
 import re
 
 from . import llm
+from .learning import briefing_for_call, record_call
 from .schemas import CallOutcome, CallResult
 
 MAX_TURNS = 12
@@ -24,8 +25,9 @@ def _turn(system: str, history: list[dict], max_tokens: int = 300) -> str:
     return resp.content[0].text.strip()
 
 
-def run_call(packet_json: str, facility: dict, nurse_name: str) -> CallResult:
-    caller_sys = llm.load_prompt("caller") + f"\n\nnurse who authorized: {nurse_name}\npacket:\n{packet_json}\n\ntarget facility:\n{json.dumps(facility)}"
+def run_call(packet_json: str, facility: dict, nurse_name: str, patient_id: str = "maria") -> CallResult:
+    briefing = briefing_for_call(facility["id"], patient_id)
+    caller_sys = llm.load_prompt("caller") + f"\n\nnurse who authorized: {nurse_name}\npacket:\n{packet_json}\n\ntarget facility:\n{json.dumps(facility)}" + briefing
     intake_sys = llm.load_prompt("intake_roleplay") + f"\n\nyour facility profile:\n{json.dumps(facility)}"
 
     transcript: list[dict] = []          # [{"speaker": "agent"|"intake", "text": ...}]
@@ -41,7 +43,9 @@ def run_call(packet_json: str, facility: dict, nurse_name: str) -> CallResult:
             transcript.append({"speaker": "agent", "text": spoken})
         if json_match:
             outcome = CallOutcome.model_validate_json(json_match.group(0))
-            return CallResult(facility_id=facility["id"], transcript=transcript, outcome=outcome, simulated_far_end=True)
+            result = CallResult(facility_id=facility["id"], transcript=transcript, outcome=outcome, simulated_far_end=True)
+            record_call(patient_id, result)
+            return result
 
         caller_hist += [{"role": "assistant", "content": agent_line}]
         intake_hist += [{"role": "user", "content": spoken or agent_line}]
@@ -55,4 +59,6 @@ def run_call(packet_json: str, facility: dict, nurse_name: str) -> CallResult:
     caller_hist += [{"role": "user", "content": "End the call now and output the outcome JSON only."}]
     final = _turn(caller_sys, caller_hist, max_tokens=500)
     outcome = CallOutcome.model_validate_json(re.search(r"\{[\s\S]*\}", final).group(0))
-    return CallResult(facility_id=facility["id"], transcript=transcript, outcome=outcome, simulated_far_end=True)
+    result = CallResult(facility_id=facility["id"], transcript=transcript, outcome=outcome, simulated_far_end=True)
+    record_call(patient_id, result)
+    return result

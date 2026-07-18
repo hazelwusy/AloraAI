@@ -91,6 +91,8 @@ class CallOutcome(BaseModel):
     outcome: CallOutcomeKind
     reason: str
     reason_category: Optional[str] = None  # one of DECLINE_ROUTING keys when declined
+    condition: Optional[str] = Field(default=None, description="verbatim condition for a conditional accept / reconsideration, e.g. 'call back when the hold is discontinued'")
+    questions_asked_by_intake: list[str] = Field(default_factory=list, description="every substantive question intake asked, answered or not — feeds facility memory")
     bed_hold_until: Optional[str] = None
     documents_requested: list[str] = []
     callback: Optional[str] = None

@@ -82,7 +82,7 @@ def place_call(body: dict):
         _save(state)
         return {"mode": "self", "script": resp.content[0].text, "referral": ref}
 
-    result = run_call(body["packet_json"], fac, body["nurse_name"])
+    result = run_call(body["packet_json"], fac, body["nurse_name"], patient_id=body["patient_id"])
     ref["status"] = result.outcome.outcome
     ref["events"].append({"ts": _now(), "status": result.outcome.outcome,
                           "facility_id": fac["id"], "note": result.outcome.reason,
@@ -146,6 +146,30 @@ def get_readiness(patient_id: str):
 def do_match_directory(need: dict):
     """Match over the real 74-facility SF directory (teammate dataset)."""
     return {"candidates": match_directory(need)}
+
+
+@app.get("/api/learning/{facility_id}")
+def facility_learning(facility_id: str):
+    from pipeline.learning import _load, FACILITY_MEM
+    return _load(FACILITY_MEM).get(facility_id, {})
+
+
+@app.get("/api/gaps/{patient_id}")
+def patient_gaps(patient_id: str):
+    from pipeline.learning import gap_checklist
+    return {"gaps": gap_checklist(patient_id)}
+
+
+@app.get("/api/patients")
+def list_patients():
+    base = ROOT / "data" / "patients"
+    out = []
+    for p in sorted(base.iterdir()):
+        if p.is_dir() and (p / "demographics.json").exists():
+            demo = json.loads((p / "demographics.json").read_text())
+            out.append({"id": p.name, "age": demo.get("age"), "insurance": demo.get("insurance"),
+                        "language": demo.get("language"), "n_notes": len(list((p / "notes").glob("*")))})
+    return {"patients": out}
 
 
 @app.get("/api/decline-routing")
