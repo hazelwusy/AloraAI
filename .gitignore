@@ -21,5 +21,11 @@ venv/
 node_modules/
 dist/
 build/
-.venv/
+
+# Local agent-tooling skills (personal, not part of the deliverable)
+.agents/
+.claude/
+skills-lock.json
+
+# Runtime output
 out/
