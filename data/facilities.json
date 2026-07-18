@@ -1,15 +1,265 @@
 {
-  "_provenance": "Facility names/types compiled from public SF directories (SFDPH, SAMHSA); availability, response behavior and all edges are SIMULATED for demo. Verify names before pitch.",
-  "facilities": [
-    {"id": "zsfg_pes", "name": "ZSFG Psychiatric Emergency Services", "type": "crisis", "level": "PES", "payers": ["medi-cal", "medicare", "uninsured"], "languages": ["en", "es", "zh"], "beds_sim": 2, "median_response_hours_sim": 1, "accept_rate_sim": 0.5},
-    {"id": "zsfg_inpatient", "name": "ZSFG Inpatient Psychiatry (7B/7C)", "type": "inpatient", "level": "acute", "payers": ["medi-cal", "medicare", "uninsured"], "languages": ["en", "es", "zh"], "beds_sim": 1, "median_response_hours_sim": 4, "accept_rate_sim": 0.3},
-    {"id": "langley_porter", "name": "UCSF Langley Porter Psychiatric Hospital", "type": "inpatient", "level": "acute", "payers": ["commercial", "medicare"], "languages": ["en", "zh"], "beds_sim": 3, "median_response_hours_sim": 3, "accept_rate_sim": 0.4},
-    {"id": "dore", "name": "Dore Urgent Care Clinic (Crisis Stabilization)", "type": "crisis", "level": "crisis_stabilization", "payers": ["medi-cal", "uninsured"], "languages": ["en", "es"], "beds_sim": 4, "median_response_hours_sim": 1, "accept_rate_sim": 0.7},
-    {"id": "hummingbird_potrero", "name": "Hummingbird Place — Potrero (Peer Respite)", "type": "respite", "level": "peer_respite", "payers": ["medi-cal", "uninsured"], "languages": ["en", "es"], "beds_sim": 5, "median_response_hours_sim": 2, "accept_rate_sim": 0.8},
-    {"id": "progress_adu", "name": "Progress Foundation Acute Diversion Unit", "type": "residential", "level": "adu", "payers": ["medi-cal"], "languages": ["en", "es"], "beds_sim": 2, "median_response_hours_sim": 6, "accept_rate_sim": 0.55},
-    {"id": "baker_places", "name": "Baker Places Residential Treatment", "type": "residential", "level": "residential", "payers": ["medi-cal"], "languages": ["en"], "beds_sim": 1, "median_response_hours_sim": 12, "accept_rate_sim": 0.4},
-    {"id": "westside_crisis", "name": "Westside Community Crisis Clinic", "type": "outpatient", "level": "urgent_outpatient", "payers": ["medi-cal", "uninsured"], "languages": ["en", "es"], "beds_sim": 8, "median_response_hours_sim": 2, "accept_rate_sim": 0.85},
-    {"id": "citywide", "name": "Citywide Case Management (ICM)", "type": "outpatient", "level": "intensive_case_mgmt", "payers": ["medi-cal"], "languages": ["en", "es", "zh"], "beds_sim": 6, "median_response_hours_sim": 24, "accept_rate_sim": 0.6},
-    {"id": "cpmc_php", "name": "CPMC Partial Hospitalization Program", "type": "outpatient", "level": "php", "payers": ["commercial", "medicare"], "languages": ["en"], "beds_sim": 4, "median_response_hours_sim": 8, "accept_rate_sim": 0.65}
-  ]
+ "_provenance": "Facility names/types compiled from public SF directories (SFDPH, SAMHSA); availability, response behavior and all edges are SIMULATED for demo. Verify names before pitch.",
+ "facilities": [
+  {
+   "id": "zsfg_pes",
+   "name": "ZSFG Psychiatric Emergency Services",
+   "type": "crisis",
+   "level": "PES",
+   "payers": [
+    "medi-cal",
+    "medicare",
+    "uninsured"
+   ],
+   "languages": [
+    "en",
+    "es",
+    "zh"
+   ],
+   "beds_sim": 2,
+   "median_response_hours_sim": 1,
+   "accept_rate_sim": 0.5,
+   "intake_requirements": [
+    "psych_eval",
+    "legal_status_documented"
+   ],
+   "decline_behavior_sim": {
+    "reason": "accept",
+    "detail": ""
+   }
+  },
+  {
+   "id": "zsfg_inpatient",
+   "name": "ZSFG Inpatient Psychiatry (7B/7C)",
+   "type": "inpatient",
+   "level": "acute",
+   "payers": [
+    "medi-cal",
+    "medicare",
+    "uninsured"
+   ],
+   "languages": [
+    "en",
+    "es",
+    "zh"
+   ],
+   "beds_sim": 1,
+   "median_response_hours_sim": 4,
+   "accept_rate_sim": 0.3,
+   "intake_requirements": [
+    "psych_eval",
+    "risk_assessment_current",
+    "medical_clearance_within_24h",
+    "legal_status_documented"
+   ],
+   "decline_behavior_sim": {
+    "reason": "accept",
+    "detail": ""
+   }
+  },
+  {
+   "id": "langley_porter",
+   "name": "UCSF Langley Porter Psychiatric Hospital",
+   "type": "inpatient",
+   "level": "acute",
+   "payers": [
+    "commercial",
+    "medicare"
+   ],
+   "languages": [
+    "en",
+    "zh"
+   ],
+   "beds_sim": 3,
+   "median_response_hours_sim": 3,
+   "accept_rate_sim": 0.4,
+   "intake_requirements": [
+    "psych_eval",
+    "medical_clearance_within_24h",
+    "legal_status_documented"
+   ],
+   "decline_behavior_sim": {
+    "reason": "accept",
+    "detail": ""
+   }
+  },
+  {
+   "id": "dore",
+   "name": "Dore Urgent Care Clinic (Crisis Stabilization)",
+   "type": "crisis",
+   "level": "crisis_stabilization",
+   "payers": [
+    "medi-cal",
+    "uninsured"
+   ],
+   "languages": [
+    "en",
+    "es"
+   ],
+   "beds_sim": 4,
+   "median_response_hours_sim": 1,
+   "accept_rate_sim": 0.7,
+   "intake_requirements": [
+    "medical_clearance_within_72h",
+    "voluntary_status",
+    "ambulatory",
+    "no_active_violence_risk"
+   ],
+   "decline_behavior_sim": {
+    "reason": "missing_docs",
+    "detail": "med reconciliation missing prescriber signature \u2014 resend when signed"
+   }
+  },
+  {
+   "id": "hummingbird_potrero",
+   "name": "Hummingbird Place \u2014 Potrero (Peer Respite)",
+   "type": "respite",
+   "level": "peer_respite",
+   "payers": [
+    "medi-cal",
+    "uninsured"
+   ],
+   "languages": [
+    "en",
+    "es"
+   ],
+   "beds_sim": 5,
+   "median_response_hours_sim": 2,
+   "accept_rate_sim": 0.8,
+   "intake_requirements": [
+    "voluntary_status",
+    "ambulatory"
+   ],
+   "decline_behavior_sim": {
+    "reason": "no_capacity",
+    "detail": "at census until tomorrow AM"
+   }
+  },
+  {
+   "id": "progress_adu",
+   "name": "Progress Foundation Acute Diversion Unit",
+   "type": "residential",
+   "level": "adu",
+   "payers": [
+    "medi-cal"
+   ],
+   "languages": [
+    "en",
+    "es"
+   ],
+   "beds_sim": 2,
+   "median_response_hours_sim": 6,
+   "accept_rate_sim": 0.55,
+   "intake_requirements": [
+    "medical_clearance_within_72h",
+    "voluntary_status",
+    "tb_screen",
+    "med_rec_signed",
+    "no_active_violence_risk"
+   ],
+   "decline_behavior_sim": {
+    "reason": "missing_docs",
+    "detail": "TB screen required before admission"
+   }
+  },
+  {
+   "id": "baker_places",
+   "name": "Baker Places Residential Treatment",
+   "type": "residential",
+   "level": "residential",
+   "payers": [
+    "medi-cal"
+   ],
+   "languages": [
+    "en"
+   ],
+   "beds_sim": 1,
+   "median_response_hours_sim": 12,
+   "accept_rate_sim": 0.4,
+   "intake_requirements": [
+    "voluntary_status",
+    "tb_screen",
+    "med_rec_signed"
+   ],
+   "decline_behavior_sim": {
+    "reason": "accept",
+    "detail": ""
+   }
+  },
+  {
+   "id": "westside_crisis",
+   "name": "Westside Community Crisis Clinic",
+   "type": "outpatient",
+   "level": "urgent_outpatient",
+   "payers": [
+    "medi-cal",
+    "uninsured"
+   ],
+   "languages": [
+    "en",
+    "es"
+   ],
+   "beds_sim": 8,
+   "median_response_hours_sim": 2,
+   "accept_rate_sim": 0.85,
+   "intake_requirements": [
+    "voluntary_status",
+    "ambulatory"
+   ],
+   "decline_behavior_sim": {
+    "reason": "accept",
+    "detail": ""
+   }
+  },
+  {
+   "id": "citywide",
+   "name": "Citywide Case Management (ICM)",
+   "type": "outpatient",
+   "level": "intensive_case_mgmt",
+   "payers": [
+    "medi-cal"
+   ],
+   "languages": [
+    "en",
+    "es",
+    "zh"
+   ],
+   "beds_sim": 6,
+   "median_response_hours_sim": 24,
+   "accept_rate_sim": 0.6,
+   "intake_requirements": [
+    "voluntary_status",
+    "legal_status_documented"
+   ],
+   "decline_behavior_sim": {
+    "reason": "accept",
+    "detail": ""
+   }
+  },
+  {
+   "id": "cpmc_php",
+   "name": "CPMC Partial Hospitalization Program",
+   "type": "outpatient",
+   "level": "php",
+   "payers": [
+    "commercial",
+    "medicare"
+   ],
+   "languages": [
+    "en"
+   ],
+   "beds_sim": 4,
+   "median_response_hours_sim": 8,
+   "accept_rate_sim": 0.65,
+   "intake_requirements": [
+    "voluntary_status",
+    "medical_clearance_within_72h",
+    "vitals_within_12h"
+   ],
+   "decline_behavior_sim": {
+    "reason": "accept",
+    "detail": ""
+   }
+  }
+ ]
 }

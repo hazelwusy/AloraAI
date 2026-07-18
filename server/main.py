@@ -101,5 +101,43 @@ def place_call(body: dict):
     return {"mode": "agent", "result": result.model_dump(), "next_candidate": nxt}
 
 
-# serve the demo UI (web/index.html) at /
+
+# ---- v2 endpoints: reconciliation + readiness + decline routing ----
+
+from datetime import datetime as _dt  # noqa: E402
+
+from pipeline.readiness import check as readiness_check  # noqa: E402
+from pipeline.schemas import DECLINE_ROUTING  # noqa: E402
+
+DEMO_NOW = _dt(2026, 7, 18, 10, 0)
+
+
+@app.get("/api/reconcile/{patient_id}")
+def get_reconciliation(patient_id: str, live: bool = False):
+    """Cached by default (out/<id>_recon.json); pass ?live=true to re-run the
+    Domain Extractor (needs ANTHROPIC_API_KEY)."""
+    cache = ROOT / "out" / f"{patient_id}_recon.json"
+    if cache.exists() and not live:
+        return json.loads(cache.read_text())
+    from pipeline.extract import reconcile_patient
+    return reconcile_patient(patient_id).model_dump()
+
+
+@app.get("/api/readiness/{patient_id}")
+def get_readiness(patient_id: str):
+    """Deterministic readiness gate for every candidate facility — no LLM."""
+    fields_path = ROOT / "data" / "patients" / patient_id / "patient_fields.json"
+    if not fields_path.exists():
+        raise HTTPException(404, "no patient_fields.json for patient")
+    fields = json.loads(fields_path.read_text())
+    return {"reports": [readiness_check(f, fields, DEMO_NOW).model_dump()
+                        for f in load_facilities()]}
+
+
+@app.get("/api/decline-routing")
+def decline_routing():
+    return DECLINE_ROUTING
+
+
+# serve the demo UI at / — MUST stay last so it never shadows /api routes
 app.mount("/", StaticFiles(directory=ROOT / "web", html=True), name="web")

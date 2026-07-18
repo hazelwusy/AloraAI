@@ -31,3 +31,7 @@ After the call ends, output the structured outcome as JSON:
  "callback": null | "...",
  "next_step_for_nurse": "one imperative sentence",
  "flagged_questions": ["things asked that the packet couldn't answer"]}
+
+Decline classification: when the outcome is "declined", also set
+"reason_category" to exactly one of: no_capacity | out_of_network |
+missing_docs | acuity_too_high | behavioral_exclusion.

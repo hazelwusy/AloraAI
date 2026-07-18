@@ -8,7 +8,10 @@ from pathlib import Path
 from typing import TypeVar
 
 import anthropic
+from dotenv import load_dotenv
 from pydantic import BaseModel
+
+load_dotenv()  # reads .env at repo root so ANTHROPIC_API_KEY 'just works'
 
 MODEL = os.environ.get("ALORA_MODEL", "claude-sonnet-5")
 PROMPTS = Path(__file__).parent / "prompts"

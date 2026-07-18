@@ -90,6 +90,7 @@ CallOutcomeKind = Literal["accepted", "declined", "info_requested"]
 class CallOutcome(BaseModel):
     outcome: CallOutcomeKind
     reason: str
+    reason_category: Optional[str] = None  # one of DECLINE_ROUTING keys when declined
     bed_hold_until: Optional[str] = None
     documents_requested: list[str] = []
     callback: Optional[str] = None
@@ -115,3 +116,69 @@ class ReferralEvent(BaseModel):
     facility_id: str
     note: str = ""
     call: Optional[CallResult] = None
+
+
+# ---- module 1: longitudinal state reconciliation ----
+
+DomainStatus = Literal["changed", "unchanged", "conflicting", "stale", "not_reassessed"]
+
+RECON_DOMAINS = [
+    "active_SI", "intent_plan", "psychosis", "sleep", "med_adherence",
+    "behavioral_incidents", "collateral", "vitals",
+]
+
+
+class DomainValue(BaseModel):
+    value: str
+    source: str = Field(description="document name, e.g. 'day2 psychiatry note'")
+    time: str = Field(description="timestamp or relative time as documented")
+    quote: str = Field(description="verbatim quote incl. any temporal qualifier ('denies SI today')")
+
+
+class DomainState(BaseModel):
+    domain: str
+    current: Optional[DomainValue] = None
+    previous: Optional[DomainValue] = None
+    status: DomainStatus
+    note: str = ""
+
+
+class ReconciliationReport(BaseModel):
+    patient_id: str
+    rows: list[DomainState]
+    changed: list[str]
+    unresolved: list[str] = Field(description="conflicting + stale + not_reassessed domains")
+    banner: str = Field(description="fixed-template prompt to clinician; never a conclusion")
+
+
+class ExtractedDomains(BaseModel):
+    """Output of the Domain Extractor for ONE document."""
+    document: str
+    domains: list[DomainState]  # extractor fills current only; differ fills the rest
+
+
+# ---- module 2: transfer readiness ----
+
+class ReadinessItem(BaseModel):
+    requirement: str
+    status: Literal["met", "missing", "stale"]
+    evidence: Optional[str] = None
+
+
+class ReadinessReport(BaseModel):
+    facility_id: str
+    ready: bool
+    items: list[ReadinessItem]
+
+
+# ---- module 3: decline intelligence ----
+
+DeclineReason = Literal["no_capacity", "out_of_network", "missing_docs", "acuity_too_high", "behavioral_exclusion"]
+
+DECLINE_ROUTING: dict[str, str] = {
+    "no_capacity": "next_candidate_same_level",
+    "out_of_network": "refilter_in_network",
+    "missing_docs": "fix_and_resend_same_facility",
+    "acuity_too_high": "stop_and_clinician_review",
+    "behavioral_exclusion": "refilter_compatible_facilities",
+}

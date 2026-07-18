@@ -1,0 +1,14 @@
+{
+  "_comment": "Patient-side readiness fields. In the full pipeline these are LLM-extracted from the record with quotes; seeded here so the readiness gate demos deterministically.",
+  "medical_clearance": {"present": true, "time": "2026-07-17T14:10", "evidence": "medically cleared by ED attending, labs unremarkable"},
+  "vitals": {"present": true, "time": "2026-07-17T19:30", "evidence": "BP 122/80, HR 84"},
+  "psych_eval": {"present": true, "time": "2026-07-16T21:40", "evidence": "initial psychiatric evaluation on file"},
+  "risk_assessment": {"present": true, "time": "2026-07-16T21:40", "evidence": "risk assessed at intake; NOT formally reassessed since"},
+  "med_rec_signed": {"present": false},
+  "legal_status": {"present": true, "time": "2026-07-18T08:00", "evidence": "5150 expired, voluntary documented in day 2 psychiatry note"},
+  "voluntary": {"present": true, "time": "2026-07-18T08:00", "evidence": "willing to remain voluntarily"},
+  "tb_screen": {"present": false},
+  "ambulatory": {"present": true, "time": "2026-07-18T07:05", "evidence": "independent ADLs per nursing"},
+  "no_violence_risk": {"present": true, "time": "2026-07-18T09:20", "evidence": "no behavioral incidents; no seclusion or restraint this admission"},
+  "pregnancy_test": {"present": false}
+}
