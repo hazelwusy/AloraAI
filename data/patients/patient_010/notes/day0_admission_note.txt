@@ -1,0 +1,9 @@
+[NOTE] [HOSPITALIST - ADMISSION] [2026-07-16 06:50]
+
+84M, unhoused, history of myocardial infarction and gout, brought in after
+found down near a shelter doorway, found to have mild hypothermia and
+dehydration. Alert and oriented x3 on arrival, cooperative with exam.
+Vitals at 06:50: BP 118/70, HR 76, RR 16, temp 35.6, O2 96% RA. Admitting
+for observation, rewarming, and hydration.
+
+— Dr. Bellamy, Hospital Medicine

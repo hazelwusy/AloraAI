@@ -1,0 +1,20 @@
+{
+  "id": "patient_008",
+  "synthetic": true,
+  "source": "Synthea-generated skeleton (California population run), see raw_synthea_skeleton/",
+  "age": 57,
+  "gender": "male",
+  "insurance": "Medi-Cal",
+  "language": "English",
+  "housing_status": "unhoused, housing described as unsatisfactory in record",
+  "emergency_contact": {
+    "relationship": "none on file",
+    "name": null,
+    "contact_note": "no emergency contact identified"
+  },
+  "medications_home": [
+    "amlodipine 2.5mg daily",
+    "insulin (per Synthea med list, for type 2 diabetes)"
+  ],
+  "background_from_skeleton": "severe anxiety/panic, unhealthy alcohol use, chronic kidney disease stage 3, type 2 diabetes, obstructive sleep apnea"
+}

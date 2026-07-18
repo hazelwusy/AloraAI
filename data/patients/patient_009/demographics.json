@@ -1,0 +1,20 @@
+{
+  "id": "patient_009",
+  "synthetic": true,
+  "source": "Synthea-generated skeleton (California population run), see raw_synthea_skeleton/",
+  "age": 68,
+  "gender": "male",
+  "insurance": "Medicare/Medi-Cal (dual eligible)",
+  "language": "English",
+  "housing_status": "housed, lives alone",
+  "emergency_contact": {
+    "relationship": "none on file",
+    "name": null,
+    "contact_note": "no emergency contact identified this admission"
+  },
+  "medications_home": [
+    "fluoxetine 20mg daily",
+    "metformin ER 500mg (per Synthea med list)"
+  ],
+  "background_from_skeleton": "major depressive disorder, severe anxiety/panic, dependent drug abuse, chronic kidney disease stage 4, type 2 diabetes, tobacco use"
+}
