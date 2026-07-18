@@ -152,6 +152,18 @@
   .node.calling .halo { animation: ping 1.9s ease-out infinite; }
   .node.faded { opacity: .1; transition: opacity .35s; pointer-events: none; }
   .edge.faded { opacity: .05 !important; }
+  .node.dim { opacity: .12; transition: opacity .2s; } .edge.dim { opacity: .06 !important; }
+  /* zoom toggle + full-map tools */
+  .zoom-btn { font-size: 12px; font-weight: 600; color: var(--accent-strong); background: var(--surface);
+    border: 1px solid var(--accent); border-radius: 999px; padding: 4px 12px; cursor: pointer; white-space: nowrap; }
+  .zoom-btn:hover { background: var(--accent-tint); }
+  .graph-presets { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 8px; }
+  .graph-legend { font-size: 12px; color: var(--text-muted); }
+  .graph-legend summary { cursor: pointer; font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-faint); }
+  .graph-legend .legend-list { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 8px; }
+  .graph-legend .row { display: flex; align-items: center; gap: 7px; }
+  .graph-legend .swatch { width: 12px; height: 12px; flex: none; }
+  .graph-legend .eline { width: 20px; border-top-width: 3px; border-top-style: solid; flex: none; }
   .node.updated .halo { animation: ping 1.3s ease-out; }
   .node .core { transition: stroke .2s, fill .2s, r .3s; }
 
@@ -496,15 +508,22 @@
       <!-- LEFT: network map (spatial centerpiece) -->
       <section class="card card-pad map-card">
         <div class="store-tag shared"><svg class="lock" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"></path></svg>Knowledge graph · institution-level · shareable across hospitals</div>
-        <div class="map-head"><h2><span class="step-tag">1</span>SF psychiatric knowledge graph</h2><span class="eyebrow">click a node or edge · agent-monitored</span></div>
+        <div class="map-head"><h2><span class="step-tag">1</span>SF psychiatric knowledge graph</h2>
+          <span class="topbar-spacer"></span>
+          <button class="zoom-btn" id="graph-zoom">⤢ Zoom out — full SF map</button></div>
         <div class="calling-banner" id="calling-banner"><span class="live-dot"></span><span id="calling-text">On call</span></div>
         <svg id="map" viewBox="0 0 640 560" aria-label="Facility network"></svg>
         <div class="kg-card" id="kg-card"></div>
-        <div class="legend">
+        <div class="legend" id="legend-flow">
           <span><i class="k" style="background:var(--flow-stepdown)"></i>step-down</span>
           <span><i class="k" style="background:var(--flow-stepup)"></i>step-up</span>
           <span><i class="k" style="background:var(--flow-vertical)"></i>vertical</span>
           <span><i class="k" style="background:var(--flow-crisis)"></i>crisis re-entry</span>
+        </div>
+        <div id="graph-tools" style="display:none">
+          <div class="graph-presets" id="graph-presets"></div>
+          <details class="graph-legend"><summary>Legend — facility type &amp; edge frequency</summary>
+            <div class="legend-list" id="graph-legend-body"></div></details>
         </div>
       </section>
 
@@ -701,60 +720,116 @@ function svgDefs(){
   return defs;
 }
 
+let GRAPH_RAW=null, graphMode="kg";   // "kg" = curated neighborhood, "map" = full network
 async function drawMap(){
-  let {facilities,edges}=await j("/api/graph");   // the real KG the monitoring agent maintains
+  GRAPH_RAW=await j("/api/graph");   // the real KG the monitoring agent maintains
   document.getElementById("conn").textContent="live"; document.getElementById("conn").className="badge live";
-  FAC_BY_ID={}; facilities.forEach(f=>FAC_BY_ID[f.id]=f);
-  EDGE_BY_KEY={};
-  // Network page = a small curated neighborhood: origin + its top referral
-  // partners. The full SF network lives in the System-map view; here we keep it
-  // legible and call-focused.
-  const origEdges=(edges.edges||[]).filter(e=>e.from===ORIGIN_ID||e.to===ORIGIN_ID);
-  const partners=[...new Set(origEdges
-    .sort((a,b)=>(b.freq_sim||0)-(a.freq_sim||0))
-    .map(e=>e.from===ORIGIN_ID?e.to:e.from))].slice(0,15);
-  const shown=new Set([ORIGIN_ID, ...partners]);
-  const allEdges=(edges.edges||[]).filter(e=>shown.has(e.from)&&shown.has(e.to));
-  edges={edges:allEdges};
-  const nodes=facilities.filter(f=>shown.has(f.id));
-  const svg=document.getElementById("map"); svg.innerHTML=""; svg.appendChild(svgDefs());
-  const cx=320,cy=270,R=215; nodePos={};
-  // origin sits in the center; everyone else on the ring around it
-  const others=nodes.filter(f=>f.id!==ORIGIN_ID);
-  nodePos[ORIGIN_ID]=[cx,cy];
-  others.forEach((f,i)=>{const a=(i/others.length)*2*Math.PI-Math.PI/2; nodePos[f.id]=[cx+R*Math.cos(a),cy+R*Math.sin(a)]});
+  renderGraph();
+}
+function setGraphMode(m){ if(graphMode===m)return; graphMode=m; hideKgCard(); renderGraph();
+  document.getElementById("graph-zoom").textContent = m==="kg" ? "⤢ Zoom out — full SF map" : "⤡ Zoom in — knowledge graph";
+  logActivity("Knowledge graph", m==="kg"?"Curated view · origin + top partners":"Zoomed out · full SF system map"); }
 
-  (edges.edges||[]).forEach(e=>{
+function renderGraph(){
+  if(!GRAPH_RAW)return;
+  const facilities=GRAPH_RAW.facilities, allE=GRAPH_RAW.edges.edges||[];
+  FAC_BY_ID={}; facilities.forEach(f=>FAC_BY_ID[f.id]=f); EDGE_BY_KEY={}; nodePos={};
+  const svg=document.getElementById("map"); svg.innerHTML=""; svg.appendChild(svgDefs());
+  let nodes, edges, cx, cy;
+  if(graphMode==="kg"){
+    svg.setAttribute("viewBox","0 0 640 560"); cx=320; cy=270; MAP_CY=270; const R=215;
+    const origEdges=allE.filter(e=>e.from===ORIGIN_ID||e.to===ORIGIN_ID);
+    const partners=[...new Set(origEdges.sort((a,b)=>(b.freq_sim||0)-(a.freq_sim||0)).map(e=>e.from===ORIGIN_ID?e.to:e.from))].slice(0,15);
+    const shown=new Set([ORIGIN_ID,...partners]);
+    edges=allE.filter(e=>shown.has(e.from)&&shown.has(e.to));
+    nodes=facilities.filter(f=>shown.has(f.id));
+    nodePos[ORIGIN_ID]=[cx,cy];
+    const others=nodes.filter(f=>f.id!==ORIGIN_ID);
+    others.forEach((f,i)=>{const a=(i/others.length)*2*Math.PI-Math.PI/2; nodePos[f.id]=[cx+R*Math.cos(a),cy+R*Math.sin(a)]});
+  } else {
+    svg.setAttribute("viewBox","0 0 1000 760"); cx=500; cy=380; MAP_CY=380;
+    const shown=new Set([ORIGIN_ID]); allE.forEach(e=>{shown.add(e.from);shown.add(e.to)});
+    edges=allE.filter(e=>shown.has(e.from)&&shown.has(e.to));
+    nodes=facilities.filter(f=>shown.has(f.id));
+    const byCat={}; CATS.forEach(c=>byCat[c.key]=[]);
+    nodes.forEach(f=>{const c=CAT_OF[f.level_of_care]; if(c)byCat[c.key].push(f);});
+    CATS.forEach((c,ci)=>{const mem=byCat[c.key]||[]; const base=(ci/CATS.length)*2*Math.PI-Math.PI/2; const spread=Math.PI/CATS.length*0.95;
+      mem.forEach((f,i)=>{const t=mem.length>1?i/(mem.length-1):0.5; const a=base-spread+t*spread*2; const rr=205+((i*47)%120); nodePos[f.id]=[cx+rr*Math.cos(a),cy+rr*Math.sin(a)];});});
+    nodePos[ORIGIN_ID]=[cx,cy];
+  }
+  edges.forEach(e=>{
     if(!nodePos[e.from]||!nodePos[e.to])return;
     const key=e.from+"|"+e.to; EDGE_BY_KEY[key]=e;
     const[x1,y1]=nodePos[e.from],[x2,y2]=nodePos[e.to];
     const mx=(x1+x2)/2+(cy-(y1+y2)/2)*0.18, my=(y1+y2)/2+((x1+x2)/2-cx)*0.18;
     const d=`M${x1},${y1} Q${mx},${my} ${x2},${y2}`;
-    // fat invisible hit path so the thin edge is easy to click
-    const hit=document.createElementNS(NS,"path");
-    hit.setAttribute("d",d); hit.setAttribute("class","edge-hit"); hit.dataset.key=key;
+    const hit=document.createElementNS(NS,"path"); hit.setAttribute("d",d); hit.setAttribute("class","edge-hit"); hit.dataset.key=key;
     hit.addEventListener("click",ev=>{ev.stopPropagation();showEdgeCard(key)});
-    const p=document.createElementNS(NS,"path");
-    p.setAttribute("d",d);
+    const p=document.createElementNS(NS,"path"); p.setAttribute("d",d);
     p.setAttribute("class","edge"); p.dataset.from=e.from; p.dataset.to=e.to; p.dataset.key=key;
-    p.setAttribute("stroke",FLOW[e.type]||"var(--border-strong)"); p.setAttribute("stroke-width",1+(e.freq_sim||1)*0.3);
+    p.setAttribute("stroke",graphMode==="map"?freqColor(e.freq_sim):(FLOW[e.type]||"var(--border-strong)"));
+    p.setAttribute("stroke-width",1+(e.freq_sim||1)*0.3); if(graphMode==="map")p.setAttribute("opacity",.28);
     svg.append(hit,p)});
-
-  nodes.forEach(f=>{ const[x,y]=nodePos[f.id]; drawNode(f,x,y,f.id===ORIGIN_ID); });
-  logActivity("Knowledge graph",`Loaded ${nodes.length} facilities · ${(edges.edges||[]).length} referral edges (curated view)`);
+  nodes.forEach(f=>{ const[x,y]=nodePos[f.id]; if(x!=null)drawNode(f,x,y,f.id===ORIGIN_ID); });
+  document.getElementById("graph-tools").style.display = graphMode==="map" ? "block":"none";
+  document.getElementById("legend-flow").style.display = graphMode==="map" ? "none":"flex";
+  if(graphMode==="map"){ buildGraphPresets(); buildGraphLegend(); }
+  applyGraphFilter();
+  logActivity("Knowledge graph",`${graphMode==="kg"?"Curated":"Full map"} · ${nodes.length} facilities · ${edges.length} edges`);
 }
 
-const MAP_CY=270;
+let graphFilter="all";
+function buildGraphPresets(){
+  const facs=Object.values(FAC_BY_ID);
+  const beds=facs.filter(f=>(f?.simulated?.availability?.available_beds||0)>0).length;
+  const presets=[{key:"all",label:"All",count:facs.length,color:"var(--text-muted)"},
+    ...CATS.map(c=>({key:c.key,label:c.label,count:facs.filter(f=>CAT_OF[f.level_of_care]===c).length,color:c.color})),
+    {key:"beds",label:"Beds now",count:beds,color:"var(--success)"},
+    {key:"medi-cal",label:"Medi-Cal",count:facs.filter(f=>(f.payers||[]).includes("medi-cal")).length,color:"var(--accent)"},
+    {key:"spanish",label:"Spanish",count:facs.filter(f=>(f.languages||[]).includes("Spanish")).length,color:"var(--accent)"}];
+  document.getElementById("graph-presets").innerHTML=presets.map(p=>
+    `<button class="preset${p.key===graphFilter?" on":""}" data-key="${p.key}"><span class="dot" style="background:${p.color}"></span>${esc(p.label)} <span class="cnt">${p.count}</span></button>`).join("");
+  document.querySelectorAll("#graph-presets .preset").forEach(b=>b.onclick=()=>{graphFilter=b.dataset.key;
+    document.querySelectorAll("#graph-presets .preset").forEach(x=>x.classList.toggle("on",x.dataset.key===graphFilter)); applyGraphFilter();});
+}
+function graphNodeMatches(g){ const k=graphFilter;
+  if(k==="all")return true;
+  if(k==="beds")return (parseInt(g.dataset.beds||"0",10)||0)>0;
+  if(k==="medi-cal")return g.dataset.payers.split(",").includes("medi-cal");
+  if(k==="spanish")return g.dataset.langs.split(",").includes("Spanish");
+  return g.dataset.cat===k; }
+function applyGraphFilter(){
+  const svg=document.getElementById("map"); const active=graphMode==="map"&&graphFilter!=="all";
+  svg.classList.toggle("filtered",active);
+  const shown=new Set();
+  svg.querySelectorAll(".node").forEach(g=>{const on=!active||graphNodeMatches(g)||g.classList.contains("origin");
+    g.classList.toggle("dim",!on); if(on)shown.add(g.id.slice(2));});
+  svg.querySelectorAll(".edge").forEach(p=>p.classList.toggle("dim",active&&!(shown.has(p.dataset.from)&&shown.has(p.dataset.to))));
+}
+function buildGraphLegend(){
+  const el=document.getElementById("graph-legend-body");
+  el.innerHTML=CATS.map(c=>`<div class="row"><span class="swatch" style="background:${c.color};border-radius:50%"></span>${esc(c.label)}</div>`).join("")
+    +`<div class="row" style="margin-top:6px;color:var(--text-faint)">edge color = referral frequency</div>`
+    +FREQ_LEGEND.map(([lab,col])=>`<div class="row"><span class="eline" style="border-top-color:${col}"></span>${esc(lab)}</div>`).join("");
+}
+document.getElementById("graph-zoom").onclick=()=>setGraphMode(graphMode==="kg"?"map":"kg");
+
+let MAP_CY=270;
 function drawNode(f,x,y,isOrigin){
   const svg=document.getElementById("map");
   const beds=f?.simulated?.availability?.available_beds;
   const r=isOrigin?22:16+(typeof beds==="number"?Math.min(beds,6):1)*1.1;
+  const cat=CAT_OF[f.level_of_care];
   const g=document.createElementNS(NS,"g"); g.setAttribute("class","node"+(isOrigin?" origin":"")); g.id="n-"+f.id;
+  g.dataset.cat=cat?cat.key:""; g.dataset.payers=(f.payers||[]).join(","); g.dataset.langs=(f.languages||[]).join(",");
+  g.dataset.beds=(typeof beds==="number"?beds:""); g.dataset.name=(f.name||"").toLowerCase();
   const halo=document.createElementNS(NS,"circle"); halo.setAttribute("class","halo");
   halo.setAttribute("cx",x); halo.setAttribute("cy",y); halo.setAttribute("r",r);
   const ring=document.createElementNS(NS,"circle"); ring.setAttribute("class","ring");
   ring.setAttribute("cx",x); ring.setAttribute("cy",y); ring.setAttribute("r",r+4);
-  ring.setAttribute("fill",isOrigin?"url(#ringGradOrigin)":"url(#ringGrad)");
+  // color the ring by facility category in the full map; keep the soft gradient in the curated view
+  if(graphMode==="map"&&cat&&!isOrigin){ ring.setAttribute("fill",cat.color); ring.setAttribute("opacity",".85"); }
+  else ring.setAttribute("fill",isOrigin?"url(#ringGradOrigin)":"url(#ringGrad)");
   const c=document.createElementNS(NS,"circle"); c.setAttribute("class","core");
   c.setAttribute("cx",x); c.setAttribute("cy",y); c.setAttribute("r",r);
   const t=document.createElementNS(NS,"text");
