@@ -23,17 +23,7 @@
     /* referral-flow edge colors, mapped onto the palette */
     --flow-stepdown: #2f7a44; --flow-stepup: #b1362f; --flow-vertical: #1f6f6b; --flow-crisis: #a8690a;
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg:#101817; --surface:#17201f; --surface-2:#1c2725; --text:#e7efed;
-      --text-muted:#a3b5b1; --text-faint:#6f8480; --border:#2a3634; --border-strong:#3b4b48;
-      --accent:#4fbdb6; --accent-strong:#7fd6d0; --accent-tint:#17302e;
-      --success:#6fbf7c; --success-tint:#17301d; --warning:#e0a83e; --warning-tint:#332409;
-      --critical:#e2685f; --critical-tint:#341714; --neutral:#8fa9ae; --neutral-tint:#1b2828;
-      --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px -10px rgba(0,0,0,.55);
-      --flow-stepdown:#6fbf7c; --flow-stepup:#e2685f; --flow-vertical:#4fbdb6; --flow-crisis:#e0a83e;
-    }
-  }
+  /* Light mode is locked on — system dark-mode override intentionally removed. */
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: var(--font-ui);
@@ -45,22 +35,54 @@
   .eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
     color: var(--text-faint); font-weight: 600; }
 
-  /* ---------- App shell: slim rail + main ---------- */
-  .app { display: grid; grid-template-columns: 72px 1fr; min-height: 100vh; }
-  @media (max-width: 820px) { .app { grid-template-columns: 56px 1fr; } }
+  /* ---------- App shell: docked sidebar (desktop) / drawer (mobile) ---------- */
+  .app { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
   .rail { background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column;
-    align-items: center; padding: 16px 0; gap: 3px; position: sticky; top: 0; height: 100vh; }
-  .rail-mark { width: 34px; height: 34px; border-radius: 9px; background: var(--accent); display: flex;
+    align-items: stretch; padding: 16px 12px; gap: 2px; position: sticky; top: 0; height: 100vh;
+    transition: transform .28s cubic-bezier(.4,0,.2,1); }
+  .rail-brand { display: flex; align-items: center; gap: 10px; padding: 4px 8px 18px; }
+  .rail-mark { width: 32px; height: 32px; border-radius: 9px; background: var(--accent); display: flex;
     align-items: center; justify-content: center; color: #fff; font-family: var(--font-mono); font-weight: 700;
-    font-size: 13px; margin-bottom: 16px; flex-shrink: 0; }
-  .rail-step { width: 54px; display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 9px 2px;
-    border-radius: var(--radius-s); background: none; border: none; color: var(--text-faint); cursor: pointer;
-    transition: background .15s, color .15s; }
-  .rail-step svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.6; }
-  .rail-step .rail-label { font-size: 9px; letter-spacing: .02em; text-align: center; line-height: 1.1; }
-  .rail-step:hover { background: var(--surface-2); color: var(--text-muted); }
+    font-size: 13px; flex-shrink: 0; }
+  .rail-brand .name { font-weight: 700; font-size: 16px; letter-spacing: -.02em; }
+  .rail-brand .close { display: none; margin-left: auto; background: none; border: none; color: var(--text-faint);
+    cursor: pointer; font-size: 22px; line-height: 1; padding: 4px 8px; border-radius: var(--radius-s); }
+  .rail-brand .close:hover { background: var(--surface-2); color: var(--text); }
+  .rail-eyebrow { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--text-faint); font-weight: 600; padding: 6px 10px 6px; }
+  .rail-step { display: flex; flex-direction: row; align-items: center; gap: 12px; padding: 10px 11px; width: 100%;
+    border-radius: var(--radius-m); background: none; border: none; color: var(--text-muted); cursor: pointer;
+    text-align: left; transition: background .15s, color .15s; }
+  .rail-step svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.7; flex: none; }
+  .rail-step .rail-label { font-size: 14px; font-weight: 550; letter-spacing: -.01em; }
+  .rail-step .rail-num { margin-left: auto; font-family: var(--font-mono); font-size: 10px; color: var(--text-faint);
+    background: var(--surface-2); border-radius: 999px; padding: 1px 7px; }
+  .rail-step:hover { background: var(--surface-2); color: var(--text); }
   .rail-step.is-active { background: var(--accent-tint); color: var(--accent-strong); }
+  .rail-step.is-active .rail-num { background: var(--accent); color: #fff; }
   .rail-spacer { flex: 1; }
+  .rail-foot { font-size: 11px; color: var(--text-faint); padding: 10px 11px; line-height: 1.45; }
+
+  /* hamburger (mobile) + scrim */
+  .hamburger { display: none; align-items: center; justify-content: center; width: 38px; height: 38px; flex: none;
+    border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text);
+    cursor: pointer; }
+  .hamburger svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+  .scrim { display: none; position: fixed; inset: 0; background: rgba(10,18,17,.42); z-index: 40; opacity: 0;
+    transition: opacity .28s; }
+
+  @media (max-width: 820px) {
+    .app { grid-template-columns: 1fr; }
+    .hamburger { display: inline-flex; }
+    .rail { position: fixed; top: 0; left: 0; z-index: 50; width: 280px; height: 100dvh;
+      transform: translateX(-100%); box-shadow: 0 0 40px -8px rgba(0,0,0,.4); }
+    .rail.open { transform: translateX(0); }
+    .rail-brand .close { display: block; }
+    .scrim.show { display: block; opacity: 1; }
+    .topbar .tagline { display: none; }
+    .topbar { padding: 11px 16px; gap: 10px; }
+    .workspace { padding: 16px 16px 90px; }
+  }
 
   .main { display: flex; flex-direction: column; min-width: 0; }
   .topbar { display: flex; align-items: center; gap: 14px; padding: 13px 24px; border-bottom: 1px solid var(--border);
@@ -86,9 +108,19 @@
     padding: 20px 24px 90px; max-width: 1640px; width: 100%; margin: 0 auto; align-items: start; }
   @media (max-width: 1080px) { .workspace { grid-template-columns: 1fr; } }
 
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-m); box-shadow: var(--shadow); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-m); box-shadow: var(--shadow);
+    transition: box-shadow .2s, border-color .2s; }
   .card-pad { padding: 18px 20px; }
-  .card h2 { font-size: 12px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px; }
+  .card h2 { font-size: 12px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 9px; }
+  /* small numbered chip that ties a card to its workflow step in the rail */
+  .step-tag { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; flex: none;
+    border-radius: 999px; background: var(--accent-tint); color: var(--accent-strong); font-family: var(--font-mono);
+    font-size: 11px; font-weight: 700; }
+  /* empty-state hint — quiet guidance instead of a blank panel */
+  .hint { display: flex; align-items: flex-start; gap: 10px; color: var(--text-faint); font-size: 13px; line-height: 1.5;
+    padding: 13px 15px; border: 1px dashed var(--border-strong); border-radius: var(--radius-m); background: var(--surface-2); }
+  .hint svg { width: 17px; height: 17px; flex: none; margin-top: 1px; stroke: var(--text-faint); fill: none; stroke-width: 1.7; }
 
   /* map is sticky so the glowing node stays in view while you work the call */
   .map-card { position: sticky; top: 78px; }
@@ -104,16 +136,44 @@
   .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 11.5px; color: var(--text-muted); margin-top: 10px; }
   .legend .k { display: inline-block; width: 16px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 5px; }
 
-  /* --- network nodes --- */
-  .node .core { fill: var(--surface); stroke: var(--border-strong); stroke-width: 1.5; cursor: pointer; transition: stroke .2s, fill .2s; }
-  .node text { fill: var(--text-faint); font-size: 9.5px; pointer-events: none; transition: fill .2s; }
+  /* --- knowledge-graph nodes (image-2 style: soft gradient ring + white core) --- */
+  .node { cursor: pointer; }
+  .node .ring { pointer-events: none; opacity: .9; transition: opacity .2s; }
+  .node .core { fill: var(--surface); stroke: #fff; stroke-width: 2; transition: stroke .2s, fill .2s; }
+  .node text { fill: var(--text-muted); font-size: 10px; font-weight: 550; pointer-events: none; transition: fill .2s; }
   .node .halo { fill: var(--accent); opacity: 0; transform-box: fill-box; transform-origin: center; pointer-events: none; }
-  .node:hover .core { stroke: var(--accent); }
-  .node.origin .core { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 2; }
-  .node.origin text { fill: var(--text-muted); font-weight: 600; }
+  .node:hover .core { stroke: var(--accent); } .node:hover text { fill: var(--text); }
+  .node:hover .ring { opacity: 1; }
+  .node.origin .core { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 2.5; }
+  .node.origin text { fill: var(--text); font-weight: 700; }
+  .node.selected .core { stroke: var(--accent); stroke-width: 3; }
   .node.active .core { stroke: var(--accent); stroke-width: 3; fill: var(--accent-tint); }
-  .node.active text { fill: var(--text); font-weight: 650; }
+  .node.active text { fill: var(--text); font-weight: 700; }
   .node.calling .halo { animation: ping 1.9s ease-out infinite; }
+
+  /* floating attribute card, anchored to a node on click (image-2 style) */
+  .map-card { position: relative; }
+  .kg-card { position: absolute; z-index: 8; width: 220px; background: var(--surface); border: 1px solid var(--border-strong);
+    border-radius: var(--radius-m); box-shadow: 0 8px 30px -8px rgba(20,34,32,.35); padding: 0; overflow: hidden;
+    opacity: 0; transform: translateY(4px); pointer-events: none; transition: opacity .16s, transform .16s; }
+  .kg-card.show { opacity: 1; transform: none; pointer-events: auto; }
+  .kg-card .kc-head { padding: 11px 13px 9px; border-bottom: 1px solid var(--border); position: relative; }
+  .kg-card .kc-ribbon { height: 4px; background: linear-gradient(90deg,#f6c99a,#f0a9c0,#c9a8e0); }
+  .kg-card .kc-name { font-weight: 700; font-size: 13.5px; letter-spacing: -.01em; padding-right: 16px; }
+  .kg-card .kc-level { font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); text-transform: uppercase;
+    letter-spacing: .05em; margin-top: 3px; }
+  .kg-card .kc-close { position: absolute; top: 8px; right: 9px; cursor: pointer; color: var(--text-faint); font-size: 16px; line-height: 1; }
+  .kg-card .kc-close:hover { color: var(--text); }
+  .kg-card .kc-body { padding: 6px 13px 11px; }
+  .kg-card .kc-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 5px 0;
+    font-size: 12.5px; border-bottom: 1px dashed var(--border); }
+  .kg-card .kc-row:last-child { border-bottom: none; }
+  .kg-card .kc-k { color: var(--text-faint); }
+  .kg-card .kc-v { font-weight: 650; color: var(--text); font-variant-numeric: tabular-nums; text-align: right; }
+  .kg-card .kc-v.warn { color: var(--warning); } .kg-card .kc-v.ok { color: var(--success); }
+  .kg-card .kc-foot { display: flex; align-items: center; gap: 6px; padding: 8px 13px; background: var(--surface-2);
+    font-size: 10.5px; color: var(--text-faint); font-family: var(--font-mono); border-top: 1px solid var(--border); }
+  .kg-card .kc-foot .fresh-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); flex: none; }
   @keyframes ping { 0% { opacity: .40; transform: scale(1); } 70% { opacity: 0; transform: scale(2.6); } 100% { opacity: 0; transform: scale(2.6); } }
 
   .edge { fill: none; opacity: .38; transition: opacity .25s; }
@@ -125,8 +185,13 @@
   .flow-col { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
 
   /* patient */
-  .patient .name { font-weight: 650; font-size: 15px; }
-  .chips { display: flex; gap: 7px; flex-wrap: wrap; margin: 10px 0 14px; }
+  .case-head { display: flex; align-items: center; gap: 13px; margin-bottom: 2px; }
+  .case-head .avatar { width: 44px; height: 44px; border-radius: 12px; flex: none; background: var(--accent-tint);
+    color: var(--accent-strong); font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center;
+    letter-spacing: .02em; }
+  .patient .name { font-weight: 700; font-size: 17px; letter-spacing: -.01em; }
+  .patient .sub { color: var(--text-muted); font-size: 13px; margin-top: 1px; }
+  .chips { display: flex; gap: 7px; flex-wrap: wrap; margin: 12px 0 14px; }
   .chip { background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px;
     font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
 
@@ -138,8 +203,11 @@
   .btn:active { transform: translateY(1px); }
   .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   .btn-primary:hover { background: var(--accent-strong); border-color: var(--accent-strong); color: #fff; }
-  .btn:disabled { opacity: .5; cursor: not-allowed; border-color: var(--border); color: var(--text-faint); background: var(--surface-2); }
+  .btn-primary { box-shadow: 0 1px 2px rgba(20,34,32,.10), 0 8px 20px -10px rgba(31,111,107,.55); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; border-color: var(--border); color: var(--text-faint); background: var(--surface-2); box-shadow: none; }
   .btn-sm { padding: 6px 11px; font-size: 12.5px; }
+  .btn-block { width: 100%; }
+  @media (max-width: 720px) { .btn { padding: 11px 16px; } .mic-row .btn { flex: 1 1 auto; } }
 
   /* candidate rows */
   .cand { border: 1px solid var(--border); border-radius: var(--radius-m); padding: 12px 14px; margin-top: 9px;
@@ -234,29 +302,39 @@
 </head>
 <body>
 <div class="app">
-  <nav class="rail" aria-label="Workflow">
-    <div class="rail-mark">AA</div>
+  <nav class="rail" id="rail" aria-label="Workflow">
+    <div class="rail-brand">
+      <div class="rail-mark">AA</div>
+      <span class="name">Alora</span>
+      <button class="close" id="rail-close" aria-label="Close menu">&times;</button>
+    </div>
+    <div class="rail-eyebrow">Transition workflow</div>
     <button class="rail-step is-active" data-focus="map-card" aria-label="Network">
       <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.4"></circle><circle cx="18" cy="7" r="2.4"></circle><circle cx="12" cy="17" r="2.4"></circle><path d="M7.6 7.2l3.2 8M16.7 9l-3.8 6.4"></path></svg>
-      <span class="rail-label">Network</span>
+      <span class="rail-label">Network</span><span class="rail-num">1</span>
     </button>
     <button class="rail-step" data-focus="patient-card" aria-label="Match">
       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"></circle><path d="M20 20l-4.2-4.2"></path></svg>
-      <span class="rail-label">Match</span>
+      <span class="rail-label">Match</span><span class="rail-num">2</span>
     </button>
     <button class="rail-step" data-focus="brief-card" aria-label="Prep">
       <svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 15.5h7M9 8.5h4"></path></svg>
-      <span class="rail-label">Prep</span>
+      <span class="rail-label">Prep</span><span class="rail-num">3</span>
     </button>
     <button class="rail-step" data-focus="copilot-card" aria-label="Live call">
       <svg viewBox="0 0 24 24"><path d="M6 4h3l1.5 4-2 1.5a11 11 0 005 5l1.5-2 4 1.5V22a2 2 0 01-2 2A16 16 0 014 6a2 2 0 012-2z"></path></svg>
-      <span class="rail-label">Live</span>
+      <span class="rail-label">Live call</span><span class="rail-num">4</span>
     </button>
     <div class="rail-spacer"></div>
+    <div class="rail-foot">Alora preps &amp; listens.<br>You run the call.</div>
   </nav>
+  <div class="scrim" id="scrim"></div>
 
   <div class="main">
     <header class="topbar">
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+      </button>
       <span class="brand">AloraAI</span>
       <span class="tagline">the case manager makes the call — Alora preps her, listens, and keeps the board live</span>
       <span class="topbar-spacer"></span>
@@ -266,9 +344,10 @@
     <div class="workspace">
       <!-- LEFT: network map (spatial centerpiece) -->
       <section class="card card-pad map-card">
-        <div class="map-head"><h2>SF psychiatric network</h2><span class="eyebrow">referral flows · simulated</span></div>
+        <div class="map-head"><h2><span class="step-tag">1</span>SF psychiatric knowledge graph</h2><span class="eyebrow">click a node · agent-monitored</span></div>
         <div class="calling-banner" id="calling-banner"><span class="live-dot"></span><span id="calling-text">On call</span></div>
         <svg id="map" viewBox="0 0 640 560" aria-label="Facility network"></svg>
+        <div class="kg-card" id="kg-card"></div>
         <div class="legend">
           <span><i class="k" style="background:var(--flow-stepdown)"></i>step-down</span>
           <span><i class="k" style="background:var(--flow-stepup)"></i>step-up</span>
@@ -283,7 +362,7 @@
         <!-- LIVE CO-PILOT (top-right, prominent during a call) -->
         <section class="card live-card" id="copilot-card" style="display:none">
           <div class="live-head">
-            <h2>Live call</h2><span class="fac" id="cop-fac"></span>
+            <h2><span class="step-tag">4</span>Live call</h2><span class="fac" id="cop-fac"></span>
             <span class="live-head-spacer"></span>
             <span class="badge" id="mic-state">idle</span>
           </div>
@@ -311,21 +390,27 @@
 
         <!-- PRE-CALL BRIEF -->
         <section class="card card-pad brief" id="brief-card" style="display:none">
-          <div class="map-head" style="margin-bottom:2px"><h2>Pre-call brief</h2><span class="fac eyebrow" id="brief-fac" style="color:var(--text-muted)"></span></div>
+          <div class="map-head" style="margin-bottom:2px"><h2><span class="step-tag">3</span>Pre-call brief</h2><span class="fac eyebrow" id="brief-fac" style="color:var(--text-muted)"></span></div>
           <div id="brief-body"><span class="eyebrow">preparing…</span></div>
           <button class="btn btn-primary" id="btn-start-call" style="margin-top:14px;display:none">Start live call · Alora listens →</button>
         </section>
 
         <!-- PATIENT + MATCH -->
-        <section class="card card-pad patient">
-          <h2>Patient — demo</h2>
-          <div class="name">Maria G. · 34 · ZSFG inpatient psychiatry, day 4</div>
+        <section class="card card-pad patient" id="patient-card">
+          <h2><span class="step-tag">2</span>Patient &amp; match</h2>
+          <div class="case-head">
+            <div class="avatar">MG</div>
+            <div>
+              <div class="name">Maria G.</div>
+              <div class="sub">34 · ZSFG inpatient psychiatry · <strong>day 4</strong></div>
+            </div>
+          </div>
           <div class="chips">
             <span class="chip">Medi-Cal</span><span class="chip">Spanish-preferred</span>
             <span class="chip">voluntary · 5150 lapsed day 2</span><span class="chip">step-down candidate</span>
           </div>
-          <button class="btn btn-primary" id="btn-match">Find step-down placements</button>
-          <div id="candidates"></div>
+          <button class="btn btn-primary btn-block" id="btn-match">Find step-down placements</button>
+          <div id="candidates"><div class="hint" id="cand-hint"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg><span>Run a match to see the top step-down placements, ranked by fit. Pick one to have Alora prep your call.</span></div></div>
         </section>
       </div>
     </div>
@@ -345,7 +430,7 @@
 
 <script>
 const API = location.protocol === "file:" ? "http://localhost:8011" : "";
-const ORIGIN_ID = "zsfg_inpatient";
+const ORIGIN_ID = "zsfg-pes";   // real-directory id; the ZSFG psychiatric hub the referrals flow from
 const FLOW = {step_down:"var(--flow-stepdown)",step_up:"var(--flow-stepup)",vertical:"var(--flow-vertical)",crisis_reentry:"var(--flow-crisis)"};
 const PATIENT = {patient_id:"maria_demo", direction:"step_down", payer:"medi-cal", language:"es", nurse_name:"J. Alvarez, RN"};
 const PACKET = JSON.stringify({
@@ -387,40 +472,140 @@ function logActivity(agent,text){
 document.getElementById("agent-log-head").onclick=()=>document.getElementById("agent-log").classList.toggle("is-open");
 
 function toast(msg){const h=document.getElementById("toast-host");const t=document.createElement("div");t.className="toast";t.textContent=msg;h.appendChild(t);setTimeout(()=>t.remove(),4000)}
+/* ---------- responsive drawer (Claude-style: hamburger top-left) ---------- */
+const rail=document.getElementById("rail"), scrim=document.getElementById("scrim"), hamburger=document.getElementById("hamburger");
+function openDrawer(){rail.classList.add("open");scrim.classList.add("show");hamburger.setAttribute("aria-expanded","true")}
+function closeDrawer(){rail.classList.remove("open");scrim.classList.remove("show");hamburger.setAttribute("aria-expanded","false")}
+hamburger.onclick=()=>rail.classList.contains("open")?closeDrawer():openDrawer();
+scrim.onclick=closeDrawer;
+document.getElementById("rail-close").onclick=closeDrawer;
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDrawer()});
+
 document.querySelectorAll(".rail-step").forEach(b=>b.onclick=()=>{
   document.querySelectorAll(".rail-step").forEach(x=>x.classList.remove("is-active")); b.classList.add("is-active");
   const el=document.getElementById(b.dataset.focus); if(el&&el.style.display!=="none")el.scrollIntoView({behavior:"smooth",block:"start"});
+  if(window.matchMedia("(max-width: 820px)").matches) closeDrawer();
 });
 
-/* ---------- network map ---------- */
+/* ---------- knowledge graph (real directory, image-2 style) ---------- */
 const NS="http://www.w3.org/2000/svg";
+let FAC_BY_ID={};   // id -> facility record, so the attribute card can read live KG fields
+
+function svgDefs(){
+  const defs=document.createElementNS(NS,"defs");
+  defs.innerHTML=`<linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f6c99a"/><stop offset="0.5" stop-color="#f0a9c0"/><stop offset="1" stop-color="#c9a8e0"/>
+    </linearGradient>
+    <linearGradient id="ringGradOrigin" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7fd6d0"/><stop offset="1" stop-color="#1f6f6b"/>
+    </linearGradient>`;
+  return defs;
+}
+
 async function drawMap(){
-  const {facilities,edges}=await j("/api/facilities");
+  let {facilities,edges}=await j("/api/graph");   // the real KG the monitoring agent maintains
   document.getElementById("conn").textContent="live"; document.getElementById("conn").className="badge live";
-  const svg=document.getElementById("map"), cx=320,cy=270,R=205;
-  facilities.forEach((f,i)=>{const a=(i/facilities.length)*2*Math.PI-Math.PI/2; nodePos[f.id]=[cx+R*Math.cos(a),cy+R*Math.sin(a)]});
-  edges.edges.forEach(e=>{
+  FAC_BY_ID={}; facilities.forEach(f=>FAC_BY_ID[f.id]=f);
+  // demo view: keep it legible — origin + its direct (1-hop) referral partners only.
+  // The agent still monitors the full graph; this just limits what we draw.
+  const shown=new Set([ORIGIN_ID]);
+  (edges.edges||[]).forEach(e=>{ if(e.from===ORIGIN_ID)shown.add(e.to); if(e.to===ORIGIN_ID)shown.add(e.from); });
+  const allEdges=(edges.edges||[]).filter(e=>shown.has(e.from)&&shown.has(e.to));
+  edges={edges:allEdges};
+  const nodes=facilities.filter(f=>shown.has(f.id));
+  const svg=document.getElementById("map"); svg.innerHTML=""; svg.appendChild(svgDefs());
+  const cx=320,cy=270,R=210; nodePos={};
+  // origin sits in the center; everyone else on the ring around it
+  const others=nodes.filter(f=>f.id!==ORIGIN_ID);
+  nodePos[ORIGIN_ID]=[cx,cy];
+  others.forEach((f,i)=>{const a=(i/others.length)*2*Math.PI-Math.PI/2; nodePos[f.id]=[cx+R*Math.cos(a),cy+R*Math.sin(a)]});
+
+  (edges.edges||[]).forEach(e=>{
     if(!nodePos[e.from]||!nodePos[e.to])return;
     const[x1,y1]=nodePos[e.from],[x2,y2]=nodePos[e.to];
-    const mx=(x1+x2)/2+(cy-(y1+y2)/2)*0.25, my=(y1+y2)/2+((x1+x2)/2-cx)*0.25;
+    const mx=(x1+x2)/2+(cy-(y1+y2)/2)*0.18, my=(y1+y2)/2+((x1+x2)/2-cx)*0.18;
     const p=document.createElementNS(NS,"path");
     p.setAttribute("d",`M${x1},${y1} Q${mx},${my} ${x2},${y2}`);
     p.setAttribute("class","edge"); p.dataset.from=e.from; p.dataset.to=e.to;
-    p.setAttribute("stroke",FLOW[e.type]||"var(--border-strong)"); p.setAttribute("stroke-width",1+ (e.freq_sim||1)*0.35);
+    p.setAttribute("stroke",FLOW[e.type]||"var(--border-strong)"); p.setAttribute("stroke-width",1+(e.freq_sim||1)*0.3);
     svg.appendChild(p)});
-  facilities.forEach(f=>{
-    const[x,y]=nodePos[f.id], r=10+(f.beds_sim||2)*1.5;
-    const g=document.createElementNS(NS,"g"); g.setAttribute("class","node"+(f.id===ORIGIN_ID?" origin":"")); g.id="n-"+f.id;
+
+  nodes.forEach(f=>{
+    const[x,y]=nodePos[f.id], isOrigin=f.id===ORIGIN_ID;
+    const beds=f?.simulated?.availability?.available_beds;
+    const r=isOrigin?22:16+(typeof beds==="number"?Math.min(beds,6):1)*1.1;
+    const g=document.createElementNS(NS,"g"); g.setAttribute("class","node"+(isOrigin?" origin":"")); g.id="n-"+f.id;
     const halo=document.createElementNS(NS,"circle"); halo.setAttribute("class","halo");
     halo.setAttribute("cx",x); halo.setAttribute("cy",y); halo.setAttribute("r",r);
+    const ring=document.createElementNS(NS,"circle"); ring.setAttribute("class","ring");
+    ring.setAttribute("cx",x); ring.setAttribute("cy",y); ring.setAttribute("r",r+4);
+    ring.setAttribute("fill",isOrigin?"url(#ringGradOrigin)":"url(#ringGrad)");
     const c=document.createElementNS(NS,"circle"); c.setAttribute("class","core");
     c.setAttribute("cx",x); c.setAttribute("cy",y); c.setAttribute("r",r);
     const t=document.createElementNS(NS,"text");
-    t.setAttribute("x",x); t.setAttribute("y",y+(y>cy?r+14:-(r+6))); t.setAttribute("text-anchor","middle");
-    (f.name||f.id).split("(")[0].trim().split(" ").reduce((lines,w)=>{const l=lines[lines.length-1];
-      if((l+" "+w).length>20)lines.push(w);else lines[lines.length-1]=(l+" "+w).trim();return lines},[""])
-      .forEach((ln,k)=>{const ts=document.createElementNS(NS,"tspan");ts.setAttribute("x",x);ts.setAttribute("dy",k?11:0);ts.textContent=ln;t.appendChild(ts)});
-    g.append(halo,c,t); svg.appendChild(g)});
+    t.setAttribute("x",x); t.setAttribute("y",y+(y>cy?r+15:-(r+8))); t.setAttribute("text-anchor","middle");
+    (f.name||f.id).replace(/\(.*?\)/g,"").split("-")[0].trim().split(" ").reduce((lines,w)=>{const l=lines[lines.length-1];
+      if((l+" "+w).length>18)lines.push(w);else lines[lines.length-1]=(l+" "+w).trim();return lines},[""])
+      .slice(0,2).forEach((ln,k)=>{const ts=document.createElementNS(NS,"tspan");ts.setAttribute("x",x);ts.setAttribute("dy",k?11:0);ts.textContent=ln;t.appendChild(ts)});
+    g.append(halo,ring,c,t);
+    g.addEventListener("click",ev=>{ev.stopPropagation();showKgCard(f.id)});
+    svg.appendChild(g)});
+  logActivity("Knowledge graph",`Loaded ${nodes.length} connected facilities · ${(edges.edges||[]).length} referral edges`);
+}
+
+/* image-2 style attribute card, anchored beside the clicked node */
+function fmtDate(s){ if(!s)return "—"; const d=new Date(s); return isNaN(d)?s:`${d.getMonth()+1}/${d.getDate()}`; }
+function showKgCard(id){
+  const f=FAC_BY_ID[id]; if(!f)return;
+  document.querySelectorAll(".node").forEach(n=>n.classList.toggle("selected",n.id==="n-"+id));
+  const av=f.simulated?.availability||{}, db=f.simulated?.decline_behavior||{};
+  const beds=av.available_beds, wait=av.estimated_wait_days, ar=db.accept_rate, rt=db.median_response_min_sim;
+  const rows=[
+    ["Available beds", beds==null?"unknown":beds, beds!=null&&beds<=0?"warn":(beds>0?"ok":"")],
+    ["Est. wait", wait==null?"—":(wait+"d"), wait!=null&&wait>=14?"warn":""],
+    ["Accept rate", ar==null?"—":Math.round(ar*100)+"%", ar!=null&&ar<0.4?"warn":(ar>=0.6?"ok":"")],
+    ["Response time", rt==null?"—":rt+" min", ""],
+    ["Staff on shift", f.simulated?.staff_on_shift ?? "—", ""],
+    ["Capacity", f.simulated?.capacity_pct!=null?f.simulated.capacity_pct+"%":"—", ""],
+    ["Languages", (f.languages||[]).slice(0,3).join(", ")||"—", ""],
+  ];
+  const card=document.getElementById("kg-card");
+  card.innerHTML=`<div class="kc-ribbon"></div>
+    <div class="kc-head"><div class="kc-name">${esc(f.name)}</div>
+      <div class="kc-level">${esc((f.level_of_care||"").replace(/_/g," "))}</div>
+      <span class="kc-close" id="kc-close">&times;</span></div>
+    <div class="kc-body">${rows.map(([k,v,cls])=>`<div class="kc-row"><span class="kc-k">${esc(k)}</span><span class="kc-v ${cls}">${esc(v)}</span></div>`).join("")}</div>
+    <div class="kc-foot"><span class="fresh-dot"></span>updated ${esc(fmtDate(av.last_updated||f.verified_date))} · agent-monitored</div>`;
+  card.querySelector("#kc-close").onclick=e=>{e.stopPropagation();hideKgCard()};
+  // position near the node (convert svg viewBox coords -> pixels)
+  const svg=document.getElementById("map"), rect=svg.getBoundingClientRect(), vb=svg.viewBox.baseVal;
+  const[nx,ny]=nodePos[id]; const px=nx/vb.width*rect.width, py=ny/vb.height*rect.height;
+  card.style.left=Math.min(Math.max(px-110,6),rect.width-226)+"px";
+  card.style.top=Math.min(py+18,rect.height-40)+"px";
+  card.classList.add("show");
+}
+function hideKgCard(){const c=document.getElementById("kg-card");if(c){c.classList.remove("show");document.querySelectorAll(".node.selected").forEach(n=>n.classList.remove("selected"))}}
+document.getElementById("map").addEventListener("click",hideKgCard);
+
+/* ---------- KG monitoring agent → activity log (no panel, just traceable log) ---------- */
+function prettyField(p){return String(p||"").replace(/^simulated\./,"").replace(/\.observed$/,"").replace(/[._]/g," ").replace(/\bpct\b/,"%").replace(/\bsim\b/,"").trim();}
+function entityName(u){
+  if(u.entity_type==="edge"){const[a,b]=String(u.entity_id).split("|");
+    return (FAC_BY_ID[a]?.name||a).split("(")[0].trim()+" → "+(FAC_BY_ID[b]?.name||b).split("(")[0].trim();}
+  return (FAC_BY_ID[u.entity_id]?.name||u.entity_id).split("(")[0].trim();
+}
+async function runMonitorScan(reason){
+  let res; try{ res=await j("/api/monitor/scan",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"}); }
+  catch(e){ return; }
+  const auto=res.auto_applied||[], queued=res.queued||[];
+  auto.forEach(u=>logActivity("KG agent",
+    `auto-updated ${entityName(u)} · ${prettyField(u.field_path)} ${u.old_value??"–"}→${u.new_value} (conf ${Math.round((u.effective_confidence||0)*100)}%, ${u.source_type})`));
+  queued.forEach(u=>logActivity("KG agent",
+    `flagged for review · ${entityName(u)} · ${prettyField(u.field_path)} ${u.old_value??"–"}→${u.new_value} (${u.source_type})`));
+  if(!auto.length&&!queued.length){ if(reason!=="tick")logActivity("KG agent","network scan · no new changes"); }
+  else { const {facilities}=await j("/api/graph"); facilities.forEach(f=>FAC_BY_ID[f.id]=f); }  // refresh card data in place
+  if(auto.length||queued.length)
+    toast(`KG agent: ${auto.length} auto-applied · ${queued.length} queued for review`);
 }
 
 /* a synthetic animated connector origin→called facility, so the referral flow
@@ -457,7 +642,7 @@ function clearMap(){ document.querySelectorAll(".edge").forEach(e=>e.classList.r
 /* ---------- match + select ---------- */
 document.getElementById("btn-match").onclick=async()=>{
   logActivity("Matcher","Ranking step-down facilities · Medi-Cal · Spanish");
-  const {candidates}=await j("/api/match",{method:"POST",headers:{"Content-Type":"application/json"},
+  const {candidates}=await j("/api/match-directory",{method:"POST",headers:{"Content-Type":"application/json"},
     body:JSON.stringify({direction:PATIENT.direction,payer:PATIENT.payer,language:PATIENT.language,exclude:[]})});
   const el=document.getElementById("candidates"); el.innerHTML="";
   candidates.slice(0,3).forEach(c=>{
@@ -618,7 +803,11 @@ document.getElementById("btn-finalize").onclick=async()=>{
   }catch(e){toast("finalize failed: "+e.message)}
 };
 
-drawMap().catch(()=>{document.getElementById("conn").textContent="API offline — start uvicorn"});
+drawMap()
+  .then(()=>{ logActivity("KG agent","monitoring the network — scanning web / phone / EHR feeds");
+    setTimeout(()=>runMonitorScan("load"),1400);                 // first pass shortly after load
+    setInterval(()=>runMonitorScan("tick"),90000); })           // keeps working on its own, quietly
+  .catch(()=>{document.getElementById("conn").textContent="API offline — start uvicorn"});
 logActivity("System","Co-pilot ready — human runs the call, Alora assists");
 </script>
 </body>

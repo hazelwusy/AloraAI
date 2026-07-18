@@ -103,11 +103,10 @@ def test_teammate_directory() -> None:
 
 
 def test_monitor() -> None:
-    """Knowledge-graph monitoring: propose -> approve/reject -> apply -> history.
-    Runs against temp copies of facilities.json/edges_directory.json so it never
-    mutates the real committed data, even though the module under test writes
-    to disk (by design — pipeline/monitor.py has no in-memory-only mode, the
-    queue and graph are meant to persist between server requests)."""
+    """Knowledge-graph monitoring: confidence-tiered scan (auto-apply vs queue),
+    HITL approve/reject -> apply -> history, and the source-reliability loop.
+    Runs against temp copies of the data + ledgers so it never mutates the real
+    committed files (the module writes to disk by design)."""
     import shutil
     import tempfile
 
@@ -117,42 +116,58 @@ def test_monitor() -> None:
         tmp = Path(tmp)
         shutil.copy(monitor.FACILITIES_PATH, tmp / "facilities.json")
         shutil.copy(monitor.EDGES_PATH, tmp / "edges_directory.json")
-        orig = (monitor.FACILITIES_PATH, monitor.EDGES_PATH, monitor.PENDING_PATH, monitor.HISTORY_PATH)
+        orig = (monitor.FACILITIES_PATH, monitor.EDGES_PATH, monitor.PENDING_PATH,
+                monitor.HISTORY_PATH, monitor.RELIABILITY_PATH)
         monitor.FACILITIES_PATH = tmp / "facilities.json"
         monitor.EDGES_PATH = tmp / "edges_directory.json"
         monitor.PENDING_PATH = tmp / "pending_updates.json"
         monitor.HISTORY_PATH = tmp / "version_history.json"
+        monitor.RELIABILITY_PATH = tmp / "source_reliability.json"
         try:
-            proposed = monitor.run_scan()
-            assert len(proposed) >= 4, "expected proposals from all three simulated fetchers"
-            assert {p["source_type"] for p in proposed} == {"web", "phone_call", "ehr_feed"}
+            res = monitor.run_scan()
+            auto, queued = res["auto_applied"], res["queued"]
+            assert auto and queued, "tiered scan should both auto-apply and queue"
+
+            # clinical fields (beds/wait) must never auto-apply — always queued
+            assert all(a["field_path"] not in monitor.NEVER_AUTO_APPLY_FIELDS for a in auto)
+            assert any(q["field_path"] in monitor.NEVER_AUTO_APPLY_FIELDS for q in queued)
+
+            # an auto-applied update is already written into the graph
+            a0 = auto[0]
+            ent = monitor._find_entity(a0["entity_type"], a0["entity_id"])[1]
+            assert monitor._get_by_path(ent, a0["field_path"]) == a0["new_value"]
 
             again = monitor.run_scan()
-            assert not again, "re-scanning should not duplicate already-pending proposals"
+            assert not again["auto_applied"] and not again["queued"], "re-scan must not duplicate"
 
+            # HITL: approve a queued facility (clinical) update -> applied + reliability up
             fac_update = next(p for p in monitor.list_pending() if p["entity_type"] == "facility")
+            src = fac_update["source_type"]
+            rel_before = monitor.load_reliability()[src]["reliability"]
             approved = monitor.approve(fac_update["id"], approved_by="test_nurse")
             assert approved["status"] == "approved"
             after_entity = monitor._find_entity("facility", fac_update["entity_id"])[1]
             assert monitor._get_by_path(after_entity, fac_update["field_path"]) == fac_update["new_value"]
-            assert after_entity["verified_date"] == monitor._now()[:10]
+            assert monitor.load_reliability()[src]["reliability"] > rel_before, "approval should raise trust"
 
-            edge_update = next(p for p in monitor.list_pending() if p["entity_type"] == "edge")
-            rejected = monitor.reject(edge_update["id"], reason="needs a second source")
+            # reject another queued update -> untouched + reliability down
+            other = next(p for p in monitor.list_pending() if p["id"] != fac_update["id"])
+            src2 = other["source_type"]
+            rel2_before = monitor.load_reliability()[src2]["reliability"]
+            rejected = monitor.reject(other["id"], reason="needs a second source")
             assert rejected["status"] == "rejected"
-            edge_entity = monitor._find_entity("edge", edge_update["entity_id"])[1]
-            assert monitor._get_by_path(edge_entity, edge_update["field_path"]) == edge_update["old_value"], \
+            ent2 = monitor._find_entity(other["entity_type"], other["entity_id"])[1]
+            assert monitor._get_by_path(ent2, other["field_path"]) == other["old_value"], \
                 "rejected update must not be applied"
-
-            remaining_ids = {p["id"] for p in monitor.list_pending()}
-            assert fac_update["id"] not in remaining_ids and edge_update["id"] not in remaining_ids
+            assert monitor.load_reliability()[src2]["reliability"] < rel2_before, "rejection should lower trust"
 
             hist = monitor.get_history(fac_update["entity_id"])
             assert any(h["id"] == fac_update["id"] and h["status"] == "approved" for h in hist)
-            print(f"monitor: {len(proposed)} proposed, 1 approved + applied, 1 rejected + untouched, "
-                  f"history recorded, re-scan idempotent")
+            print(f"monitor: {len(auto)} auto-applied, {len(queued)} queued, approve/reject + "
+                  f"reliability loop verified, re-scan idempotent")
         finally:
-            monitor.FACILITIES_PATH, monitor.EDGES_PATH, monitor.PENDING_PATH, monitor.HISTORY_PATH = orig
+            (monitor.FACILITIES_PATH, monitor.EDGES_PATH, monitor.PENDING_PATH,
+             monitor.HISTORY_PATH, monitor.RELIABILITY_PATH) = orig
 
 
 if __name__ == "__main__":

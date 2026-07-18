@@ -56,7 +56,13 @@ def referrals():
 
 
 def _facility(facility_id: str) -> dict:
-    fac = next((f for f in load_facilities() if f["id"] == facility_id), None)
+    """Resolve against the real 74-facility directory (the knowledge graph the
+    map and monitoring agent share), falling back to the legacy demo set so any
+    older demo id still resolves."""
+    from pipeline.directory import load_directory
+    fac = next((f for f in load_directory() if f["id"] == facility_id), None)
+    if not fac:
+        fac = next((f for f in load_facilities() if f["id"] == facility_id), None)
     if not fac:
         raise HTTPException(404, "unknown facility")
     return fac
@@ -224,9 +230,17 @@ def monitor_pending():
 
 @app.post("/api/monitor/scan")
 def monitor_scan():
-    """Run every registered fetcher (simulated web/phone/EHR-feed checks) and
-    queue anything new for human review — nothing is applied yet."""
-    return {"proposed": monitor.run_scan()}
+    """Run every registered fetcher (simulated web/phone/EHR-feed checks).
+    Confidence-tiered: high-confidence, non-clinical findings are auto-applied
+    to the graph; the rest are queued for human review. Returns both sets."""
+    return monitor.run_scan()
+
+
+@app.get("/api/monitor/reliability")
+def monitor_reliability():
+    """The agent's learned per-source trust weights — how it 'gets better' at
+    deciding what to apply on its own vs escalate to a human."""
+    return {"reliability": monitor.load_reliability()}
 
 
 @app.post("/api/monitor/approve/{update_id}")

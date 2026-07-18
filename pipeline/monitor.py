@@ -33,9 +33,25 @@ EDGES_PATH = DATA / "edges_directory.json"
 MONITOR_DIR = DATA / "monitoring"
 PENDING_PATH = MONITOR_DIR / "pending_updates.json"
 HISTORY_PATH = MONITOR_DIR / "version_history.json"
+RELIABILITY_PATH = MONITOR_DIR / "source_reliability.json"
 
 SourceType = Literal["web", "phone_call", "ehr_feed"]
 EntityType = Literal["facility", "edge"]
+
+# A proposal is auto-applied only when its EFFECTIVE confidence (the fetcher's raw
+# confidence weighted by how reliable that source has proven to be) clears this
+# bar; anything below sits in the human-in-the-loop queue. Clinical fields that
+# drive placement (bed counts, wait) are never auto-applied regardless of score.
+AUTO_APPLY_THRESHOLD = 0.80
+NEVER_AUTO_APPLY_FIELDS = {
+    "simulated.availability.available_beds",
+    "simulated.availability.estimated_wait_days",
+}
+
+# Baseline trust per source; nudged up on every human approval, down on rejection,
+# so the agent gets better at knowing which channels to trust without a human. This
+# is the "self-improving" loop: effective_confidence() reads these weights.
+_DEFAULT_RELIABILITY = {"web": 0.75, "phone_call": 0.9, "ehr_feed": 0.95}
 
 
 def _now() -> str:
@@ -124,6 +140,8 @@ class SimulatedWebFetcher:
          "sf.gov PES status page states next-available today (simulated check)"),
         ("dore-urgent-care", "simulated.availability.available_beds", 2,
          "facility site's posted 'current capacity' note (simulated check)"),
+        ("dore-urgent-care", "simulated.capacity_pct", 82,
+         "facility site's posted occupancy dashboard (simulated check)"),
     ]
 
     def scan(self) -> list[ProposedUpdate]:
@@ -148,6 +166,10 @@ class SimulatedPhoneFetcher:
          "intake line confirmed one bed opening this afternoon (simulated call)"),
         ("minna-project", "simulated.availability.estimated_wait_days", 18,
          "intake coordinator quoted a longer waitlist than currently on file (simulated call)"),
+        ("hummingbird-potrero", "simulated.staff_on_shift", 6,
+         "intake coordinator stated current staffing on shift (simulated call)"),
+        ("soma-rise", "simulated.capacity_pct", 74,
+         "intake line quoted current occupancy (simulated call)"),
     ]
 
     def scan(self) -> list[ProposedUpdate]:
@@ -212,20 +234,93 @@ def propose(update: ProposedUpdate) -> dict:
     return update.to_dict()
 
 
-def run_scan() -> list[dict]:
-    """Run every registered fetcher, propose everything found. Returns the
-    newly proposed updates (skips anything already pending for the same
-    entity+field to avoid duplicate queue entries on repeated scans)."""
+def load_reliability() -> dict:
+    rel = _load_json(RELIABILITY_PATH, {})
+    for src, base in _DEFAULT_RELIABILITY.items():
+        rel.setdefault(src, {"reliability": base, "approved": 0, "rejected": 0})
+    return rel
+
+
+def effective_confidence(update: ProposedUpdate | dict) -> float:
+    """Raw fetcher confidence weighted by the source's learned reliability."""
+    src = update.source_type if isinstance(update, ProposedUpdate) else update["source_type"]
+    conf = update.confidence if isinstance(update, ProposedUpdate) else update["confidence"]
+    rel = load_reliability().get(src, {}).get("reliability", 0.75)
+    return round(conf * rel, 3)
+
+
+def _bump_reliability(source_type: str, approved: bool) -> None:
+    """Move a source's reliability toward 1 on approval, toward 0 on rejection —
+    a slow EMA so one bad call doesn't crater a good channel."""
+    rel = load_reliability()
+    s = rel[source_type]
+    s["approved" if approved else "rejected"] += 1
+    target = 1.0 if approved else 0.0
+    s["reliability"] = round(s["reliability"] + 0.12 * (target - s["reliability"]), 3)
+    _save_json(RELIABILITY_PATH, rel)
+
+
+def _apply_update(upd: dict, approved_by: str) -> dict:
+    """Write a proposal into the graph + version history. Shared by human
+    approval and confidence-tiered auto-apply."""
+    container, entity = _find_entity(upd["entity_type"], upd["entity_id"])
+    if entity is None:
+        raise KeyError(f"entity {upd['entity_id']} not found")
+    _set_by_path(entity, upd["field_path"], upd["new_value"])
+    if upd["entity_type"] == "facility":
+        entity["verified_date"] = _now()[:10]
+        _save_json(FACILITIES_PATH, container)
+    else:
+        _save_json(EDGES_PATH, container)
+    upd["approved_by"] = approved_by
+    upd["approved_at"] = _now()
+    _append_history(upd)
+    return upd
+
+
+def run_scan() -> dict:
+    """Run every registered fetcher. Each finding is routed by its EFFECTIVE
+    confidence: high-confidence, non-clinical fields are applied automatically
+    (the agent updating the graph on its own); everything else is queued for a
+    human. Returns {auto_applied: [...], queued: [...]}."""
     already_pending = {(u["entity_type"], u["entity_id"], u["field_path"]) for u in list_pending()}
-    proposed: list[dict] = []
+    auto_applied: list[dict] = []
+    queued: list[dict] = []
     for fetcher in FETCHERS:
         for update in fetcher.scan():
             key = (update.entity_type, update.entity_id, update.field_path)
             if key in already_pending:
                 continue
-            proposed.append(propose(update))
             already_pending.add(key)
-    return proposed
+            eff = effective_confidence(update)
+            can_auto = eff >= AUTO_APPLY_THRESHOLD and update.field_path not in NEVER_AUTO_APPLY_FIELDS
+            # fill old_value from current state either way
+            _, entity = _find_entity(update.entity_type, update.entity_id)
+            if entity is not None:
+                try:
+                    update.old_value = _get_by_path(entity, update.field_path)
+                except (KeyError, TypeError):
+                    update.old_value = None
+            # already-applied (or unchanged) values are a no-op — keeps repeated
+            # scans idempotent even for auto-applied updates not sitting in the queue
+            if update.old_value == update.new_value:
+                continue
+            rec = update.to_dict()
+            rec["effective_confidence"] = eff
+            if can_auto:
+                rec["status"] = "auto_applied"
+                try:
+                    _apply_update(rec, approved_by="agent (auto)")
+                    auto_applied.append(rec)
+                except KeyError:
+                    rec["status"] = "pending"
+                    _save_json(PENDING_PATH, list_pending() + [rec])
+                    queued.append(rec)
+            else:
+                rec["status"] = "pending"
+                _save_json(PENDING_PATH, list_pending() + [rec])
+                queued.append(rec)
+    return {"auto_applied": auto_applied, "queued": queued}
 
 
 def approve(update_id: str, approved_by: str) -> dict:
@@ -234,23 +329,10 @@ def approve(update_id: str, approved_by: str) -> dict:
     if idx is None:
         raise KeyError(f"no pending update {update_id}")
     upd = pending.pop(idx)
-
-    container, entity = _find_entity(upd["entity_type"], upd["entity_id"])
-    if entity is None:
-        raise KeyError(f"entity {upd['entity_id']} not found")
-    _set_by_path(entity, upd["field_path"], upd["new_value"])
-
-    if upd["entity_type"] == "facility":
-        entity["verified_date"] = _now()[:10]
-        _save_json(FACILITIES_PATH, container)
-    else:
-        _save_json(EDGES_PATH, container)
-
     upd["status"] = "approved"
-    upd["approved_by"] = approved_by
-    upd["approved_at"] = _now()
+    _apply_update(upd, approved_by=approved_by)
     _save_json(PENDING_PATH, pending)
-    _append_history(upd)
+    _bump_reliability(upd["source_type"], approved=True)
     return upd
 
 
@@ -265,6 +347,7 @@ def reject(update_id: str, reason: str) -> dict:
     upd["rejected_at"] = _now()
     _save_json(PENDING_PATH, pending)
     _append_history(upd)
+    _bump_reliability(upd["source_type"], approved=False)
     return upd
 
 
