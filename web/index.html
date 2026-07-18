@@ -374,6 +374,7 @@
   .sysmap-panel.collapsible:not(.collapsed) h4 { margin-bottom: 10px; }
   /* patient triage list */
   .reco.priority { border-color: var(--accent); }
+  .sysmap-panel.reco h4 { display: flex; align-items: center; gap: 8px; }
   .rc { cursor: pointer; transition: border-color .15s, box-shadow .15s; }
   .rc:hover { border-color: var(--accent); box-shadow: var(--shadow); }
   .rc-head { display: flex; align-items: center; gap: 8px; }
@@ -386,6 +387,17 @@
   .rc.prio-high { border-left: 3px solid var(--critical); }
   .rc.prio-medium { border-left: 3px solid var(--warning); }
   .rc.prio-low { border-left: 3px solid var(--neutral); }
+  .rc { position: relative; }
+  .rc.changed, .rc.moved-up { animation: rcflash 1.8s ease-out; }
+  @keyframes rcflash { 0% { background: var(--accent-tint); box-shadow: 0 0 0 2px var(--accent); } 100% { background: var(--surface); box-shadow: none; } }
+  .rc-badge { position: absolute; top: 8px; right: 9px; font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+    background: var(--accent); color: #fff; border-radius: 999px; padding: 1px 7px; }
+  .rc-badge.up { background: var(--success); }
+  .triage-live { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: 9.5px; color: var(--success); }
+  .triage-live .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); animation: pulse-dot 1.8s ease-in-out infinite; }
+  .rescan-btn { margin-left: auto; font-size: 11px; font-weight: 600; color: var(--accent-strong); background: var(--surface);
+    border: 1px solid var(--accent); border-radius: 999px; padding: 3px 10px; cursor: pointer; }
+  .rescan-btn:hover { background: var(--accent-tint); }
   /* patient popup modal */
   .patient-modal { position: fixed; inset: 0; z-index: 70; background: rgba(10,18,17,.5); display: none;
     align-items: center; justify-content: center; padding: 24px; opacity: 0; transition: opacity .18s; }
@@ -567,7 +579,9 @@
         </div>
         <aside class="sysmap-side">
           <div class="sysmap-panel reco priority">
-            <h4>Patient triage — Alora's live priority ranking</h4>
+            <h4>Patient triage — live priority ranking
+              <span class="triage-live"><span class="dot"></span>live</span>
+              <button class="rescan-btn" id="btn-rescan">↻ Re-scan</button></h4>
             <div class="eyebrow" style="margin-bottom:8px">agentic · re-ranked as acuity &amp; the graph change · click a patient</div>
             <div id="reco-list"><span class="dot-flash"><span></span><span></span><span></span></span></div>
           </div>
@@ -859,6 +873,9 @@ async function runMonitorScan(reason){
   [...auto,...queued].forEach(u=>pulseNode(u.entity_type==="edge"?String(u.entity_id).split("|")[1]:u.entity_id));
   if(auto.length||queued.length)
     toast(`KG agent: ${auto.length} auto-applied · ${queued.length} queued for review`);
+  // agentic: the agent just changed the graph → re-reason the patient triage and
+  // highlight whose priority / recommendation moved
+  if(auto.length && sysDrawn) loadRecommendations(true);
 }
 
 /* a synthetic animated connector origin→called facility, so the referral flow
@@ -1293,19 +1310,34 @@ function legendShape(shape,color){
   return `<circle cx="8" cy="8" r="6" fill="${color}"/>`;
 }
 
-async function loadRecommendations(){
+let lastTriage={};   // pid -> {rank, fid, fname} from the previous ranking, to diff changes
+async function loadRecommendations(diff){
   const host=document.getElementById("reco-list");
-  let patients=[]; try{ patients=(await j("/api/triage")).patients||[]; }catch(e){ host.textContent="—"; return; }
-  host.innerHTML=patients.map(p=>{
+  let patients=[]; try{ patients=(await j("/api/triage")).patients||[]; }catch(e){ if(!diff)host.textContent="—"; return; }
+  const changes=[];
+  host.innerHTML=patients.map((p,i)=>{
     const top=p.top&&p.top.facility;
-    return `<div class="rc prio-${esc(p.priority_label)}" data-pid="${esc(p.id)}" data-fid="${top?esc(top.id):""}">
+    const prev=lastTriage[p.id];
+    let flag="";
+    if(diff&&prev){
+      if(top&&prev.fid&&top.id!==prev.fid){ flag="changed"; changes.push(`${p.label}: pick → ${top.name.split("-")[0].trim()}`); }
+      else if(i<prev.rank){ flag="moved-up"; changes.push(`${p.label}: ↑ priority`); }
+    }
+    return `<div class="rc prio-${esc(p.priority_label)} ${flag}" data-pid="${esc(p.id)}" data-fid="${top?esc(top.id):""}">
+      ${flag==="changed"?`<span class="rc-badge">updated</span>`:flag==="moved-up"?`<span class="rc-badge up">↑</span>`:""}
       <div class="rc-head"><span class="prio-chip prio-${esc(p.priority_label)}">${p.priority}</span>
         <span class="pt">${esc(p.label)}</span><span class="rc-meta">${esc(p.insurance||"")} · ${esc(p.language||"")}</span></div>
       ${top?`<div class="to">→ ${esc(top.name)}</div>`:`<div class="why">no in-network match</div>`}
       <div class="why">${esc((p.factors||[]).slice(0,2).join(" · "))}</div></div>`;
   }).join("");
   host.querySelectorAll(".rc[data-pid]").forEach(el=>el.onclick=()=>openPatientModal(el.dataset.pid));
-  logActivity("Alora · triage",`Re-ranked ${patients.length} patients by live acuity · highest: ${patients[0]?.label||"—"}`);
+  lastTriage={}; patients.forEach((p,i)=>lastTriage[p.id]={rank:i,fid:p.top&&p.top.facility&&p.top.facility.id,fname:p.top&&p.top.facility&&p.top.facility.name});
+  if(diff&&changes.length){
+    logActivity("Alora · triage",`Re-ranked after graph update — ${changes.slice(0,2).join("; ")}`);
+    toast(`Triage re-ranked · ${changes.length} change${changes.length>1?"s":""}`);
+  } else if(!diff){
+    logActivity("Alora · triage",`Ranked ${patients.length} patients by live acuity · highest: ${patients[0]?.label||"—"}`);
+  }
 }
 
 async function openPatientModal(pid){
@@ -1363,6 +1395,13 @@ document.querySelectorAll(".rail-step[data-focus]").forEach(b=>b.addEventListene
 document.getElementById("sysmap-search").addEventListener("input",()=>applyPreset(activePreset));
 // collapsible legend panels
 document.querySelectorAll(".sysmap-panel.collapsible h4").forEach(h=>h.onclick=()=>h.parentElement.classList.toggle("collapsed"));
+// manual re-scan → agent scans the network, then triage re-ranks + highlights changes
+document.getElementById("btn-rescan").onclick=async(e)=>{
+  const b=e.currentTarget; b.disabled=true; b.textContent="↻ scanning…";
+  await runMonitorScan("manual");
+  await loadRecommendations(true);   // diff even if the scan auto-applied nothing new
+  b.disabled=false; b.textContent="↻ Re-scan";
+};
 // patient modal: click backdrop or Esc to close
 document.getElementById("patient-modal").addEventListener("click",e=>{ if(e.target.id==="patient-modal")e.currentTarget.classList.remove("show"); });
 document.addEventListener("keydown",e=>{ if(e.key==="Escape")document.getElementById("patient-modal").classList.remove("show"); });
