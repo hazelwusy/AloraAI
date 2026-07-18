@@ -11,7 +11,7 @@ STEP_DOWN_LEVELS = ["crisis_stabilization", "peer_respite", "adu", "residential"
 
 
 def load_facilities() -> list[dict]:
-    return json.loads((DATA / "facilities.json").read_text())["facilities"]
+    return json.loads((DATA / "facilities_demo.json").read_text())["facilities"]
 
 
 def match(need: dict) -> list[dict]:
