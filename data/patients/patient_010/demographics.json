@@ -1,0 +1,20 @@
+{
+  "id": "patient_010",
+  "synthetic": true,
+  "source": "Synthea-generated skeleton (California population run), see raw_synthea_skeleton/",
+  "age": 84,
+  "gender": "male",
+  "insurance": "Medicare",
+  "language": "English",
+  "housing_status": "unhoused",
+  "emergency_contact": {
+    "relationship": "none on file",
+    "name": null,
+    "contact_note": "no emergency contact identified"
+  },
+  "medications_home": [
+    "lisinopril 20mg daily",
+    "atorvastatin 40mg daily (per Synthea med list)"
+  ],
+  "background_from_skeleton": "history of myocardial infarction, drug misuse noted in record, history of intimate partner abuse, gout"
+}

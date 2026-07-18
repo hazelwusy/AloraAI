@@ -1,0 +1,17 @@
+{
+  "id": "patient_007",
+  "synthetic": true,
+  "source": "Synthea-generated skeleton (California population run), see raw_synthea_skeleton/",
+  "age": 48,
+  "gender": "male",
+  "insurance": "Medi-Cal",
+  "language": "English",
+  "housing_status": "unhoused",
+  "emergency_contact": {
+    "relationship": "none on file",
+    "name": null,
+    "contact_note": "no emergency contact identified"
+  },
+  "medications_home": [],
+  "background_from_skeleton": "homeless, unemployed, social isolation, no active medications or major conditions — lowest acuity of the expanded set"
+}

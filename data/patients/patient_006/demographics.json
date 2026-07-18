@@ -1,0 +1,19 @@
+{
+  "id": "patient_006",
+  "synthetic": true,
+  "source": "Synthea-generated skeleton (California population run), see raw_synthea_skeleton/",
+  "age": 56,
+  "gender": "male",
+  "insurance": "Medi-Cal",
+  "language": "Spanish (primary); limited English",
+  "housing_status": "unhoused, refugee status per record, history of unstable housing",
+  "emergency_contact": {
+    "relationship": "none on file",
+    "name": null,
+    "contact_note": "no emergency contact identified this admission"
+  },
+  "medications_home": [
+    "fluoxetine 20mg daily (per Synthea med list)"
+  ],
+  "background_from_skeleton": "major depressive disorder, alcoholism, chronic low back pain, chronic pain, history of intimate partner abuse, social isolation"
+}
