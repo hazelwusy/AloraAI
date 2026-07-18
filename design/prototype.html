@@ -1,0 +1,1283 @@
+<title>AloraAI — Transition Coordination Prototype</title>
+<style>
+  :root {
+    --bg: #eef3f1;
+    --surface: #ffffff;
+    --surface-2: #f4f7f6;
+    --text: #16211f;
+    --text-muted: #4c605c;
+    --text-faint: #7c8d89;
+    --border: #d7e1de;
+    --border-strong: #b9c8c4;
+    --accent: #1f6f6b;
+    --accent-strong: #144e4b;
+    --accent-tint: #e2efed;
+    --success: #2f7a44;
+    --success-tint: #e5f2e6;
+    --warning: #a8690a;
+    --warning-tint: #faefdc;
+    --critical: #b1362f;
+    --critical-tint: #fbe6e4;
+    --neutral-flag: #4f6a72;
+    --neutral-flag-tint: #e6edee;
+    --shadow: 0 1px 2px rgba(20, 34, 32, 0.06), 0 6px 20px -8px rgba(20, 34, 32, 0.14);
+    --radius-s: 6px;
+    --radius-m: 10px;
+    --radius-l: 14px;
+    --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101817;
+      --surface: #17201f;
+      --surface-2: #1c2725;
+      --text: #e7efed;
+      --text-muted: #a3b5b1;
+      --text-faint: #6f8480;
+      --border: #2a3634;
+      --border-strong: #3b4b48;
+      --accent: #4fbdb6;
+      --accent-strong: #7fd6d0;
+      --accent-tint: #17302e;
+      --success: #6fbf7c;
+      --success-tint: #17301d;
+      --warning: #e0a83e;
+      --warning-tint: #332409;
+      --critical: #e2685f;
+      --critical-tint: #341714;
+      --neutral-flag: #8fa9ae;
+      --neutral-flag-tint: #1b2828;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 30px -10px rgba(0, 0, 0, 0.55);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #101817; --surface: #17201f; --surface-2: #1c2725; --text: #e7efed;
+    --text-muted: #a3b5b1; --text-faint: #6f8480; --border: #2a3634; --border-strong: #3b4b48;
+    --accent: #4fbdb6; --accent-strong: #7fd6d0; --accent-tint: #17302e;
+    --success: #6fbf7c; --success-tint: #17301d; --warning: #e0a83e; --warning-tint: #332409;
+    --critical: #e2685f; --critical-tint: #341714; --neutral-flag: #8fa9ae; --neutral-flag-tint: #1b2828;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 30px -10px rgba(0, 0, 0, 0.55);
+  }
+  :root[data-theme="light"] {
+    --bg: #eef3f1; --surface: #ffffff; --surface-2: #f4f7f6; --text: #16211f;
+    --text-muted: #4c605c; --text-faint: #7c8d89; --border: #d7e1de; --border-strong: #b9c8c4;
+    --accent: #1f6f6b; --accent-strong: #144e4b; --accent-tint: #e2efed;
+    --success: #2f7a44; --success-tint: #e5f2e6; --warning: #a8690a; --warning-tint: #faefdc;
+    --critical: #b1362f; --critical-tint: #fbe6e4; --neutral-flag: #4f6a72; --neutral-flag-tint: #e6edee;
+    --shadow: 0 1px 2px rgba(20, 34, 32, 0.06), 0 6px 20px -8px rgba(20, 34, 32, 0.14);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: 0.001ms !important; animation-duration: 0.001ms !important; }
+  }
+
+  h1, h2, h3, h4 { margin: 0; text-wrap: balance; font-weight: 650; letter-spacing: -0.01em; }
+  p { margin: 0; }
+  button { font-family: inherit; }
+  a { color: var(--accent); }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    font-weight: 600;
+  }
+
+  /* ---------- App shell ---------- */
+  .app {
+    display: grid;
+    grid-template-columns: 76px 1fr;
+    min-height: 100vh;
+  }
+  @media (max-width: 720px) {
+    .app { grid-template-columns: 60px 1fr; }
+  }
+
+  .rail {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 18px 0;
+    gap: 4px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+  .rail-mark {
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-family: var(--font-mono); font-weight: 700; font-size: 13px;
+    margin-bottom: 18px;
+    flex-shrink: 0;
+  }
+  .rail-step {
+    width: 52px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 2px 10px;
+    border-radius: var(--radius-s);
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .rail-step svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+  .rail-step .rail-label { font-size: 9.5px; letter-spacing: 0.02em; text-align: center; line-height: 1.15; }
+  .rail-step:hover { background: var(--surface-2); color: var(--text-muted); }
+  .rail-step.is-active { background: var(--accent-tint); color: var(--accent-strong); }
+  .rail-step:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .rail-spacer { flex: 1; }
+  .rail-hood {
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text-muted);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .rail-hood svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+  .rail-hood:hover { border-color: var(--accent); color: var(--accent); }
+
+  .main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  /* ---------- Context bar ---------- */
+  .ctxbar {
+    display: none;
+    align-items: center;
+    gap: 14px;
+    padding: 13px 28px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+  .ctxbar.is-visible { display: flex; }
+  .ctxbar-name { font-weight: 650; font-size: 15px; }
+  .ctxbar-meta { color: var(--text-muted); font-size: 13.5px; }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    letter-spacing: 0.01em;
+  }
+  .pill-critical { background: var(--critical-tint); color: var(--critical); }
+  .pill-warning { background: var(--warning-tint); color: var(--warning); }
+  .pill-success { background: var(--success-tint); color: var(--success); }
+  .pill-neutral { background: var(--neutral-flag-tint); color: var(--neutral-flag); }
+  .ctxbar-spacer { flex: 1; }
+
+  .content { padding: 32px 28px 80px; max-width: 900px; width: 100%; }
+  @media (max-width: 640px) { .content { padding: 22px 16px 64px; } }
+
+  .screen { display: none; animation: fadein 0.25s ease; }
+  .screen.is-active { display: block; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  .page-head { margin-bottom: 22px; }
+  .page-head h1 { font-size: 22px; margin-top: 6px; }
+  .page-head .sub { color: var(--text-muted); font-size: 14px; margin-top: 5px; max-width: 62ch; }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow);
+  }
+  .stack { display: flex; flex-direction: column; gap: 14px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 680px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    border-radius: var(--radius-s);
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 9px 15px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent-strong); }
+  .btn:active { transform: translateY(1px); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-strong); border-color: var(--accent-strong); color: #fff; }
+  .btn-primary:disabled, .btn:disabled {
+    opacity: 0.5; cursor: not-allowed; border-color: var(--border); color: var(--text-faint); background: var(--surface-2);
+  }
+  .btn-sm { padding: 6px 11px; font-size: 12.5px; }
+  .btn-block { width: 100%; }
+
+  /* ---------- Boarding list ---------- */
+  .patient-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 15px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-m);
+    background: var(--surface);
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .patient-row:hover { border-color: var(--border-strong); box-shadow: var(--shadow); }
+  .patient-row:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .stripe { width: 4px; align-self: stretch; border-radius: 3px; flex-shrink: 0; }
+  .stripe-critical { background: var(--critical); }
+  .stripe-warning { background: var(--warning); }
+  .stripe-success { background: var(--success); }
+  .stripe-neutral { background: var(--neutral-flag); }
+  .patient-id { font-weight: 650; font-size: 14.5px; }
+  .patient-meta { color: var(--text-faint); font-size: 12.5px; font-family: var(--font-mono); margin-top: 1px; }
+  .patient-flag { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+  .patient-badge { margin-left: auto; flex-shrink: 0; }
+
+  /* ---------- Domain cards ---------- */
+  .domain-card { padding: 18px 20px; border-radius: var(--radius-m); border: 1px solid var(--border); background: var(--surface); }
+  .domain-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .domain-title { font-weight: 650; font-size: 14.5px; }
+  .quote-block {
+    font-family: var(--font-mono);
+    font-size: 12.6px;
+    line-height: 1.55;
+    background: var(--surface-2);
+    border-left: 3px solid var(--border-strong);
+    border-radius: 0 var(--radius-s) var(--radius-s) 0;
+    padding: 9px 12px;
+    margin-top: 8px;
+    color: var(--text);
+  }
+  .quote-src { display: block; margin-top: 5px; font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); }
+  .domain-note { font-size: 13px; color: var(--text-muted); margin-top: 10px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+  .col-label { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-faint); }
+
+  .integrity-flag {
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-m);
+    padding: 14px 18px;
+    background: var(--surface-2);
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .integrity-flag svg { flex-shrink: 0; width: 17px; height: 17px; margin-top: 2px; stroke: var(--warning); fill: none; stroke-width: 1.6; }
+
+  .coord-note { font-size: 12px; color: var(--text-faint); margin-top: 8px; max-width: 54ch; }
+
+  /* ---------- Facility comparison ---------- */
+  .fac-card { padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; }
+  .fac-name { font-weight: 650; font-size: 15px; }
+  .fac-addr { font-size: 12.5px; color: var(--text-faint); font-family: var(--font-mono); }
+  .fac-stats { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--text-muted); }
+  .fac-stats b { color: var(--text); font-variant-numeric: tabular-nums; }
+  .sim-tag {
+    font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.05em;
+    color: var(--text-faint); border: 1px solid var(--border); border-radius: 4px;
+    padding: 1px 5px; margin-left: 4px; vertical-align: 1px;
+  }
+  .req-list { display: flex; flex-direction: column; gap: 7px; margin-top: 2px; }
+  .req-row { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .req-icon { width: 16px; height: 16px; flex-shrink: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .req-icon.ok { background: var(--success-tint); color: var(--success); }
+  .req-icon.missing { background: var(--critical-tint); color: var(--critical); }
+  .req-icon svg { width: 10px; height: 10px; stroke: currentColor; stroke-width: 2.4; fill: none; }
+  .req-detail { color: var(--text-faint); font-size: 11.5px; margin-left: 24px; margin-top: -3px; }
+  .fac-verdict { font-size: 13px; font-weight: 650; padding-top: 6px; border-top: 1px solid var(--border); margin-top: 2px; }
+  .fac-verdict.ready { color: var(--success); }
+  .fac-verdict.blocked { color: var(--critical); }
+
+  /* ---------- Packet ---------- */
+  .field-row { padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .field-row:last-child { border-bottom: none; }
+  .field-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .field-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-faint); }
+  .field-value { font-size: 14px; margin-top: 6px; line-height: 1.55; }
+  .field-src-toggle { background: none; border: none; color: var(--accent); font-size: 12px; cursor: pointer; padding: 0; font-weight: 600; }
+  .field-src { display: none; margin-top: 8px; }
+  .field-src.is-open { display: block; }
+  .edit-icon-btn {
+    width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--border-strong);
+    background: var(--surface); color: var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+  }
+  .edit-icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .edit-icon-btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+  .edited-tag { font-family: var(--font-mono); font-size: 10.5px; color: var(--accent-strong); background: var(--accent-tint); padding: 1px 6px; border-radius: 4px; margin-left: 6px; }
+  textarea.edit-area {
+    width: 100%; margin-top: 8px; font-family: var(--font-ui); font-size: 13.5px; padding: 9px 11px;
+    border: 1px solid var(--border-strong); border-radius: var(--radius-s); background: var(--surface-2); color: var(--text); resize: vertical; min-height: 60px;
+  }
+
+  /* ---------- Track ---------- */
+  .stat-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 22px; }
+  @media (max-width: 640px) { .stat-strip { grid-template-columns: 1fr; } }
+  .stat-tile { padding: 14px 16px; border-radius: var(--radius-m); border: 1px solid var(--border); background: var(--surface); }
+  .stat-num { font-family: var(--font-mono); font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--accent-strong); }
+  .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+  .stat-caption { font-size: 11.5px; color: var(--text-faint); font-style: italic; margin-top: -10px; margin-bottom: 22px; }
+
+  .track-row { padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; }
+  .track-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .track-status-line { font-size: 13px; color: var(--text-muted); }
+  .decline-box { background: var(--warning-tint); border-radius: var(--radius-s); padding: 12px 14px; margin-top: 4px; }
+  .decline-box .k { font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--warning); font-weight: 700; }
+  .decline-box p { font-size: 13.5px; margin-top: 5px; }
+  .accept-box { background: var(--success-tint); border-radius: var(--radius-s); padding: 12px 14px; margin-top: 4px; }
+  .accept-box p { font-size: 13.5px; color: var(--success); font-weight: 600; }
+  .broadcast-note { font-size: 12px; color: var(--text-faint); margin-top: 10px; max-width: 60ch; }
+
+  /* ---------- Aftercare ---------- */
+  .checklist-row { display: flex; align-items: flex-start; gap: 12px; padding: 13px 18px; border-bottom: 1px solid var(--border); }
+  .checklist-row:last-child { border-bottom: none; }
+  .checklist-text { flex: 1; font-size: 13.8px; }
+  .checklist-text b { display: block; font-size: 13.5px; margin-bottom: 2px; }
+  .checklist-text span { color: var(--text-muted); }
+
+  /* ---------- Toast ---------- */
+  #toast-host { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 60; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+  .toast {
+    background: var(--text); color: var(--bg);
+    padding: 10px 18px; border-radius: 999px; font-size: 13px; font-weight: 600;
+    box-shadow: var(--shadow); animation: toastin 0.2s ease;
+  }
+  @keyframes toastin { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- Overlay: persona + hood drawer ---------- */
+  .overlay-scrim {
+    position: fixed; inset: 0; background: rgba(10, 16, 15, 0.42);
+    display: none; z-index: 40; align-items: stretch; justify-content: flex-end;
+  }
+  .overlay-scrim.is-open { display: flex; }
+  .overlay-scrim.center { align-items: center; justify-content: center; }
+
+  .persona-panel {
+    background: var(--bg); width: min(480px, 100%); height: 100%;
+    box-shadow: -8px 0 30px -10px rgba(0,0,0,0.35); display: flex; flex-direction: column;
+    animation: slidein 0.22s ease;
+  }
+  @keyframes slidein { from { transform: translateX(24px); opacity: 0.6; } to { transform: none; opacity: 1; } }
+  .persona-topbar { background: var(--accent-strong); color: #fff; padding: 14px 20px; display: flex; align-items: center; gap: 10px; }
+  .persona-topbar .t1 { font-weight: 700; font-size: 14px; }
+  .persona-topbar .t2 { font-size: 11.5px; opacity: 0.8; font-family: var(--font-mono); }
+  .persona-close { margin-left: auto; background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; line-height: 1; opacity: 0.85; }
+  .persona-body { padding: 18px 20px; overflow-y: auto; flex: 1; }
+  .inbox-row { display: flex; gap: 12px; padding: 13px 14px; border-radius: var(--radius-s); border: 1px solid var(--border); margin-bottom: 9px; background: var(--surface); }
+  .inbox-row.muted { opacity: 0.45; }
+  .inbox-row.active { border-color: var(--warning); background: var(--warning-tint); }
+  .inbox-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warning); margin-top: 6px; flex-shrink: 0; }
+  .inbox-row.muted .inbox-dot { background: var(--text-faint); }
+  .inbox-subject { font-weight: 650; font-size: 13.5px; }
+  .inbox-preview { font-size: 12.5px; color: var(--text-muted); margin-top: 3px; }
+
+  .hood-panel {
+    background: var(--surface); width: min(560px, 100%); height: 100%;
+    box-shadow: -8px 0 30px -10px rgba(0,0,0,0.35); display: flex; flex-direction: column; animation: slidein 0.22s ease;
+  }
+  .hood-topbar { padding: 16px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; }
+  .hood-topbar h3 { font-size: 15px; }
+  .hood-body { padding: 20px 22px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 16px; }
+  .agent-card { border: 1px solid var(--border); border-radius: var(--radius-m); padding: 14px 16px; background: var(--surface-2); }
+  .agent-name { font-weight: 650; font-size: 13.5px; display: flex; align-items: center; gap: 7px; }
+  .agent-tag { font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); border: 1px solid var(--border-strong); padding: 1px 6px; border-radius: 4px; }
+  .agent-desc { font-size: 12.5px; color: var(--text-muted); margin-top: 6px; line-height: 1.5; }
+  .agent-io { font-family: var(--font-mono); font-size: 10.8px; background: var(--bg); border-radius: 6px; padding: 8px 10px; margin-top: 8px; color: var(--text-muted); white-space: pre-wrap; word-break: break-word; }
+  .principle-box { border-left: 3px solid var(--accent); padding: 10px 14px; background: var(--accent-tint); border-radius: 0 var(--radius-s) var(--radius-s) 0; font-size: 12.5px; color: var(--text); }
+  .datanote-box { font-size: 11.5px; color: var(--text-faint); border-top: 1px solid var(--border); padding-top: 12px; }
+
+  /* ---------- Agent activity log ---------- */
+  .agent-log {
+    position: fixed; left: 16px; bottom: 16px; z-index: 50;
+    width: 300px; max-width: calc(100vw - 32px);
+    background: var(--surface); border: 1px solid var(--border-strong);
+    border-radius: var(--radius-m); box-shadow: var(--shadow);
+    font-family: var(--font-mono);
+    overflow: hidden;
+  }
+  .agent-log-head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 12px; cursor: pointer; user-select: none;
+    border-bottom: 1px solid transparent;
+  }
+  .agent-log.is-open .agent-log-head { border-bottom-color: var(--border); }
+  .agent-log-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); flex-shrink: 0; animation: pulse-dot 1.8s ease-in-out infinite; }
+  @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+  .agent-log-title { font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-faint); font-weight: 700; }
+  .agent-log-latest { font-size: 11.5px; color: var(--text-muted); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .agent-log-chevron { font-size: 10px; color: var(--text-faint); transition: transform 0.15s ease; flex-shrink: 0; }
+  .agent-log.is-open .agent-log-chevron { transform: rotate(180deg); }
+  .agent-log-body { max-height: 0; overflow-y: auto; transition: max-height 0.2s ease; }
+  .agent-log.is-open .agent-log-body { max-height: 220px; }
+  .agent-log-entry { display: flex; gap: 8px; padding: 7px 12px; font-size: 11px; border-bottom: 1px solid var(--border); animation: login 0.25s ease; }
+  .agent-log-entry:last-child { border-bottom: none; }
+  @keyframes login { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
+  .agent-log-entry .who { color: var(--accent-strong); font-weight: 700; flex-shrink: 0; }
+  .agent-log-entry .what { color: var(--text-muted); }
+  .agent-log-entry .when { color: var(--text-faint); margin-left: auto; flex-shrink: 0; }
+
+  /* ---------- Staged / processing states ---------- */
+  .processing-line {
+    display: flex; align-items: center; gap: 9px;
+    font-family: var(--font-mono); font-size: 12.5px; color: var(--text-muted);
+    padding: 14px 2px;
+  }
+  .dot-flash { display: inline-flex; gap: 3px; }
+  .dot-flash span { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); animation: dotflash 1.1s ease-in-out infinite; }
+  .dot-flash span:nth-child(2) { animation-delay: 0.15s; }
+  .dot-flash span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes dotflash { 0%, 60%, 100% { opacity: 0.25; } 30% { opacity: 1; } }
+
+  .stagger-in { opacity: 0; animation: stagger-fade 0.35s ease forwards; }
+  @keyframes stagger-fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .typewrite-cursor::after {
+    content: "\258C"; color: var(--accent); animation: blink 0.9s step-start infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stagger-in { animation: none; opacity: 1; }
+    .agent-log-entry { animation: none; }
+    .agent-log-dot { animation: none; }
+    .dot-flash span { animation: none; opacity: 1; }
+  }
+</style>
+
+<div class="app">
+  <nav class="rail" aria-label="Pipeline steps">
+    <div class="rail-mark">AA</div>
+    <button class="rail-step" data-screen="boarding" aria-label="Boarding list">
+      <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="3.4" rx="1"></rect><rect x="4" y="10.3" width="16" height="3.4" rx="1"></rect><rect x="4" y="15.6" width="10" height="3.4" rx="1"></rect></svg>
+      <span class="rail-label">Census</span>
+    </button>
+    <button class="rail-step" data-screen="reconciliation" aria-label="Reconciliation">
+      <svg viewBox="0 0 24 24"><path d="M7 4v13l-3-3M7 17l3-3"></path><path d="M17 20V7l3 3M17 7l-3 3"></path></svg>
+      <span class="rail-label">Reconcile</span>
+    </button>
+    <button class="rail-step" data-screen="readiness" aria-label="Transfer readiness">
+      <svg viewBox="0 0 24 24"><path d="M5 12.5l4 4 10-10"></path><rect x="3.5" y="3.5" width="17" height="17" rx="3"></rect></svg>
+      <span class="rail-label">Readiness</span>
+    </button>
+    <button class="rail-step" data-screen="packet" aria-label="Packet">
+      <svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 15.5h7M9 8.5h4"></path></svg>
+      <span class="rail-label">Packet</span>
+    </button>
+    <button class="rail-step" data-screen="track" aria-label="Send and track">
+      <svg viewBox="0 0 24 24"><path d="M4 12l16-8-6 16-3-6-6-2z"></path></svg>
+      <span class="rail-label">Track</span>
+    </button>
+    <button class="rail-step" data-screen="aftercare" aria-label="Aftercare checklist">
+      <svg viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="2.5"></rect><path d="M8 11l2.3 2.3L16 8"></path></svg>
+      <span class="rail-label">Aftercare</span>
+    </button>
+    <div class="rail-spacer"></div>
+    <button class="rail-hood" id="hood-btn" aria-label="Under the hood">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"></circle><path d="M19.4 13.5a1.7 1.7 0 000-3l1.2-1.9-1.9-1.9-1.9 1.2a1.7 1.7 0 00-3 0L12.5 4h-2.7L9 5.9a1.7 1.7 0 00-3 0L4.1 4.7 2.2 6.6l1.2 1.9a1.7 1.7 0 000 3L2.2 13.4l1.9 1.9 1.9-1.2a1.7 1.7 0 003 0l.7 2.2h2.7l.7-2.2a1.7 1.7 0 003 0l1.9 1.2 1.9-1.9z"></path></svg>
+    </button>
+  </nav>
+
+  <div class="main">
+    <div class="ctxbar" id="ctxbar">
+      <div>
+        <span class="ctxbar-name">Maria (synthetic)</span>
+        <span class="ctxbar-meta"> · 34F · Day 2 of admission</span>
+      </div>
+      <span class="pill pill-warning" id="ctx-hold-pill">Hold active · signature unconfirmed</span>
+      <div class="ctxbar-spacer"></div>
+      <span class="eyebrow">SF County Behavioral Health</span>
+    </div>
+
+    <div class="content">
+
+      <!-- SCREEN: BOARDING -->
+      <section class="screen is-active" id="screen-boarding">
+        <div class="page-head">
+          <span class="eyebrow">Inpatient Psychiatry · Census</span>
+          <h1>Transition Coordination Worklist</h1>
+          <p class="sub">Longitudinal reconciliation runs continuously against each patient's chart. Only domains that materially changed, conflict, or went stale surface here — this is not a risk score.</p>
+        </div>
+        <div class="stack">
+          <button class="patient-row" data-open="maria">
+            <span class="stripe stripe-critical"></span>
+            <div>
+              <div class="patient-id">Maria</div>
+              <div class="patient-meta">34F · DAY 2 · HOLD ACTIVE</div>
+              <div class="patient-flag">SI intent &amp; plan — not reassessed in 48h</div>
+            </div>
+            <span class="patient-badge pill pill-critical">Needs review</span>
+          </button>
+
+          <button class="patient-row" data-toast="Demo path uses Maria — patient_002 has full longitudinal data too (worsening psychosis, new command hallucinations, medication refusal).">
+            <span class="stripe stripe-critical"></span>
+            <div>
+              <div class="patient-id">Patient 002</div>
+              <div class="patient-meta">DAY 2 · VOLUNTARY</div>
+              <div class="patient-flag">Psychosis — worsening, new command hallucinations since Day 0</div>
+            </div>
+            <span class="patient-badge pill pill-critical">Needs review</span>
+          </button>
+
+          <button class="patient-row" data-toast="Patient_003: nursing (09:00, calm/cooperative) and psychiatry (13:15, guarded/irritable) documented conflicting affect on the same calendar day.">
+            <span class="stripe stripe-warning"></span>
+            <div>
+              <div class="patient-id">Patient 003</div>
+              <div class="patient-meta">DAY 1 · HOLD ACTIVE</div>
+              <div class="patient-flag">Affect — nursing and psychiatry conflict, same day</div>
+            </div>
+            <span class="patient-badge pill pill-warning">Conflicting</span>
+          </button>
+
+          <button class="patient-row" data-toast="Patient_004: every readiness field current and documented — control case shown to confirm the system doesn't over-flag when nothing is actually wrong.">
+            <span class="stripe stripe-success"></span>
+            <div>
+              <div class="patient-id">Patient 004</div>
+              <div class="patient-meta">DAY 2 · VOLUNTARY</div>
+              <div class="patient-flag">All domains current — ready for transfer review</div>
+            </div>
+            <span class="patient-badge pill pill-success">No gaps</span>
+          </button>
+
+          <button class="patient-row" data-toast="Patient_005: Day 1 follow-up mirrors Day 0 with explicit 'no change' language across every domain — the outpatient-only, lowest-acuity case in the set.">
+            <span class="stripe stripe-neutral"></span>
+            <div>
+              <div class="patient-id">Patient 005</div>
+              <div class="patient-meta">DAY 1 · OUTPATIENT</div>
+              <div class="patient-flag">Stable — no change since last visit</div>
+            </div>
+            <span class="patient-badge pill pill-neutral">Stable</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- SCREEN: RECONCILIATION -->
+      <section class="screen" id="screen-reconciliation">
+        <div class="page-head">
+          <span class="eyebrow">State Reconciliation</span>
+          <h1>What's changed since the last assessment</h1>
+          <p class="sub">Every value below is bound to a verbatim quote, source note, and timestamp. Conflicting and stale domains are reported as-is — the system does not resolve them on your behalf.</p>
+        </div>
+
+        <div class="processing-line" id="recon-processing" style="display:none;">
+          <span class="dot-flash"><span></span><span></span><span></span></span>
+          Domain Extractor is reading Maria's chart (5 notes)…
+        </div>
+        <div class="stack" id="domain-stack">
+          <div class="domain-card">
+            <div class="domain-head">
+              <span class="domain-title">SI intent &amp; plan</span>
+              <span class="pill pill-critical" id="si-status-pill">Not reassessed · 48h</span>
+            </div>
+            <div class="two-col">
+              <div>
+                <span class="col-label">Day 0 — 23:40</span>
+                <div class="quote-block">"Active suicidal ideation with intent and a specific plan (going to the Golden Gate Bridge) is present at time of evaluation."
+                  <span class="quote-src">Psychiatry — initial evaluation</span>
+                </div>
+              </div>
+              <div>
+                <span class="col-label">Day 2 — 09:50</span>
+                <div class="quote-block">"Dice que no, hoy no tiene esos pensamientos." (denies SI <em>today</em>)
+                  <span class="quote-src">Psychiatry — follow-up transcript</span>
+                </div>
+              </div>
+            </div>
+            <p class="domain-note">The Day 2 question and denial are both scoped to "today." The specific plan and intent documented on Day 0 has not been re-asked or revisited in any later note.</p>
+          </div>
+
+          <div class="domain-card">
+            <div class="domain-head">
+              <span class="domain-title">Psychosis</span>
+              <span class="pill pill-neutral">Unchanged</span>
+            </div>
+            <div class="two-col">
+              <div>
+                <span class="col-label">Day 0 — 23:40</span>
+                <div class="quote-block">"No auditory or visual hallucinations elicited on exam. No evidence of thought disorder or delusional content."
+                  <span class="quote-src">Psychiatry — initial evaluation</span>
+                </div>
+              </div>
+              <div>
+                <span class="col-label">Day 2 — 09:50</span>
+                <div class="quote-block">"No, dice que no escucha ni ve nada raro."
+                  <span class="quote-src">Psychiatry — follow-up transcript</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="domain-card">
+            <div class="domain-head">
+              <span class="domain-title">Collateral support (sister)</span>
+              <span class="pill pill-warning">Unchanged · unresolved</span>
+            </div>
+            <div class="two-col">
+              <div>
+                <span class="col-label">Day 0 — ED</span>
+                <div class="quote-block">"Sister... stated she is not able to have Maria stay with her at this time due to space constraints in the sister's own housing situation."
+                  <span class="quote-src">ED / initial psychiatry note</span>
+                </div>
+              </div>
+              <div>
+                <span class="col-label">Day 2 — 13:05</span>
+                <div class="quote-block">"...she does not have space for Maria to stay with her right now... willing to visit and stay in phone contact but cannot offer housing."
+                  <span class="quote-src">Social work note — L. Fernandez, LCSW</span>
+                </div>
+              </div>
+            </div>
+            <p class="domain-note">No change in available housing despite the patient's improved presentation — discharge destination remains unresolved.</p>
+          </div>
+
+          <div class="domain-card">
+            <div class="domain-head">
+              <span class="domain-title">Vitals</span>
+              <span class="pill pill-warning">Stale · &gt;12h</span>
+            </div>
+            <span class="col-label">Last recorded — Day 1, 04:00</span>
+            <div class="quote-block">"...awake for vitals at 0400 without difficulty returning to sleep."
+              <span class="quote-src">RN shift assessment</span>
+            </div>
+            <p class="domain-note">No vitals appear in either Day 2 note (social work 13:05, psychiatry 09:50) — last recorded reading is over 12 hours old as of the current chart review.</p>
+          </div>
+
+          <div class="integrity-flag">
+            <svg viewBox="0 0 24 24"><path d="M12 3l9 16H3z"></path><path d="M12 10v4M12 17h.01"></path></svg>
+            <div>
+              <div style="font-weight:650; font-size:13.5px;">Documentation integrity — possible copy-forward</div>
+              <p class="domain-note" style="margin-top:5px;">"Alert, oriented x4.", "No evidence of thought disorder or delusional content.", and "Thought process linear." appear identically in the Day 0 psychiatry eval and the Day 1 nursing note. Flagged for review — not treated as proof a reassessment didn't happen.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:24px;" id="si-cta-wrap">
+          <button class="btn btn-primary" id="flag-btn">Flag SI intent for clinician reassessment</button>
+          <p class="coord-note">Coordination signal only — this does not make a clinical determination, and nothing is resolved without an explicit clinician action.</p>
+        </div>
+        <div style="margin-top:24px; display:none;" id="si-resolved-wrap">
+          <span class="pill pill-success">✓ Reassessment confirmed by Dr. Reyes, 2026-07-12 14:20</span>
+        </div>
+      </section>
+
+      <!-- SCREEN: READINESS -->
+      <section class="screen" id="screen-readiness">
+        <div class="page-head">
+          <span class="eyebrow">Transfer Readiness</span>
+          <h1>Compare candidate facilities</h1>
+          <p class="sub">Patient readiness fields are diffed against each facility's own declared intake requirements — deterministic comparison, not a language-model judgment call.</p>
+        </div>
+        <div class="grid-2">
+          <div class="card fac-card">
+            <div>
+              <div class="fac-name">Hummingbird Place — Valencia</div>
+              <div class="fac-addr">1156 Valencia St, San Francisco · Peer respite</div>
+            </div>
+            <div class="fac-stats">
+              <span>Beds: <b>5</b><span class="sim-tag">SIM</span></span>
+              <span>Est. wait: <b>3 d</b><span class="sim-tag">SIM</span></span>
+              <span>Accept rate: <b>57%</b><span class="sim-tag">SIM</span></span>
+            </div>
+            <div class="processing-line" id="fac-a-processing" style="display:none;">
+              <span class="dot-flash"><span></span><span></span><span></span></span>
+              Readiness Diff Engine comparing against intake requirements…
+            </div>
+            <div class="req-list" id="fac-a-reqs">
+              <!-- populated by JS depending on siReassessed -->
+            </div>
+            <div class="fac-verdict" id="fac-a-verdict"></div>
+            <button class="btn btn-primary btn-block" id="select-fac-a" style="margin-top:4px;">Select &amp; generate packet</button>
+          </div>
+
+          <div class="card fac-card">
+            <div>
+              <div class="fac-name">The Minna Project</div>
+              <div class="fac-addr">447 Minna St, San Francisco · Residential treatment</div>
+            </div>
+            <div class="fac-stats">
+              <span>Beds: <b>5</b><span class="sim-tag">SIM</span></span>
+              <span>Est. wait: <b>11 d</b><span class="sim-tag">SIM</span></span>
+              <span>Accept rate: <b>57%</b><span class="sim-tag">SIM</span></span>
+            </div>
+            <div class="req-list">
+              <div class="req-row"><span class="req-icon missing"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"></path></svg></span> TB screen</div>
+              <div class="req-detail">Not documented anywhere in the chart</div>
+              <div class="req-row"><span class="req-icon missing"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"></path></svg></span> Medication reconciliation</div>
+              <div class="req-detail">Not documented anywhere in the chart</div>
+              <div class="req-row"><span class="req-icon ok"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg></span> Insurance verification</div>
+              <div class="req-detail">Medi-Cal on file</div>
+              <div class="req-row"><span class="req-icon ok"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg></span> No active violence risk</div>
+              <div class="req-detail">No violence documented in any note</div>
+            </div>
+            <div class="fac-verdict blocked">2 items missing — not ready</div>
+            <button class="btn btn-block" disabled style="margin-top:4px;">Cannot generate packet yet</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN: PACKET -->
+      <section class="screen" id="screen-packet">
+        <div class="page-head">
+          <span class="eyebrow">Referral Packet — draft</span>
+          <h1>Hummingbird Place, Valencia</h1>
+          <p class="sub">Every field traces to a source note. Review before sending — this draft is editable, not a final document until you send it.</p>
+        </div>
+        <div class="card" style="padding: 4px 20px;">
+          <div class="field-row">
+            <div class="field-head">
+              <span class="field-label">Patient</span>
+            </div>
+            <div class="field-value">Maria (synthetic) · 34F · Medi-Cal</div>
+          </div>
+
+          <div class="field-row">
+            <div class="field-head">
+              <span class="field-label">Presenting concern</span>
+              <button class="field-src-toggle" data-src="src-1">Source</button>
+            </div>
+            <div class="field-value" id="pv-presenting">Intentional sertraline overdose in the context of housing loss and relationship dissolution; concurrent methamphetamine use.</div>
+            <div class="field-src" id="src-1">
+              <div class="quote-block">"Patient reports ingesting approximately 20 tablets of home sertraline approximately 2 hours prior to arrival, in the context of a breakup and eviction..."
+                <span class="quote-src">Psychiatry — initial evaluation, 2026-07-10 23:40</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field-head">
+              <span class="field-label">Current risk status</span>
+              <button class="field-src-toggle" data-src="src-2">Source</button>
+            </div>
+            <div class="field-value" id="pv-riskstatus">SI denied today (2026-07-12); plan/intent documented 2026-07-10, formally reassessed by Dr. Reyes on 2026-07-12 14:20.</div>
+            <div class="field-src" id="src-2">
+              <div class="quote-block">Reconciliation flag resolved after clinician review — see Reconciliation tab for full quote trail.</div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field-head">
+              <span class="field-label">Psychosis</span>
+              <button class="field-src-toggle" data-src="src-3">Source</button>
+            </div>
+            <div class="field-value">No hallucinations or delusional content on exam — unchanged across the admission.</div>
+            <div class="field-src" id="src-3">
+              <div class="quote-block">"No auditory or visual hallucinations elicited on exam."
+                <span class="quote-src">Psychiatry — initial evaluation</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field-head">
+              <span class="field-label">Discharge destination support</span>
+              <button class="field-src-toggle" data-src="src-4">Source</button>
+            </div>
+            <div class="field-value">Sister unable to provide housing; no other collateral identified. Shelter waitlist referral placed.</div>
+            <div class="field-src" id="src-4">
+              <div class="quote-block">"Referral placed to shelter bed waitlist and to county behavioral health for outpatient follow-up."
+                <span class="quote-src">Social work note — L. Fernandez, LCSW</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field-head">
+              <span class="field-label">Hold status <span class="edited-tag" id="hold-edited-tag" style="display:none;">edited by case manager</span></span>
+              <button class="edit-icon-btn" id="edit-hold-btn" aria-label="Edit this field">
+                <svg viewBox="0 0 24 24"><path d="M4 20l1-4L16 5l3 3L8 19l-4 1z"></path></svg>
+              </button>
+            </div>
+            <div class="field-value" id="hold-field-value">Involuntary hold initiated 2026-07-10; clinical resolution documented. Formal hold-closure signature is not present anywhere in the chart.</div>
+            <textarea class="edit-area" id="hold-edit-area" style="display:none;" placeholder="Add a note...">Confirmed verbally with Dr. Reyes 07-12; requesting a signed copy before transport.</textarea>
+            <button class="btn btn-sm" id="save-hold-btn" style="display:none; margin-top:8px;">Save</button>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;">
+          <button class="btn btn-primary" id="send-packet-btn">Send to Hummingbird Place, Valencia</button>
+        </div>
+      </section>
+
+      <!-- SCREEN: TRACK -->
+      <section class="screen" id="screen-track">
+        <div class="page-head">
+          <span class="eyebrow">Referral Tracking</span>
+          <h1>Send &amp; decline handling</h1>
+        </div>
+
+        <div class="stat-strip">
+          <div class="stat-tile"><div class="stat-num">2</div><div class="stat-label">Facilities compared before sending</div></div>
+          <div class="stat-tile"><div class="stat-num">1</div><div class="stat-label">Missing-doc decline resolved without re-broadcast</div></div>
+          <div class="stat-tile"><div class="stat-num">0</div><div class="stat-label">Facilities blindly re-contacted</div></div>
+        </div>
+        <p class="stat-caption">Illustrative — from this single-patient walkthrough, not a performance benchmark.</p>
+
+        <div class="card track-row">
+          <div class="track-head">
+            <div class="fac-name">Hummingbird Place, Valencia</div>
+            <span class="pill pill-warning" id="track-status-pill">Sent</span>
+          </div>
+          <div class="track-status-line" id="track-status-line">Packet sent 2026-07-12 14:45. Awaiting facility response.</div>
+
+          <div id="track-decline-area"></div>
+
+          <div id="track-actions">
+            <button class="btn" id="check-response-btn">Check facility response</button>
+          </div>
+
+          <p class="broadcast-note">A broadcast-style referral tool would have queued this packet to the next several facilities on any decline. Because the reason is classified first, this stayed a one-facility resend.</p>
+        </div>
+      </section>
+
+      <!-- SCREEN: AFTERCARE -->
+      <section class="screen" id="screen-aftercare">
+        <div class="page-head">
+          <span class="eyebrow">Exit branch</span>
+          <h1>Aftercare Coordination Checklist</h1>
+          <p class="sub">A checklist of coordination items and their status — not a treatment plan.</p>
+        </div>
+        <div class="card">
+          <div class="checklist-row">
+            <span class="pill pill-warning">Pending</span>
+            <div class="checklist-text"><b>Housing</b><span>Shelter waitlist referral placed 2026-07-12.</span></div>
+          </div>
+          <div class="checklist-row">
+            <span class="pill pill-success">Confirmed</span>
+            <div class="checklist-text"><b>Collateral contact</b><span>Sister reachable by phone; no in-person supervision available.</span></div>
+          </div>
+          <div class="checklist-row">
+            <span class="pill pill-warning">Pending</span>
+            <div class="checklist-text"><b>Outpatient follow-up</b><span>County behavioral health referral placed, appointment not yet confirmed.</span></div>
+          </div>
+          <div class="checklist-row">
+            <span class="pill pill-warning">Pending</span>
+            <div class="checklist-text"><b>Medication bridge</b><span>Home sertraline continuation needs prescriber confirmation.</span></div>
+          </div>
+          <div class="checklist-row">
+            <span class="pill pill-warning">Pending</span>
+            <div class="checklist-text"><b>Transportation</b><span>To be arranged closer to bed-ready date.</span></div>
+          </div>
+          <div class="checklist-row">
+            <span class="pill pill-success">Confirmed</span>
+            <div class="checklist-text"><b>Follow-up ownership</b><span>L. Fernandez, LCSW.</span></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- Persona overlay -->
+<div class="overlay-scrim" id="persona-scrim">
+  <div class="persona-panel">
+    <div class="persona-topbar">
+      <div>
+        <div class="t1">In Basket — simulated view</div>
+        <div class="t2">Dr. A. Reyes · Psychiatry</div>
+      </div>
+      <button class="persona-close" id="persona-close" aria-label="Close">×</button>
+    </div>
+    <div class="persona-body">
+      <div class="inbox-row active">
+        <span class="inbox-dot"></span>
+        <div>
+          <div class="inbox-subject">Maria — SI intent/plan not reassessed (48h)</div>
+          <div class="inbox-preview">Denial on 07-12 was scoped to "today" only. Day 0 plan and intent has not been revisited in any later note.</div>
+          <button class="btn btn-primary btn-sm" id="ack-btn" style="margin-top:10px;">Acknowledge &amp; document reassessment</button>
+        </div>
+      </div>
+      <div class="inbox-row muted">
+        <span class="inbox-dot"></span>
+        <div>
+          <div class="inbox-subject">Refill request — J. Chen</div>
+          <div class="inbox-preview">Routine, unrelated to this walkthrough.</div>
+        </div>
+      </div>
+      <div class="inbox-row muted">
+        <span class="inbox-dot"></span>
+        <div>
+          <div class="inbox-subject">Lab result review — R. Alvarez</div>
+          <div class="inbox-preview">Routine, unrelated to this walkthrough.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Under the hood drawer -->
+<div class="overlay-scrim" id="hood-scrim">
+  <div class="hood-panel">
+    <div class="hood-topbar">
+      <h3>Under the hood</h3>
+      <button class="persona-close" id="hood-close" aria-label="Close" style="color:var(--text-muted); margin-left:auto;">×</button>
+    </div>
+    <div class="hood-body">
+      <p style="font-size:12.5px; color:var(--text-muted);">Fixed example content — this panel does not reflect a live trace of the current session.</p>
+
+      <div class="agent-card">
+        <div class="agent-name">Domain Extractor &amp; Reconciliation <span class="agent-tag">LLM</span></div>
+        <div class="agent-desc">Reads longitudinal notes and extracts domain-level clinical state. Every value is bound to a verbatim quote, source note, and timestamp — nothing is asserted without a citation.</div>
+        <div class="agent-io">in:  day0_psych_eval.txt + day2_psych_transcript.txt
+out: {"domain":"SI_intent","status":"not_reassessed",
+      "quote":"...hoy no tiene esos pensamientos.",
+      "source":"psych_transcript","time":"2026-07-12 09:50"}</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-name">Readiness Diff Engine <span class="agent-tag">deterministic</span></div>
+        <div class="agent-desc">Compares patient readiness fields against a target facility's own declared intake_requirements. No language model in this step — the extractor supplies values, this engine only diffs them.</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-name">Decline Classifier <span class="agent-tag">LLM</span></div>
+        <div class="agent-desc">Maps a facility's response into a fixed taxonomy — no_capacity / out_of_network / missing_docs / acuity_too_high / behavioral_exclusion — and proposes the matching next action instead of blind re-broadcast.</div>
+      </div>
+
+      <div class="principle-box">
+        This system produces coordination signals for people to act on. It does not decide dispositions, and no flag is written to a permanent record without an explicit clinician or case-manager action.
+      </div>
+
+      <div class="datanote-box">
+        Facility identities and locations shown throughout are real, public information. Bed counts, wait times, and decline behavior are simulated for demonstration and are not live data.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="agent-log" id="agent-log">
+  <div class="agent-log-head" id="agent-log-head">
+    <span class="agent-log-dot"></span>
+    <span class="agent-log-title">Agent activity</span>
+    <span class="agent-log-latest" id="agent-log-latest">Idle — waiting on next action</span>
+    <span class="agent-log-chevron">▲</span>
+  </div>
+  <div class="agent-log-body" id="agent-log-body"></div>
+</div>
+
+<div id="toast-host"></div>
+
+<script>
+(function () {
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function wait(ms, fn) { if (reduceMotion) { fn(); } else { setTimeout(fn, ms); } }
+
+  var state = { siReassessed: false, holdEdited: false, trackStage: 'sent' };
+  var flags = { reconciliationVisited: false, packetTyped: false };
+
+  var screens = Array.prototype.slice.call(document.querySelectorAll('.screen'));
+  var railSteps = Array.prototype.slice.call(document.querySelectorAll('.rail-step'));
+  var ctxbar = document.getElementById('ctxbar');
+
+  /* ---------- Agent activity log ---------- */
+  var logBody = document.getElementById('agent-log-body');
+  var logLatest = document.getElementById('agent-log-latest');
+  var logWidget = document.getElementById('agent-log');
+  var logEntries = [];
+  function logActivity(agent, text) {
+    var t = new Date();
+    var stamp = ('0' + t.getHours()).slice(-2) + ':' + ('0' + t.getMinutes()).slice(-2) + ':' + ('0' + t.getSeconds()).slice(-2);
+    logEntries.push({ agent: agent, text: text, stamp: stamp });
+    if (logEntries.length > 14) logEntries.shift();
+    renderLog();
+  }
+  function renderLog() {
+    logBody.innerHTML = logEntries.slice().reverse().map(function (e) {
+      return '<div class="agent-log-entry"><span class="who">' + e.agent + '</span><span class="what">' + e.text + '</span><span class="when">' + e.stamp + '</span></div>';
+    }).join('');
+    if (logEntries.length) {
+      var last = logEntries[logEntries.length - 1];
+      logLatest.textContent = last.agent + ': ' + last.text;
+    }
+  }
+  document.getElementById('agent-log-head').addEventListener('click', function () {
+    logWidget.classList.toggle('is-open');
+  });
+
+  function showScreen(id) {
+    screens.forEach(function (s) { s.classList.toggle('is-active', s.id === 'screen-' + id); });
+    railSteps.forEach(function (b) { b.classList.toggle('is-active', b.dataset.screen === id); });
+    ctxbar.classList.toggle('is-visible', id !== 'boarding');
+    if (id === 'reconciliation') runReconciliationIntro();
+    if (id === 'readiness') renderFacilityA(true);
+    if (id === 'packet') runPacketIntro();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+
+  railSteps.forEach(function (b) {
+    b.addEventListener('click', function () { showScreen(b.dataset.screen); });
+  });
+
+  document.querySelectorAll('[data-open="maria"]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      logActivity('Reconciliation Agent', "Opening Maria's chart — 5 notes across 3 days");
+      showScreen('reconciliation');
+    });
+  });
+
+  document.querySelectorAll('[data-toast]').forEach(function (el) {
+    el.addEventListener('click', function () { toast(el.dataset.toast); });
+  });
+
+  function toast(msg) {
+    var host = document.getElementById('toast-host');
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    host.appendChild(t);
+    setTimeout(function () { t.remove(); }, 4200);
+  }
+
+  /* ---------- Reconciliation staged intro ---------- */
+  function runReconciliationIntro() {
+    if (flags.reconciliationVisited) return;
+    flags.reconciliationVisited = true;
+    var proc = document.getElementById('recon-processing');
+    var stack = document.getElementById('domain-stack');
+    var items = Array.prototype.slice.call(stack.children);
+    var domainNames = ['SI intent & plan', 'Psychosis', 'Collateral support', 'Vitals', 'Documentation integrity'];
+    items.forEach(function (el) { el.style.opacity = '0'; });
+    proc.style.display = 'flex';
+    wait(750, function () {
+      proc.style.display = 'none';
+      items.forEach(function (el, i) {
+        wait(i * 110, function () {
+          el.classList.add('stagger-in');
+          el.style.opacity = '';
+          logActivity('Domain Extractor', 'Extracted ' + (domainNames[i] || 'domain') + ' — quote + source + timestamp bound');
+        });
+      });
+    });
+  }
+
+  /* Persona overlay */
+  var personaScrim = document.getElementById('persona-scrim');
+  document.getElementById('flag-btn').addEventListener('click', function () {
+    logActivity('Reconciliation Agent', "Routing SI_intent reassessment task to Dr. Reyes' In Basket");
+    personaScrim.classList.add('is-open');
+  });
+  document.getElementById('persona-close').addEventListener('click', function () {
+    personaScrim.classList.remove('is-open');
+  });
+  document.getElementById('ack-btn').addEventListener('click', function () {
+    state.siReassessed = true;
+    personaScrim.classList.remove('is-open');
+    document.getElementById('si-status-pill').textContent = 'Reassessed';
+    document.getElementById('si-status-pill').className = 'pill pill-success';
+    document.getElementById('si-cta-wrap').style.display = 'none';
+    document.getElementById('si-resolved-wrap').style.display = 'block';
+    document.getElementById('ctx-hold-pill').textContent = 'Hold active · reassessment confirmed';
+    logActivity('Dr. Reyes (clinician)', 'Acknowledged — documented a fresh risk assessment');
+    logActivity('Reconciliation Agent', 'SI_intent flag cleared — will re-check against next note');
+    toast('Reassessment documented 2026-07-12 14:20 — flag cleared.');
+  });
+
+  /* Hood drawer */
+  var hoodScrim = document.getElementById('hood-scrim');
+  document.getElementById('hood-btn').addEventListener('click', function () { hoodScrim.classList.add('is-open'); });
+  document.getElementById('hood-close').addEventListener('click', function () { hoodScrim.classList.remove('is-open'); });
+  [personaScrim, hoodScrim].forEach(function (scrim) {
+    scrim.addEventListener('click', function (e) { if (e.target === scrim) scrim.classList.remove('is-open'); });
+  });
+
+  /* ---------- Readiness screen — facility A depends on siReassessed ---------- */
+  function renderFacilityA(animate) {
+    var reqs = document.getElementById('fac-a-reqs');
+    var verdict = document.getElementById('fac-a-verdict');
+    var selectBtn = document.getElementById('select-fac-a');
+    var proc = document.getElementById('fac-a-processing');
+
+    function paint() {
+      if (state.siReassessed) {
+        reqs.innerHTML =
+          '<div class="req-row"><span class="req-icon ok"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg></span> Risk assessment current</div>' +
+          '<div class="req-detail">Reassessed by Dr. Reyes, 2026-07-12 14:20</div>' +
+          '<div class="req-row"><span class="req-icon ok"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg></span> No active violence risk</div>' +
+          '<div class="req-detail">No violence documented in any note</div>';
+        verdict.textContent = 'Ready to generate packet';
+        verdict.className = 'fac-verdict ready';
+        selectBtn.disabled = false;
+        selectBtn.textContent = 'Select & generate packet';
+      } else {
+        reqs.innerHTML =
+          '<div class="req-row"><span class="req-icon missing"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"></path></svg></span> Risk assessment current</div>' +
+          '<div class="req-detail">Not reassessed since Day 0 — resolve in Reconciliation first</div>' +
+          '<div class="req-row"><span class="req-icon ok"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg></span> No active violence risk</div>' +
+          '<div class="req-detail">No violence documented in any note</div>';
+        verdict.textContent = '1 item missing — not ready';
+        verdict.className = 'fac-verdict blocked';
+        selectBtn.disabled = true;
+        selectBtn.textContent = 'Resolve reconciliation flag first';
+      }
+      reqs.style.display = '';
+      verdict.style.display = '';
+    }
+
+    if (!animate) { paint(); return; }
+    reqs.style.display = 'none';
+    verdict.style.display = 'none';
+    proc.style.display = 'flex';
+    logActivity('Readiness Diff Engine', "Comparing Maria's readiness fields against 2 candidate facilities");
+    wait(500, function () {
+      proc.style.display = 'none';
+      paint();
+      logActivity('Readiness Diff Engine', state.siReassessed ? 'Hummingbird Place: 0 gaps — ready' : 'Hummingbird Place: 1 gap — blocked');
+      logActivity('Readiness Diff Engine', 'Minna Project: 2 gaps — tb_screen, med_reconciliation missing');
+    });
+  }
+  document.getElementById('select-fac-a').addEventListener('click', function () {
+    if (!state.siReassessed) return;
+    logActivity('Packet Generator', 'Drafting referral packet for Hummingbird Place, Valencia');
+    showScreen('packet');
+  });
+
+  /* ---------- Packet screen ---------- */
+  document.querySelectorAll('.field-src-toggle').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var el = document.getElementById(btn.dataset.src);
+      el.classList.toggle('is-open');
+      btn.textContent = el.classList.contains('is-open') ? 'Hide source' : 'Source';
+    });
+  });
+  document.getElementById('edit-hold-btn').addEventListener('click', function () {
+    document.getElementById('hold-edit-area').style.display = 'block';
+    document.getElementById('save-hold-btn').style.display = 'inline-flex';
+  });
+  document.getElementById('save-hold-btn').addEventListener('click', function () {
+    var val = document.getElementById('hold-edit-area').value.trim();
+    document.getElementById('hold-field-value').textContent =
+      'Involuntary hold initiated 2026-07-10; formal signature not on file. Case manager note: ' + val;
+    document.getElementById('hold-edited-tag').style.display = 'inline';
+    document.getElementById('hold-edit-area').style.display = 'none';
+    document.getElementById('save-hold-btn').style.display = 'none';
+    state.holdEdited = true;
+    logActivity('Case manager', 'Edited hold status field before send');
+    toast('Field updated by case manager.');
+  });
+  document.getElementById('send-packet-btn').addEventListener('click', function () {
+    logActivity('Packet Generator', 'Packet sent to Hummingbird Place, Valencia');
+    showScreen('track');
+    toast('Packet sent to Hummingbird Place, Valencia.');
+  });
+
+  function typewrite(el, text, speed) {
+    if (reduceMotion) { el.textContent = text; return; }
+    el.textContent = '';
+    el.classList.add('typewrite-cursor');
+    var i = 0;
+    var iv = setInterval(function () {
+      i++;
+      el.textContent = text.slice(0, i);
+      if (i >= text.length) { clearInterval(iv); el.classList.remove('typewrite-cursor'); }
+    }, speed);
+  }
+  function runPacketIntro() {
+    if (flags.packetTyped) return;
+    flags.packetTyped = true;
+    var presenting = document.getElementById('pv-presenting');
+    var risk = document.getElementById('pv-riskstatus');
+    var t1 = presenting.textContent, t2 = risk.textContent;
+    logActivity('Packet Generator', 'Drafting presenting concern from initial evaluation');
+    typewrite(presenting, t1, 12);
+    wait(Math.min(t1.length * 12, 1600) + 250, function () {
+      logActivity('Packet Generator', 'Drafting current risk status — citing reconciliation outcome');
+      typewrite(risk, t2, 12);
+    });
+  }
+
+  /* ---------- Track screen state machine ---------- */
+  var statusPill = document.getElementById('track-status-pill');
+  var statusLine = document.getElementById('track-status-line');
+  var declineArea = document.getElementById('track-decline-area');
+  var actions = document.getElementById('track-actions');
+
+  function renderTrack() {
+    if (state.trackStage === 'sent') {
+      statusPill.textContent = 'Sent';
+      statusPill.className = 'pill pill-warning';
+      statusLine.textContent = 'Packet sent 2026-07-12 14:45. Awaiting facility response.';
+      declineArea.innerHTML = '';
+      actions.innerHTML = '<button class="btn" id="check-response-btn">Check facility response</button>';
+      bindCheck();
+    } else if (state.trackStage === 'declined') {
+      statusPill.textContent = 'Declined · missing_docs';
+      statusPill.className = 'pill pill-critical';
+      statusLine.textContent = 'Response received 2026-07-12 15:02.';
+      declineArea.innerHTML =
+        '<div class="decline-box"><div class="k">Missing docs</div>' +
+        '<p>Hold discharge documentation incomplete — physician co-signature not on file. This is a documentable gap, not a capacity issue.</p></div>';
+      actions.innerHTML = '<button class="btn btn-primary" id="resend-btn">Mark resolved &amp; resend</button>';
+      document.getElementById('resend-btn').addEventListener('click', function () {
+        logActivity('Case manager', 'Confirmed signature with Dr. Reyes — resending');
+        state.trackStage = 'resent';
+        renderTrack();
+        toast('Signature confirmed with Dr. Reyes — resent to the same facility.');
+      });
+    } else if (state.trackStage === 'resent') {
+      statusPill.textContent = 'Resent';
+      statusPill.className = 'pill pill-warning';
+      statusLine.textContent = 'Resent 2026-07-12 15:10 with signed hold documentation attached.';
+      declineArea.innerHTML = '';
+      actions.innerHTML = '<button class="btn" id="check-response-btn">Check facility response</button>';
+      bindCheck();
+    } else if (state.trackStage === 'accepted') {
+      statusPill.textContent = 'Accepted';
+      statusPill.className = 'pill pill-success';
+      statusLine.textContent = 'Bed confirmed — admission window 2026-07-13, 08:00.';
+      declineArea.innerHTML = '<div class="accept-box"><p>✓ Transfer confirmed. Aftercare coordination can proceed.</p></div>';
+      actions.innerHTML = '';
+      logActivity('Decline Classifier', 'Outcome: accepted — no further action needed');
+    }
+  }
+  function bindCheck() {
+    var btn = document.getElementById('check-response-btn');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var nextStage = state.trackStage === 'sent' ? 'declined' : 'accepted';
+      btn.disabled = true;
+      btn.innerHTML = '<span class="dot-flash"><span></span><span></span><span></span></span>&nbsp; Classifying response…';
+      logActivity('Decline Classifier', 'Response received — classifying against fixed taxonomy');
+      wait(650, function () {
+        state.trackStage = nextStage;
+        renderTrack();
+        if (nextStage === 'declined') logActivity('Decline Classifier', 'Classified: missing_docs — recommending resend, not re-broadcast');
+      });
+    });
+  }
+  renderTrack();
+
+  logActivity('System', 'Reconciliation pipeline idle — watching 5 patients');
+})();
+</script>
