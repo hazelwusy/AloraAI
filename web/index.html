@@ -151,8 +151,9 @@
   .node.active text { fill: var(--text); font-weight: 700; }
   .node.calling .halo { animation: ping 1.9s ease-out infinite; }
 
-  /* floating attribute card, anchored to a node on click (image-2 style) */
-  .map-card { position: relative; }
+  /* floating attribute card, anchored to a node on click (image-2 style).
+     .map-card is position:sticky (declared above), which already establishes the
+     containing block for this absolutely-positioned card — no extra rule needed. */
   .kg-card { position: absolute; z-index: 8; width: 220px; background: var(--surface); border: 1px solid var(--border-strong);
     border-radius: var(--radius-m); box-shadow: 0 8px 30px -8px rgba(20,34,32,.35); padding: 0; overflow: hidden;
     opacity: 0; transform: translateY(4px); pointer-events: none; transition: opacity .16s, transform .16s; }
@@ -176,8 +177,12 @@
   .kg-card .kc-foot .fresh-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); flex: none; }
   @keyframes ping { 0% { opacity: .40; transform: scale(1); } 70% { opacity: 0; transform: scale(2.6); } 100% { opacity: 0; transform: scale(2.6); } }
 
-  .edge { fill: none; opacity: .38; transition: opacity .25s; }
+  .edge { fill: none; opacity: .38; transition: opacity .25s; pointer-events: none; }
   .edge.dim { opacity: .1; }
+  .edge.sel { opacity: 1; stroke-width: 3.5; }
+  /* fat transparent hit area so thin edges are easy to click */
+  .edge-hit { fill: none; stroke: transparent; stroke-width: 14; cursor: pointer; }
+  .edge-hit:hover + .edge { opacity: .8; stroke-width: 3; }
   .edge.hot { opacity: 1; stroke-width: 3; stroke-dasharray: 6 5; animation: flow 1s linear infinite; }
   @keyframes flow { to { stroke-dashoffset: -22; } }
 
@@ -344,7 +349,7 @@
     <div class="workspace">
       <!-- LEFT: network map (spatial centerpiece) -->
       <section class="card card-pad map-card">
-        <div class="map-head"><h2><span class="step-tag">1</span>SF psychiatric knowledge graph</h2><span class="eyebrow">click a node · agent-monitored</span></div>
+        <div class="map-head"><h2><span class="step-tag">1</span>SF psychiatric knowledge graph</h2><span class="eyebrow">click a node or edge · agent-monitored</span></div>
         <div class="calling-banner" id="calling-banner"><span class="live-dot"></span><span id="calling-text">On call</span></div>
         <svg id="map" viewBox="0 0 640 560" aria-label="Facility network"></svg>
         <div class="kg-card" id="kg-card"></div>
@@ -490,6 +495,7 @@ document.querySelectorAll(".rail-step").forEach(b=>b.onclick=()=>{
 /* ---------- knowledge graph (real directory, image-2 style) ---------- */
 const NS="http://www.w3.org/2000/svg";
 let FAC_BY_ID={};   // id -> facility record, so the attribute card can read live KG fields
+let EDGE_BY_KEY={}; // "from|to" -> edge record, for the edge attribute card
 
 function svgDefs(){
   const defs=document.createElementNS(NS,"defs");
@@ -506,15 +512,17 @@ async function drawMap(){
   let {facilities,edges}=await j("/api/graph");   // the real KG the monitoring agent maintains
   document.getElementById("conn").textContent="live"; document.getElementById("conn").className="badge live";
   FAC_BY_ID={}; facilities.forEach(f=>FAC_BY_ID[f.id]=f);
-  // demo view: keep it legible — origin + its direct (1-hop) referral partners only.
-  // The agent still monitors the full graph; this just limits what we draw.
+  EDGE_BY_KEY={};
+  // draw the whole connected referral graph — every facility that has at least
+  // one referral edge, plus the origin. (The agent monitors all 74; only the
+  // isolated, edge-less rows are hidden to keep the picture legible.)
   const shown=new Set([ORIGIN_ID]);
-  (edges.edges||[]).forEach(e=>{ if(e.from===ORIGIN_ID)shown.add(e.to); if(e.to===ORIGIN_ID)shown.add(e.from); });
+  (edges.edges||[]).forEach(e=>{ shown.add(e.from); shown.add(e.to); });
   const allEdges=(edges.edges||[]).filter(e=>shown.has(e.from)&&shown.has(e.to));
   edges={edges:allEdges};
   const nodes=facilities.filter(f=>shown.has(f.id));
   const svg=document.getElementById("map"); svg.innerHTML=""; svg.appendChild(svgDefs());
-  const cx=320,cy=270,R=210; nodePos={};
+  const cx=320,cy=270,R=215; nodePos={};
   // origin sits in the center; everyone else on the ring around it
   const others=nodes.filter(f=>f.id!==ORIGIN_ID);
   nodePos[ORIGIN_ID]=[cx,cy];
@@ -522,13 +530,19 @@ async function drawMap(){
 
   (edges.edges||[]).forEach(e=>{
     if(!nodePos[e.from]||!nodePos[e.to])return;
+    const key=e.from+"|"+e.to; EDGE_BY_KEY[key]=e;
     const[x1,y1]=nodePos[e.from],[x2,y2]=nodePos[e.to];
     const mx=(x1+x2)/2+(cy-(y1+y2)/2)*0.18, my=(y1+y2)/2+((x1+x2)/2-cx)*0.18;
+    const d=`M${x1},${y1} Q${mx},${my} ${x2},${y2}`;
+    // fat invisible hit path so the thin edge is easy to click
+    const hit=document.createElementNS(NS,"path");
+    hit.setAttribute("d",d); hit.setAttribute("class","edge-hit"); hit.dataset.key=key;
+    hit.addEventListener("click",ev=>{ev.stopPropagation();showEdgeCard(key)});
     const p=document.createElementNS(NS,"path");
-    p.setAttribute("d",`M${x1},${y1} Q${mx},${my} ${x2},${y2}`);
-    p.setAttribute("class","edge"); p.dataset.from=e.from; p.dataset.to=e.to;
+    p.setAttribute("d",d);
+    p.setAttribute("class","edge"); p.dataset.from=e.from; p.dataset.to=e.to; p.dataset.key=key;
     p.setAttribute("stroke",FLOW[e.type]||"var(--border-strong)"); p.setAttribute("stroke-width",1+(e.freq_sim||1)*0.3);
-    svg.appendChild(p)});
+    svg.append(hit,p)});
 
   nodes.forEach(f=>{
     const[x,y]=nodePos[f.id], isOrigin=f.id===ORIGIN_ID;
@@ -555,6 +569,23 @@ async function drawMap(){
 
 /* image-2 style attribute card, anchored beside the clicked node */
 function fmtDate(s){ if(!s)return "—"; const d=new Date(s); return isNaN(d)?s:`${d.getMonth()+1}/${d.getDate()}`; }
+/* place the popover beside a node/edge, flipping to whichever side has room so
+   it visually connects to what was clicked (coords are svg viewBox units) */
+function placeCard(card, pos){
+  const svg=document.getElementById("map"), rect=svg.getBoundingClientRect(), vb=svg.viewBox.baseVal;
+  if(!pos){ card.classList.add("show"); return; }
+  const px=pos[0]/vb.width*rect.width, py=pos[1]/vb.height*rect.height;
+  const W=222;
+  let left = px < rect.width/2 ? px+18 : px-W-10;   // flip to the roomy side
+  left = Math.max(6, Math.min(left, rect.width-6));
+  const top = Math.max(6, py-26);
+  // <svg> has no offsetLeft/offsetTop; derive its offset within the positioned
+  // parent (.map-card) from bounding rects instead
+  const parent=card.offsetParent||svg.parentElement, prect=parent.getBoundingClientRect();
+  card.style.left=(rect.left-prect.left+left)+"px";
+  card.style.top=(rect.top-prect.top+top)+"px";
+  card.classList.add("show");
+}
 function showKgCard(id){
   const f=FAC_BY_ID[id]; if(!f)return;
   document.querySelectorAll(".node").forEach(n=>n.classList.toggle("selected",n.id==="n-"+id));
@@ -578,14 +609,43 @@ function showKgCard(id){
     <div class="kc-foot"><span class="fresh-dot"></span>updated ${esc(fmtDate(av.last_updated||f.verified_date))} · agent-monitored</div>`;
   card.querySelector("#kc-close").onclick=e=>{e.stopPropagation();hideKgCard()};
   // position near the node (convert svg viewBox coords -> pixels)
-  const svg=document.getElementById("map"), rect=svg.getBoundingClientRect(), vb=svg.viewBox.baseVal;
-  const[nx,ny]=nodePos[id]; const px=nx/vb.width*rect.width, py=ny/vb.height*rect.height;
-  card.style.left=Math.min(Math.max(px-110,6),rect.width-226)+"px";
-  card.style.top=Math.min(py+18,rect.height-40)+"px";
-  card.classList.add("show");
+  placeCard(card, id ? nodePos[id] : null);
 }
-function hideKgCard(){const c=document.getElementById("kg-card");if(c){c.classList.remove("show");document.querySelectorAll(".node.selected").forEach(n=>n.classList.remove("selected"))}}
+function hideKgCard(){const c=document.getElementById("kg-card");if(c){c.classList.remove("show");
+  document.querySelectorAll(".node.selected").forEach(n=>n.classList.remove("selected"));
+  document.querySelectorAll(".edge.sel").forEach(e=>e.classList.remove("sel"))}}
 document.getElementById("map").addEventListener("click",hideKgCard);
+
+const EDGE_TYPE_LABEL={step_down:"Step-down",step_up:"Step-up",vertical:"Vertical",crisis_reentry:"Crisis re-entry"};
+/* edge attribute card — referral relationship data the agent also monitors */
+function showEdgeCard(key){
+  const e=EDGE_BY_KEY[key]; if(!e)return;
+  document.querySelectorAll(".edge.sel").forEach(x=>x.classList.remove("sel"));
+  document.querySelectorAll(".node.selected").forEach(n=>n.classList.remove("selected"));
+  const path=document.querySelector(`.edge[data-key="${key}"]`); if(path)path.classList.add("sel");
+  const sim=e.simulated||{};
+  const ar=sim.accept_rate_observed, rt=sim.avg_response_time_min_observed;
+  const rows=[
+    ["Referral type", EDGE_TYPE_LABEL[e.type]||e.type||"—", ""],
+    ["Accept rate", ar==null?"—":Math.round(ar*100)+"%", ar!=null&&ar<0.4?"warn":(ar>=0.6?"ok":"")],
+    ["Avg response", rt==null?"—":rt+" min", rt!=null&&rt>90?"warn":""],
+    ["Referral volume", e.freq_sim!=null?e.freq_sim+"/mo (sim)":"—", ""],
+    ["Data source", sim.source||"—", ""],
+  ];
+  const fromN=(FAC_BY_ID[e.from]?.name||e.from).split("(")[0].trim();
+  const toN=(FAC_BY_ID[e.to]?.name||e.to).split("(")[0].trim();
+  const card=document.getElementById("kg-card");
+  card.innerHTML=`<div class="kc-ribbon"></div>
+    <div class="kc-head"><div class="kc-name">${esc(fromN)} → ${esc(toN)}</div>
+      <div class="kc-level">referral edge</div>
+      <span class="kc-close" id="kc-close">&times;</span></div>
+    <div class="kc-body">${rows.map(([k,v,cls])=>`<div class="kc-row"><span class="kc-k">${esc(k)}</span><span class="kc-v ${cls}">${esc(v)}</span></div>`).join("")}</div>
+    <div class="kc-foot"><span class="fresh-dot"></span>updated ${esc(fmtDate(sim.last_updated))} · agent-monitored</div>`;
+  card.querySelector("#kc-close").onclick=ev=>{ev.stopPropagation();hideKgCard()};
+  // anchor at the edge midpoint
+  const[x1,y1]=nodePos[e.from]||[0,0],[x2,y2]=nodePos[e.to]||[0,0];
+  placeCard(card, [(x1+x2)/2, (y1+y2)/2]);
+}
 
 /* ---------- KG monitoring agent → activity log (no panel, just traceable log) ---------- */
 function prettyField(p){return String(p||"").replace(/^simulated\./,"").replace(/\.observed$/,"").replace(/[._]/g," ").replace(/\bpct\b/,"%").replace(/\bsim\b/,"").trim();}
@@ -599,9 +659,9 @@ async function runMonitorScan(reason){
   catch(e){ return; }
   const auto=res.auto_applied||[], queued=res.queued||[];
   auto.forEach(u=>logActivity("KG agent",
-    `auto-updated ${entityName(u)} · ${prettyField(u.field_path)} ${u.old_value??"–"}→${u.new_value} (conf ${Math.round((u.effective_confidence||0)*100)}%, ${u.source_type})`));
+    `auto-updated ${entityName(u)} · ${prettyField(u.field_path)} ${u.old_value??"–"}→${u.new_value??"–"} (conf ${Math.round((u.effective_confidence||0)*100)}%, ${u.source_type})`));
   queued.forEach(u=>logActivity("KG agent",
-    `flagged for review · ${entityName(u)} · ${prettyField(u.field_path)} ${u.old_value??"–"}→${u.new_value} (${u.source_type})`));
+    `flagged for review · ${entityName(u)} · ${prettyField(u.field_path)} ${u.old_value??"–"}→${u.new_value??"–"} (${u.source_type})`));
   if(!auto.length&&!queued.length){ if(reason!=="tick")logActivity("KG agent","network scan · no new changes"); }
   else { try{ const {facilities}=await j("/api/graph"); facilities.forEach(f=>FAC_BY_ID[f.id]=f); }catch(e){} }  // refresh card data in place
   if(auto.length||queued.length)
@@ -732,7 +792,7 @@ async function runObserve(){
       body:JSON.stringify({patient_id:PATIENT.patient_id,facility_id:selected.id,packet_json:PACKET,transcript:transcriptText})});
     renderState(state);
     const g=(state.open_gaps||[]).length, f=(state.integrity_flags||[]).length;
-    logActivity("Alora · live",`Updated board${g?` · ${g} gap${g>1?"s":""}`:""}${f?` · ${f} integrity flag`:""}`);
+    logActivity("Alora · live",`Updated board${g?` · ${g} gap${g>1?"s":""}`:""}${f?` · ${f} integrity flag${f>1?"s":""}`:""}`);
   }catch(e){}
   observeInFlight=false; document.getElementById("mic-state").textContent=listening?"● listening":"idle";
   if(dirty)runObserve();
