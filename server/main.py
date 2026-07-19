@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -18,7 +19,10 @@ from pipeline.learning import record_call
 from pipeline.schemas import CallOutcome, CallResult
 
 ROOT = Path(__file__).parent.parent
-STATE_PATH = ROOT / "out" / "state.json"
+# writable runtime dir — /tmp on serverless (Vercel), out/ locally
+OUT = Path("/tmp/alora_out") if os.environ.get("VERCEL") else ROOT / "out"
+OUT.mkdir(parents=True, exist_ok=True)
+STATE_PATH = OUT / "state.json"
 
 app = FastAPI(title="AloraAI demo API")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
@@ -133,7 +137,7 @@ DEMO_NOW = _dt(2026, 7, 12, 15, 0)  # aligned to Maria timeline in data/patients
 def get_reconciliation(patient_id: str, live: bool = False):
     """Cached by default (out/<id>_recon.json); pass ?live=true to re-run the
     Domain Extractor (needs ANTHROPIC_API_KEY)."""
-    cache = ROOT / "out" / f"{patient_id}_recon.json"
+    cache = OUT / f"{patient_id}_recon.json"
     if cache.exists() and not live:
         return json.loads(cache.read_text())
     from pipeline.extract import reconcile_patient

@@ -11,13 +11,17 @@ To reset the demo to the committed baseline, delete ``out/graph``.
 from __future__ import annotations
 
 import json
+import os
 import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
 DATA = ROOT / "data"
-OUT_GRAPH = ROOT / "out" / "graph"
-OUT_MONITORING = ROOT / "out" / "monitoring"
+# Vercel (and most serverless) filesystems are read-only except /tmp, so the
+# mutable runtime store lives there in that environment; locally it stays in out/.
+OUT_BASE = Path("/tmp/alora_out") if os.environ.get("VERCEL") else ROOT / "out"
+OUT_GRAPH = OUT_BASE / "graph"
+OUT_MONITORING = OUT_BASE / "monitoring"
 
 # committed baselines (seeds) -> live runtime copies
 _SEEDS = {

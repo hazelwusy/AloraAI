@@ -483,11 +483,6 @@
       <svg viewBox="0 0 24 24"><path d="M6 4h3l1.5 4-2 1.5a11 11 0 005 5l1.5-2 4 1.5V22a2 2 0 01-2 2A16 16 0 014 6a2 2 0 012-2z"></path></svg>
       <span class="rail-label">Live call</span><span class="rail-num">4</span>
     </button>
-    <div class="rail-eyebrow" style="margin-top:14px">Explore</div>
-    <button class="rail-step" data-view="systemmap" aria-label="System map">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 3.5v3M12 17.5v3M3.5 12h3M17.5 12h3"></path></svg>
-      <span class="rail-label">System map</span>
-    </button>
     <div class="rail-spacer"></div>
     <div class="rail-foot">Alora preps &amp; listens.<br>You run the call.</div>
   </nav>
@@ -567,58 +562,26 @@
           <button class="btn btn-primary" id="btn-start-call" style="margin-top:14px;display:none">Start live call · Alora listens →</button>
         </section>
 
-        <!-- PATIENT + MATCH -->
+        <!-- PATIENT TRIAGE + MATCH -->
         <section class="card card-pad patient" id="patient-card">
-          <h2><span class="step-tag">2</span>Patient &amp; match</h2>
-          <div class="case-head">
-            <div class="avatar">MG</div>
-            <div>
-              <div class="name">Maria G.</div>
-              <div class="sub">34 · ZSFG inpatient psychiatry · <strong>day 4</strong></div>
+          <h2><span class="step-tag">2</span>Patient triage &amp; match
+            <span class="triage-live"><span class="dot"></span>live</span>
+            <button class="rescan-btn" id="btn-rescan">↻ Re-scan</button></h2>
+          <div class="eyebrow" style="margin:-4px 0 10px">agentic · ranked by acuity, re-ranked as the graph changes · click a patient to work it</div>
+          <div id="home-triage"><span class="dot-flash"><span></span><span></span><span></span></span></div>
+          <div id="active-patient" style="display:none">
+            <div class="case-head" style="margin-top:6px">
+              <div class="avatar" id="ap-avatar">MG</div>
+              <div><div class="name" id="ap-name">Maria G.</div><div class="sub" id="ap-sub"></div></div>
+              <button class="btn btn-sm" id="ap-back" style="margin-left:auto">← all patients</button>
             </div>
+            <div class="chips" id="ap-chips"></div>
+            <div id="candidates"></div>
           </div>
-          <div class="chips">
-            <span class="chip">Medi-Cal</span><span class="chip">Spanish-preferred</span>
-            <span class="chip">voluntary · 5150 lapsed day 2</span><span class="chip">step-down candidate</span>
-          </div>
-          <button class="btn btn-primary btn-block" id="btn-match">Find step-down placements</button>
-          <div id="candidates"><div class="hint" id="cand-hint"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg><span>Run a match to see the top step-down placements, ranked by fit. Pick one to have Alora prep your call.</span></div></div>
         </section>
       </div>
     </div>
 
-    <!-- SYSTEM MAP (Kumu-style full network) -->
-    <section class="sysmap" id="systemmap-view" hidden>
-      <div class="sysmap-bar">
-        <div class="sysmap-title"><span class="step-tag">◎</span> SF behavioral-health system map
-          <span class="eyebrow" id="sysmap-count"></span></div>
-        <input class="sysmap-search" id="sysmap-search" placeholder="Search facilities…" />
-      </div>
-      <div class="sysmap-presets" id="sysmap-presets"></div>
-      <div class="sysmap-body">
-        <div class="sysmap-canvas">
-          <svg id="sysmap" viewBox="0 0 1000 760" aria-label="SF behavioral-health system map"></svg>
-          <div class="kg-card" id="sys-card"></div>
-        </div>
-        <aside class="sysmap-side">
-          <div class="sysmap-panel reco priority">
-            <h4>Patient triage — live priority ranking
-              <span class="triage-live"><span class="dot"></span>live</span>
-              <button class="rescan-btn" id="btn-rescan">↻ Re-scan</button></h4>
-            <div class="eyebrow" style="margin-bottom:8px">agentic · re-ranked as acuity &amp; the graph change · click a patient</div>
-            <div id="reco-list"><span class="dot-flash"><span></span><span></span><span></span></span></div>
-          </div>
-          <div class="sysmap-panel collapsible collapsed">
-            <h4>Legend — facility type</h4>
-            <div id="sysmap-legend-nodes" class="legend-list"></div>
-          </div>
-          <div class="sysmap-panel collapsible collapsed">
-            <h4>Legend — referral edges</h4>
-            <div id="sysmap-legend-edges" class="legend-list"></div>
-          </div>
-        </aside>
-      </div>
-    </section>
   </div>
 </div>
 
@@ -964,7 +927,7 @@ async function runMonitorScan(reason){
     toast(`KG agent: ${auto.length} auto-applied · ${queued.length} queued for review`);
   // agentic: the agent just changed the graph → re-reason the patient triage and
   // highlight whose priority / recommendation moved
-  if(auto.length && sysDrawn) loadRecommendations(true);
+  if(auto.length) loadHomeTriage(true);
 }
 
 /* a synthetic animated connector origin→called facility, so the referral flow
@@ -1006,25 +969,56 @@ function highlight(facId, calling){
 function clearMap(){ document.querySelectorAll(".edge,.edge-hit").forEach(e=>e.classList.remove("hot","dim","faded"));
   document.querySelectorAll(".node").forEach(n=>n.classList.remove("active","calling","faded")); setLiveFlow(null); }
 
-/* ---------- match + select ---------- */
-document.getElementById("btn-match").onclick=async()=>{
-  const btn=document.getElementById("btn-match"); btn.disabled=true;
-  logActivity("Matcher","Ranking step-down facilities · Medi-Cal · Spanish");
-  try{
-    const {candidates}=await j("/api/match-directory",{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({direction:PATIENT.direction,payer:PATIENT.payer,language:PATIENT.language,exclude:[]})});
-    const el=document.getElementById("candidates"); el.innerHTML="";
-    candidates.slice(0,3).forEach(c=>{
-      const d=document.createElement("div"); d.className="cand";
-      const left=document.createElement("div");
-      left.innerHTML=`<div class="nm">${esc(c.facility.name)}</div><div class="why">${esc(c.reasons.join(" · "))}</div>`;
-      const b=document.createElement("button"); b.className="btn btn-sm"; b.textContent="Prep call";
-      b.onclick=()=>selectFacility(c.facility);
-      d.append(left,b); el.appendChild(d);
-    });
-    logActivity("Matcher",`${candidates.length} candidates · top: ${candidates[0]?.facility.name||"none"}`);
-  }catch(e){ toast("Match failed: "+e.message); logActivity("Matcher","match failed"); }
-  finally{ btn.disabled=false; }
+/* ---------- home triage → pick a patient → match ---------- */
+async function loadHomeTriage(diff){
+  const host=document.getElementById("home-triage");
+  let patients=[]; try{ patients=(await j("/api/triage")).patients||[]; }catch(e){ if(!diff)host.textContent="—"; return; }
+  const changes=[];
+  host.innerHTML=patients.map(p=>{
+    const top=p.top&&p.top.facility, prev=lastTriage[p.id];
+    let flag=""; if(diff&&prev&&top&&prev.fid&&top.id!==prev.fid){flag="changed";changes.push(p.label);}
+    return `<div class="rc prio-${esc(p.priority_label)} ${flag}" data-pid="${esc(p.id)}">
+      ${flag?`<span class="rc-badge">updated</span>`:""}
+      <div class="rc-head"><span class="prio-chip prio-${esc(p.priority_label)}">${p.priority}</span>
+        <span class="pt">${esc(p.label)}</span><span class="rc-meta">${esc(p.insurance||"")} · ${esc(p.language||"")}</span></div>
+      ${top?`<div class="to">→ ${esc(top.name)}</div>`:`<div class="why">no in-network match</div>`}
+      <div class="why">${esc((p.factors||[]).slice(0,2).join(" · "))}</div></div>`;
+  }).join("");
+  host.querySelectorAll(".rc[data-pid]").forEach(el=>el.onclick=()=>openActivePatient(el.dataset.pid));
+  lastTriage={}; patients.forEach((p,i)=>lastTriage[p.id]={rank:i,fid:p.top&&p.top.facility&&p.top.facility.id});
+  if(diff&&changes.length){logActivity("Alora · triage",`Re-ranked after graph update — ${changes.slice(0,2).join(", ")}`);toast(`Triage re-ranked · ${changes.length} change${changes.length>1?"s":""}`);}
+}
+
+async function openActivePatient(pid){
+  let d; try{ d=await j("/api/patient/"+pid); }catch(e){ toast("Failed to load patient"); return; }
+  const dem=d.demographics||{};
+  PATIENT.patient_id=pid; PATIENT.payer=d.need?.payer||PATIENT.payer; PATIENT.language=d.need?.language||PATIENT.language;
+  document.getElementById("home-triage").style.display="none";
+  document.getElementById("active-patient").style.display="block";
+  document.getElementById("ap-avatar").textContent=(d.label||"?").split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
+  document.getElementById("ap-name").textContent=d.label;
+  document.getElementById("ap-sub").innerHTML=`${esc(dem.age||"")} · ${esc(dem.gender||"")} · priority <b>${d.priority} ${esc(d.priority_label)}</b>`;
+  document.getElementById("ap-chips").innerHTML=[dem.insurance,dem.language,...(d.factors||[])].filter(Boolean).map(c=>`<span class="chip">${esc(c)}</span>`).join("");
+  const cands=[d.top,...(d.alternatives||[])].filter(Boolean);
+  const el=document.getElementById("candidates"); el.innerHTML=`<div class="eyebrow" style="margin:10px 0 6px">Alora's ranked placements · reasoned over the live graph</div>`;
+  cands.forEach((c,i)=>{
+    const d2=document.createElement("div"); d2.className="cand";
+    const left=document.createElement("div");
+    left.innerHTML=`<div class="nm">${i===0?"★ ":""}${esc(c.facility.name)}</div><div class="why">${esc((c.reasons||[]).slice(0,2).join(" · "))}</div>`;
+    const b=document.createElement("button"); b.className="btn btn-sm"+(i===0?" btn-primary":""); b.textContent="Prep call";
+    b.onclick=()=>selectFacility(c.facility);
+    d2.append(left,b); el.appendChild(d2);
+  });
+  logActivity("Alora · triage",`Opened ${d.label} · top pick ${d.top?.facility?.name||"none"}`);
+}
+document.getElementById("ap-back").onclick=()=>{
+  document.getElementById("active-patient").style.display="none";
+  document.getElementById("home-triage").style.display="block";
+};
+document.getElementById("btn-rescan").onclick=async(e)=>{
+  const b=e.currentTarget; b.disabled=true; b.textContent="↻ scanning…";
+  await runMonitorScan("manual"); await loadHomeTriage(true);
+  b.disabled=false; b.textContent="↻ Re-scan";
 };
 
 async function selectFacility(fac){
@@ -1506,36 +1500,13 @@ async function openPatientModal(pid){
   logActivity("Alora · triage",`Reasoned over ${d.n_considered} facilities for ${d.label} → ${top?top.name:"no match"}`);
 }
 
-// view switching: rail items with data-view toggle the system map overlay
-function showView(view){
-  const isMap=view==="systemmap";
-  document.querySelector(".workspace").style.display=isMap?"none":"";
-  document.getElementById("systemmap-view").hidden=!isMap;
-  if(isMap&&!sysDrawn) drawSystemMap().catch(()=>toast("System map failed to load"));
-}
-document.querySelectorAll(".rail-step[data-view]").forEach(b=>b.onclick=()=>{
-  document.querySelectorAll(".rail-step").forEach(x=>x.classList.remove("is-active")); b.classList.add("is-active");
-  showView(b.dataset.view);
-  if(window.matchMedia("(max-width: 820px)").matches) closeDrawer();
-});
-// workflow rail steps should return to the workspace view
-document.querySelectorAll(".rail-step[data-focus]").forEach(b=>b.addEventListener("click",()=>showView("workspace"),true));
-document.getElementById("sysmap-search").addEventListener("input",()=>applyPreset(activePreset));
-// collapsible legend panels
-document.querySelectorAll(".sysmap-panel.collapsible h4").forEach(h=>h.onclick=()=>h.parentElement.classList.toggle("collapsed"));
-// manual re-scan → agent scans the network, then triage re-ranks + highlights changes
-document.getElementById("btn-rescan").onclick=async(e)=>{
-  const b=e.currentTarget; b.disabled=true; b.textContent="↻ scanning…";
-  await runMonitorScan("manual");
-  await loadRecommendations(true);   // diff even if the scan auto-applied nothing new
-  b.disabled=false; b.textContent="↻ Re-scan";
-};
 // modals: click backdrop or Esc to close
 ["patient-modal","summary-modal"].forEach(id=>document.getElementById(id).addEventListener("click",e=>{ if(e.target.id===id)e.currentTarget.classList.remove("show"); }));
 document.addEventListener("keydown",e=>{ if(e.key==="Escape"){document.getElementById("patient-modal").classList.remove("show");document.getElementById("summary-modal").classList.remove("show");} });
 
 drawMap()
   .then(()=>{ logActivity("KG agent","monitoring the network — scanning web / phone / EHR feeds");
+    loadHomeTriage();
     setTimeout(()=>runMonitorScan("load"),1400);                 // first pass shortly after load
     setInterval(()=>runMonitorScan("tick"),90000); })           // keeps working on its own, quietly
   .catch(()=>{document.getElementById("conn").textContent="API offline — start uvicorn"});
