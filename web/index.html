@@ -153,6 +153,8 @@
   .node.faded { opacity: .1; transition: opacity .35s; pointer-events: none; }
   .edge.faded { opacity: .05 !important; }
   .node.dim { opacity: .12; transition: opacity .2s; } .edge.dim { opacity: .06 !important; }
+  .outcome-edge { fill: none; stroke-width: 2.5; stroke-dasharray: 1 5; stroke-linecap: round; opacity: .8; pointer-events: none; }
+  .outcome-badge text { pointer-events: none; }
   /* zoom toggle + full-map tools */
   .zoom-btn { font-size: 12px; font-weight: 600; color: var(--accent-strong); background: var(--surface);
     border: 1px solid var(--accent); border-radius: 999px; padding: 4px 12px; cursor: pointer; white-space: nowrap; }
@@ -671,6 +673,7 @@ document.querySelectorAll(".rail-step").forEach(b=>b.onclick=()=>{
 const NS="http://www.w3.org/2000/svg";
 let FAC_BY_ID={};   // id -> facility record, so the attribute card can read live KG fields
 let EDGE_BY_KEY={}; // "from|to" -> edge record, for the edge attribute card
+let OUTCOMES={};    // facilityId -> recorded call outcome, drawn on the graph
 
 function svgDefs(){
   const defs=document.createElementNS(NS,"defs");
@@ -734,6 +737,7 @@ function renderGraph(){
     p.setAttribute("stroke-width",1+(e.freq_sim||1)*0.3); if(graphMode==="map")p.setAttribute("opacity",.28);
     svg.append(hit,p)});
   nodes.forEach(f=>{ const[x,y]=nodePos[f.id]; if(x!=null)drawNode(f,x,y,f.id===ORIGIN_ID); });
+  renderOutcomeMarkers();
   document.getElementById("graph-tools").style.display = graphMode==="map" ? "block":"none";
   document.getElementById("legend-flow").style.display = graphMode==="map" ? "none":"flex";
   if(graphMode==="map"){ buildGraphPresets(); buildGraphLegend(); }
@@ -813,6 +817,49 @@ function ensureNodeDrawn(fac){
   const[ox,oy]=nodePos[ORIGIN_ID]||[320,270];
   nodePos[fac.id]=[ox+150, oy-150];   // upper-right of origin
   const g=drawNode(fac, ox+150, oy-150, false); g.dataset.temp="1";
+}
+
+/* recorded call outcomes drawn onto the graph as origin→facility connectors +
+   a status badge on the node; click to reopen the outcome */
+const OUTCOME_COLOR={accepted:"var(--success)",declined:"var(--critical)",info_requested:"var(--warning)"};
+async function loadOutcomes(){
+  try{ const st=await j("/api/referrals"); (st.referrals||[]).forEach(r=>{
+    if(!r.facility_id)return;
+    OUTCOMES[r.facility_id]={kind:r.status, reason:(r.events&&r.events[r.events.length-1]?.note)||"",
+      patient:r.patient_id, name:(FAC_BY_ID[r.facility_id]?.name)||r.facility_id, when:(r.events&&r.events[r.events.length-1]?.ts)||""}; });
+  }catch(e){}
+}
+function renderOutcomeMarkers(){
+  const svg=document.getElementById("map"); if(!svg)return;
+  svg.querySelectorAll(".outcome-edge,.outcome-badge").forEach(n=>n.remove());
+  const[ox,oy]=nodePos[ORIGIN_ID]||[]; if(ox==null)return;
+  Object.entries(OUTCOMES).forEach(([fid,o])=>{
+    const p=nodePos[fid]; if(!p)return;
+    const[x2,y2]=p, col=OUTCOME_COLOR[o.kind]||"var(--neutral)";
+    const path=document.createElementNS(NS,"path");
+    path.setAttribute("d",`M${ox},${oy} L${x2},${y2}`); path.setAttribute("class","outcome-edge");
+    path.setAttribute("stroke",col); svg.insertBefore(path, svg.firstChild.nextSibling);
+    const b=document.createElementNS(NS,"g"); b.setAttribute("class","outcome-badge"); b.style.cursor="pointer";
+    const dot=document.createElementNS(NS,"circle"); dot.setAttribute("cx",x2); dot.setAttribute("cy",y2-18); dot.setAttribute("r",7.5); dot.setAttribute("fill",col);
+    const mk=document.createElementNS(NS,"text"); mk.setAttribute("x",x2); mk.setAttribute("y",y2-14.5); mk.setAttribute("text-anchor","middle");
+    mk.setAttribute("fill","#fff"); mk.setAttribute("font-size","10"); mk.setAttribute("font-weight","700");
+    mk.textContent=o.kind==="accepted"?"✓":o.kind==="declined"?"✕":"…";
+    b.append(dot,mk); b.addEventListener("click",ev=>{ev.stopPropagation();showOutcomeCard(fid)});
+    svg.appendChild(b);
+  });
+}
+function showOutcomeCard(fid){
+  const o=OUTCOMES[fid]; if(!o)return;
+  const card=document.getElementById("kg-card");
+  const rows=[["Outcome",(OUTCOME_LABEL[o.kind]||o.kind),o.kind==="accepted"?"ok":o.kind==="declined"?"warn":""],
+    ["Patient",o.patient||"—",""],["When",fmtDate(o.when),""]];
+  card.innerHTML=`<div class="kc-ribbon" style="background:${OUTCOME_COLOR[o.kind]||"var(--neutral)"}"></div>
+    <div class="kc-head"><div class="kc-name">${esc(o.name)}</div><div class="kc-level">call outcome</div>
+      <span class="kc-close" id="kc-close">&times;</span></div>
+    <div class="kc-body">${cardRowsHTML(rows)}${o.reason?`<div class="kc-row"><span class="kc-k">Note</span><span class="kc-v">${esc(o.reason)}</span></div>`:""}</div>
+    <div class="kc-foot"><span class="fresh-dot"></span>recorded from the live call · patient detail stays in workspace</div>`;
+  card.querySelector("#kc-close").onclick=e=>{e.stopPropagation();hideKgCard()};
+  placeCard(document.getElementById("map"), card, nodePos[fid]);
 }
 
 /* image-2 style attribute card, anchored beside the clicked node */
@@ -1244,8 +1291,12 @@ async function doFinalize(){
     const res=await j("/api/copilot/finalize",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
     logActivity("Alora · learning","Patient-side outcome recorded to the workspace ledgers");
     if(res.next_candidate){logActivity("Matcher","Suggested next candidate: "+res.next_candidate.facility.name);}
+    // record the outcome onto the graph (persistent, clickable)
+    OUTCOMES[selected.id]={kind, reason:o?o.reason:"", condition:o?o.condition:"", patient:"Maria G.",
+      name:selected.name, when:new Date().toISOString()};
     stopMic();
     document.getElementById("calling-banner").classList.remove("on"); highlight(selected.id,false);
+    renderOutcomeMarkers();
   }catch(e){toast("finalize failed: "+e.message)}
 }
 
@@ -1505,7 +1556,8 @@ async function openPatientModal(pid){
 document.addEventListener("keydown",e=>{ if(e.key==="Escape"){document.getElementById("patient-modal").classList.remove("show");document.getElementById("summary-modal").classList.remove("show");} });
 
 drawMap()
-  .then(()=>{ logActivity("KG agent","monitoring the network — scanning web / phone / EHR feeds");
+  .then(async()=>{ logActivity("KG agent","monitoring the network — scanning web / phone / EHR feeds");
+    await loadOutcomes(); renderOutcomeMarkers();
     loadHomeTriage();
     setTimeout(()=>runMonitorScan("load"),1400);                 // first pass shortly after load
     setInterval(()=>runMonitorScan("tick"),90000); })           // keeps working on its own, quietly
